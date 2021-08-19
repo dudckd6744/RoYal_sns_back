@@ -7,7 +7,7 @@ import * as bcrypt from 'bcryptjs';
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
 
-    async registerUser(createUserDto: CreateUserDto): Promise<User> {
+    async registerUser(createUserDto: CreateUserDto): Promise<{message:string}> {
         const {name, email, password} = createUserDto;
 
         const salt = await bcrypt.genSalt();
@@ -27,6 +27,6 @@ export class UserRepository extends Repository<User> {
             throw new ConflictException('이미 해당 유저가 존재합니다.');
         }
 
-        return user;
+        return {message: 'Success'};
     }
 }

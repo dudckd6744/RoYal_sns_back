@@ -4,17 +4,16 @@ import { CreateUserDto, LoginUser } from './dto/user.create.dto';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcryptjs';
-import { JwtService } from '@nestjs/jwt';
+import { signToken } from 'src/utils/utils.jwt';
 
 @Injectable()
 export class AuthService {
     constructor(
         @InjectRepository(UserRepository)
         private userRepository: UserRepository,
-        private jwtService: JwtService
     ) {}
 
-    registerUser(createUserDto: CreateUserDto): Promise<User> {
+    registerUser(createUserDto: CreateUserDto): Promise<{message: string}> {
         return this.userRepository.registerUser(createUserDto);
     }
 
@@ -25,7 +24,7 @@ export class AuthService {
         if(!user) throw new UnauthorizedException('해당 유저가 존재하지않습니다.');
         else if(await bcrypt.compare(password, user.password)){
             const email = user.email 
-            const token = await this.jwtService.sign({email})
+            const token = await signToken({email})
             
             return { token }
         }else{

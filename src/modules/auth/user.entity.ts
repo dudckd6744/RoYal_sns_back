@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity()
 @Unique(['email'])
@@ -9,9 +9,13 @@ export class User extends BaseEntity{
     @Column()
     name: string;
 
+
     @Column()
     email: string;
 
     @Column()
     password: string;
+
+    @CreateDateColumn()
+    createdAt: Date
 }

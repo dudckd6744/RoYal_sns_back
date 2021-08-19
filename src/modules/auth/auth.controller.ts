@@ -1,6 +1,6 @@
 import { Body, Controller, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { GetUser } from 'src/utils/user.decorater';
+import { AuthGuard } from 'src/utils/auth.guard';
+import { ReqUser } from 'src/utils/user.decorater';
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUser } from './dto/user.create.dto';
 import { User } from './user.entity';
@@ -13,7 +13,7 @@ export class AuthController {
     @UsePipes(ValidationPipe)
     registerUser(
         @Body() createUserDto: CreateUserDto,
-    ): Promise<User>{
+    ): Promise<{message: string}>{
         return this.userService.registerUser(createUserDto);
     }
 
@@ -26,8 +26,8 @@ export class AuthController {
     }
 
     @Post('/test')
-    @UseGuards(AuthGuard())
-    test(@GetUser() user:User){
+    @UseGuards(AuthGuard)
+    test(@ReqUser() user:User){
         return user;
     }
 }

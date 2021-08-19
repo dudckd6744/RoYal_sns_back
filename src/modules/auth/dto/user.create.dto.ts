@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, Matches, MaxLength, MinLength } from "class-validator";
+import { IsEmail, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from "class-validator";
 
 export class CreateUserDto {
 
@@ -7,7 +7,7 @@ export class CreateUserDto {
     name:string;
 
     @IsNotEmpty({message: '이메일이 비어있습니다.'})
-    @IsString()
+    @IsEmail({} ,{message :'이메일 형식으로 입력해주세요!'} )
     email: string;
 
     @IsNotEmpty({message: '비밀번호가 비어있습니다.'})
@@ -27,7 +27,7 @@ export class CreateUserDto {
 export class LoginUser {
 
     @IsNotEmpty({message: '이메일이 비어있습니다.'})
-    @IsString()
+    @IsEmail()
     email: string;
 
     @IsNotEmpty({message: '비밀번호가 비어있습니다.'})
