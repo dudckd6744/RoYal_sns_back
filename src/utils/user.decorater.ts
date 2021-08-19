@@ -5,6 +5,6 @@ export const ReqUser = createParamDecorator<
   ExecutionContext
 >((data: unknown, context: ExecutionContext) => {
   const req = context.switchToHttp().getRequest()
-  console.log(req)
+
     return req.user;
 })

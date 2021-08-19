@@ -11,3 +11,13 @@ async function bootstrap() {
   await app.listen(port);
 }
 bootstrap();
+
+// DB_HOST=
+// DB_USER=
+// DB_PW=
+// DB_NAME=
+
+// PORT=
+
+// JWT_SECRET=
+// JWT_EXP=
