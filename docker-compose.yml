@@ -19,6 +19,4 @@ services:
       - ./mysql/mysql_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: asdfzxcv
-      # MYSQL_USER: test
-      # MYSQL_PASSWORD: qwerasdf
       MYSQL_DATABASE: bolier
