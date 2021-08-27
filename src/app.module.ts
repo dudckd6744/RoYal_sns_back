@@ -4,6 +4,7 @@ import { typeORMConfig } from './configs/typeorm.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserRepository } from './modules/auth/user.repository';
 import { AuthTokenMiddleware } from './utils/auth.token.middleware';
+import { BoardsModule } from './modules/boards/boards.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { AuthTokenMiddleware } from './utils/auth.token.middleware';
     TypeOrmModule.forRoot(typeORMConfig),
     TypeOrmModule.forFeature([UserRepository]),
     AuthModule,
+    BoardsModule,
   ],
 })
 export class AppModule {

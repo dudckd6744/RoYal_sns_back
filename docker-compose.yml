@@ -1,0 +1,24 @@
+version: "3.8"
+services: 
+  nest:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    container_name: nest
+    volumes:
+      - /app/node_modules
+      - .:/app
+
+  mysql:
+    build: ./mysql
+    restart: always
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: asdfzxcv
+      # MYSQL_USER: test
+      # MYSQL_PASSWORD: qwerasdf
+      MYSQL_DATABASE: bolier
