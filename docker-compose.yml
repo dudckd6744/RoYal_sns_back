@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile
       context: .
     container_name: nest
+    ports: 
+      - "5000:5000"
     volumes:
       - /app/node_modules
       - .:/app

@@ -14,6 +14,6 @@ export const typeORMConfig: TypeOrmModuleOptions = {
     synchronize: true,
     autoLoadEntities: true,
     timezone: '+09:00',
-    connectTimeout: 300000,
-    acquireTimeout: 300000
+    // connectTimeout: 30000,
+    // acquireTimeout: 30000
 }
