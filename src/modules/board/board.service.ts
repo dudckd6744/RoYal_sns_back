@@ -37,4 +37,18 @@ export class BoardService {
     ): Promise<Board> {
         return this.boardRepository.getDetailBoard(user ,id);
     }
+
+    updateBoard(
+        user: User,
+        id: number,
+        createBoardDto: CreateBoardDto,
+        status: BoardStatus
+    ): Promise<{message: string}> {
+        return this.boardRepository.updateBoard(
+            user,
+            id,
+            createBoardDto,
+            status
+        );
+    }
 }

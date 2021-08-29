@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from 'src/utils/auth.guard';
 import { ReqUser } from 'src/utils/user.decorater';
 import { User } from '../auth/user.entity';
@@ -38,5 +38,22 @@ export class BoardController {
         @Param('id', ParseIntPipe) id: number
     ): Promise<Board> {
         return this.boardSerivce.getDetailBoard(user, id);
+    }
+
+    @Put('/:id')
+    @UsePipes(ValidationPipe)
+    updateBoard(
+        @ReqUser() user: User,
+        @Param('id', ParseIntPipe) id: number,
+        @Body() createBoardDto: CreateBoardDto,
+        @Body('status', BoardStatusPipe) status: BoardStatus
+    ): Promise<{message: string}> {
+
+        return this.boardSerivce.updateBoard(
+            user,
+            id,
+            createBoardDto,
+            status
+        )
     }
 }

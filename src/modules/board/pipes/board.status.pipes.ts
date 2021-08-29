@@ -16,6 +16,7 @@ export class BoardStatusPipe implements PipeTransform {
         if(!this.isStatusOption(value)){
             throw new BadRequestException(`${value}는 게시글 상태값에 해당되지않습니다.`)
         }        
+        return value
     }
     private isStatusOption(status: any) {
         const index = this.StatusOption.indexOf(status)

@@ -13,7 +13,7 @@ export class BoardRepository extends Repository<Board>{
         status: BoardStatus
     ): Promise<{message: string}> {
         const {title, description} = createBoardDto;
-
+        
         const board = await this.create({
             userId: user.id,
             user,
@@ -68,6 +68,7 @@ export class BoardRepository extends Repository<Board>{
                 "board.userId",
                 "board.view",
                 "board.like",
+                "board.status",
                 "board.IsLike",
                 "user.name",
                 "board.createdAt",
@@ -81,5 +82,27 @@ export class BoardRepository extends Repository<Board>{
                 await this.save(board);
             }
             return board
+    }
+
+    async updateBoard(
+        user: User,
+        id: number,
+        creatreBoardDto: CreateBoardDto,
+        status: BoardStatus
+    ): Promise<{message: string}> {
+        const {title, description} = creatreBoardDto
+        
+        const board = await this.findOne(id)
+
+        if(!board) throw new BadRequestException('해당 게시글이 존재 하지않습니다.')
+        else if(board.userId != user.id) throw new BadRequestException('사용자 게시글이 아닙니다.')
+
+        board.title = title
+        board.description = description
+        board.status = status
+
+        await this.save(board)
+
+        return {message: 'success'}
     }
 }
