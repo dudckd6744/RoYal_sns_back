@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from 'src/utils/auth.guard';
 import { ReqUser } from 'src/utils/user.decorater';
 import { User } from '../auth/user.entity';
@@ -42,18 +42,45 @@ export class BoardController {
 
     @Put('/:id')
     @UsePipes(ValidationPipe)
+    @UseGuards(AuthGuard)
     updateBoard(
         @ReqUser() user: User,
         @Param('id', ParseIntPipe) id: number,
         @Body() createBoardDto: CreateBoardDto,
         @Body('status', BoardStatusPipe) status: BoardStatus
     ): Promise<{message: string}> {
-
         return this.boardSerivce.updateBoard(
             user,
             id,
             createBoardDto,
             status
         )
+    }
+
+    @Delete("/:id")
+    @UseGuards(AuthGuard)
+    deleteBoard(
+        @ReqUser() user:User,
+        @Param('id', ParseIntPipe) id: number
+    ): Promise<{message: string}> {
+        return this.boardSerivce.deleteBoard(user, id)
+    }
+
+    @Post('/:id/like')
+    @UseGuards(AuthGuard)
+    like(
+        @ReqUser() user:User,
+        @Param('id', ParseIntPipe) id:number
+    ): Promise<{message: string}> {
+        return this.boardSerivce.like(user, id)
+    }
+
+    @Post('/:id/unlike')
+    @UseGuards(AuthGuard)
+    unlike(
+        @ReqUser() user:User,
+        @Param('id', ParseIntPipe) id:number
+    ): Promise<{message: string}> {
+        return this.boardSerivce.unlike(user, id)
     }
 }

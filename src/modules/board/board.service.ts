@@ -51,4 +51,25 @@ export class BoardService {
             status
         );
     }
+
+    deleteBoard(
+        user: User,
+        id: number
+    ): Promise<{message: string}> {
+        return this.boardRepository.deleteBoard(user, id);
+    }
+
+    like(
+        user: User,
+        id: number
+    ): Promise<{message: string}> {
+        return this.boardRepository.like(user, id);
+    }
+
+    unlike(
+        user: User,
+        id: number
+    ): Promise<{message: string}> {
+        return this.boardRepository.unlike(user, id);
+    }
 }
