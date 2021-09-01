@@ -82,6 +82,12 @@ export class BoardRepository extends Repository<Board>{
                 board.view ++
                 await this.save(board);
             }
+            if(user){
+                const like = await Like.findOne({userId:user.id , boardId:board.id});
+                if(like){
+                    board.IsLike = true
+                }
+            }
             return board
     }
 

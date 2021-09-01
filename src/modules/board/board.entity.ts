@@ -29,6 +29,9 @@ export class Board extends BaseEntity{
     @Column({default: 0})
     like: number;
 
+    @Column({default: 0})
+    reply: number;
+
     @Column({default: false})
     IsLike: boolean;
 

@@ -9,3 +9,8 @@ export class CreateBoardDto {
     @IsNotEmpty()
     description: string
 }
+
+export class CreateReplyDto {
+    @IsNotEmpty()
+    comment: string;
+}

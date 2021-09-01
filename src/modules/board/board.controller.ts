@@ -4,8 +4,9 @@ import { ReqUser } from 'src/utils/user.decorater';
 import { User } from '../auth/user.entity';
 import { Board } from './board.entity';
 import { BoardService } from './board.service';
-import { CreateBoardDto } from './dto/board.dto';
+import { CreateBoardDto, CreateReplyDto } from './dto/board.dto';
 import { BoardStatusPipe } from './pipes/board.status.pipes';
+import { Reply } from './sections/reply.entity';
 import { BoardStatus } from './utils/board.status.enum';
 
 @Controller('boards')
@@ -83,4 +84,16 @@ export class BoardController {
     ): Promise<{message: string}> {
         return this.boardSerivce.unlike(user, id)
     }
+
+    @Post('/:id/reply')
+    @UseGuards(AuthGuard)
+    @UsePipes(ValidationPipe)
+    createReply(
+        @ReqUser() user: User,
+        @Body() createReplyDto: CreateReplyDto,
+        @Param('id', ParseIntPipe) id: number 
+    ): Promise<Reply> {
+        return this.boardSerivce.createReply(user, id, createReplyDto)
+    }
+
 }

@@ -3,7 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../auth/user.entity';
 import { Board } from './board.entity';
 import { BoardRepository } from './board.repository';
-import { CreateBoardDto } from './dto/board.dto';
+import { CreateBoardDto, CreateReplyDto } from './dto/board.dto';
+import { Reply } from './sections/reply.entity';
 import { BoardStatus } from './utils/board.status.enum';
 
 @Injectable()
@@ -71,5 +72,37 @@ export class BoardService {
         id: number
     ): Promise<{message: string}> {
         return this.boardRepository.unlike(user, id);
+    }
+
+    async createReply(
+        user: User,
+        id: number,
+        createReplyDto: CreateReplyDto
+    ): Promise<Reply> {
+        const { comment } = createReplyDto;
+        const reply = await Reply.create({
+            userId:user.id,
+            user,
+            boardId:id,
+            comment
+        })
+        const save_reply = await Reply.save(reply)
+
+        const reply_data = await Reply.createQueryBuilder('reply')
+            .where({id:save_reply.id})
+            .leftJoinAndSelect('reply.user', 'user')
+            .select([
+                'reply.id',
+                'reply.userId',
+                'user.name',
+                'reply.boardId',
+                'reply.comment',
+                'reply.createdAt'
+            ])
+            .getOne();
+        const board = await this.boardRepository.findOne(id)
+        board.reply ++
+        await this.boardRepository.save(board)
+        return reply_data
     }
 }
