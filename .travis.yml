@@ -3,7 +3,7 @@ language: node_js
 node_js:
   - "16.6"
 
-sudo: required
+# sudo: required
 
 # services:
 #   - docker
@@ -11,11 +11,14 @@ cache:
   directories:
     - "node_modules"
 
-before_install: 
-  - npm install 
+# before_install: 
+#   - npm install 
 
-script:
-  - npm run test -- --coverage
+# script:
+#   - npm run test -- --coverage
+branches:
+  only:
+    - main
 
 before_deploy:
   - rm -rf node_modules 
