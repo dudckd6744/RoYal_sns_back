@@ -15,7 +15,7 @@ before_install:
   - npm install 
 
 script:
-  - npm run test -- --covreage
+  - npm run test -- --coverage
 
 before_deploy:
   - rm -rf node_modules 
