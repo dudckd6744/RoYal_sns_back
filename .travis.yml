@@ -3,20 +3,20 @@ language: node_js
 node_js:
   - "16.6"
 
-sudo: required
+# sudo: required
 
-services:
-  - docker
+# services:
+#   - docker
 
-cache:
-  directories:
-    - "node_modules"
+# cache:
+#   directories:
+#     - "node_modules"
 
-before_install: 
-  - docker build -t dudckd/bolier-test-app -f ./Dockerfile.dev ./
+# before_install: 
+#   - docker build -t dudckd/bolier-test-app -f ./Dockerfile.dev ./
 
-script:
-  - docker run -e CI=true dudckd/bolier-test-app npm run test
+# script:
+#   - docker run -e CI=true dudckd/bolier-test-app npm run test
 
 branches:
   only:
