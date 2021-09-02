@@ -1,5 +1,4 @@
 import { IsNotEmpty, MaxLength } from "class-validator";
-import { BoardStatus } from "../utils/board.status.enum";
 
 export class CreateBoardDto {
     @IsNotEmpty()

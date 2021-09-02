@@ -96,4 +96,10 @@ export class BoardController {
         return this.boardSerivce.createReply(user, id, createReplyDto)
     }
 
+    @Get('/:id/reply')
+    getReply(
+        @Param('id', ParseIntPipe) id: number
+    ): Promise<{reply_count: number, reply: Reply[]}> {
+        return this.boardSerivce.getReply(id);
+    }
 }
