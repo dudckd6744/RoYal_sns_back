@@ -9,7 +9,7 @@ sudo: required
 #   - docker
 
 before_install: 
-  - sudo npm install
+  - npm install -g yarn
 
 after_success:
   - echo "success"
