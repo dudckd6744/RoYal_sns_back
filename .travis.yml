@@ -9,8 +9,8 @@ sudo: required
 #   - docker
 
 before_install: 
-  - npm install
-  
+  - sudo npm install
+
 after_success:
   - echo "success"
 
