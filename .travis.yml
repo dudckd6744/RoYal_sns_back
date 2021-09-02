@@ -10,10 +10,7 @@ sudo: required
 
 before_install: 
   - npm install
-
-script:
-  - CI=true npm run test 
-
+  
 after_success:
   - echo "success"
 
