@@ -33,12 +33,13 @@ before_deploy:
 
 deploy:
   provider: codedeploy
-  region: "ap-northeast-2"
-  application: "test"
-  deployment_group: "test_test"
+  region: ap-northeast-2
+  application: test
+  deployment_group: test_test
   key: bolier-CD.zip
   bucket: wooyc
   bundle_type: zip
+  wait-until-deployed: true
   on:
     branch: main
   
