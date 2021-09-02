@@ -5,9 +5,9 @@ node_js:
 
 sudo: required
 
-services:
-  - docker
-  
+# services:
+#   - docker
+
 script:
   - npm run test
 
