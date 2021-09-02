@@ -13,7 +13,7 @@ cache:
     - "node_modules"
 
 before_install: 
-  - docker build -t dudckd/bolier-test-app -f ./frontend/Dockerfile.dev ./
+  - docker build -t dudckd/bolier-test-app -f ./Dockerfile.dev ./
 
 script:
   - docker run -e CI=true dudckd/bolier-test-app npm run test
