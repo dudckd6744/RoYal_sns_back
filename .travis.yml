@@ -28,7 +28,7 @@ before_deploy:
   - cp Dockerfile before-deploy/     # Dockerfile 복사하기 
   - cp appspec.yml before-deploy/    # CodeDeploy 에게 필요한 appspec.yml 파일
   - cd before-deploy && zip -r before-deploy * # before-deploy로 이동후 전체 압축
-  - cd ../ && mkdir -p deploy # 상위 디렉토리로 이동후 deploy 디렉토리 생성
+  - mkdir -p deploy # 상위 디렉토리로 이동후 deploy 디렉토리 생성
   - mv before-deploy/before-deploy.zip deploy/bolier-CD.zip # deploy로 zip파일 이동
 
 deploy:
