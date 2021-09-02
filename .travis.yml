@@ -9,7 +9,7 @@ sudo: required
 #   - docker
 
 script:
-  - npm run test
+  - CI=true npm run test 
 
 after_success:
   - echo "success"
