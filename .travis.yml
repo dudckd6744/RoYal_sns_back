@@ -1,8 +1,4 @@
-language: node_js
-
-node_js:
-    - "10"
-    - "12"
+language: generic
 
 sudo: required
 
@@ -20,16 +16,16 @@ before_deploy:
 script:
   - docker run -e CI=true dudckd/bolier npm run test -- --coverage
 
-deploy:
-  provider: codedeploy
-  region: "ap-northeast-2"
-  application: "test"
-  deployment_group: "test_test"
-  key: bolier-CD.zip
-  bucket: wooyc
-  bundle_type: zip
-  on:
-    branch: main
+# deploy:
+#   provider: codedeploy
+#   region: "ap-northeast-2"
+#   application: "test"
+#   deployment_group: "test_test"
+#   key: bolier-CD.zip
+#   bucket: wooyc
+#   bundle_type: zip
+#   on:
+#     branch: main
   
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key: $AWS_SECRET_ACCESS_KEY
+#   access_key_id: $AWS_ACCESS_KEY
+#   secret_access_key: $AWS_SECRET_ACCESS_KEY
