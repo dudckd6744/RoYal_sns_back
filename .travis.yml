@@ -7,9 +7,12 @@ sudo: required
 
 # services:
 #   - docker
-
+cache:
+  directories:
+    - "node_modules"
+    
 before_install: 
-  - npm install -g yarn
+  - npm install 
 
 after_success:
   - echo "success"
