@@ -1,18 +1,16 @@
-language: node_js
-
-node_js:
-  - "10.14"
+language: generic
 
 sudo: required
 
-branches:
-  only:
-    - main
+# branches:
+#   only:
+#     - main
 
 services:
   - docker
 
 before_deploy:
+  - rm -rf node_modules 
   - mkdir -p before-deploy # zip에 포함시킬 파일들을 담을 디렉토리 생성
   - cp Dockerfile before-deploy/     # Dockerfile 복사하기 
   - cp appspec.yml before-deploy/    # CodeDeploy 에게 필요한 appspec.yml 파일
