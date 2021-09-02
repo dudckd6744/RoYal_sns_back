@@ -1,76 +1,77 @@
-# language: node_js
+language: node_js
 
-# node_js:
-#   - "10.14"
-
-# sudo: required
-
-# branches:
-#   only:
-#     - main
-
-# services:
-#   - docker
-
-# before_deploy:
-#   - mkdir -p before-deploy # zip에 포함시킬 파일들을 담을 디렉토리 생성
-#   - cp Dockerfile before-deploy/     # Dockerfile 복사하기 
-#   - cp appspec.yml before-deploy/    # CodeDeploy 에게 필요한 appspec.yml 파일
-#   - cd before-deploy && zip -r before-deploy * # before-deploy로 이동후 전체 압축
-#   - cd ../ && mkdir -p deploy # 상위 디렉토리로 이동후 deploy 디렉토리 생성
-#   - mv before-deploy/before-deploy.zip deploy/bolier-CD.zip # deploy로 zip파일 이동
-
-# script:
-#   - docker run -e CI=true dudckd/bolier npm run test -- --coverage
-
-# deploy:
-#   provider: codedeploy
-#   region: "ap-northeast-2"
-#   application: "test"
-#   deployment_group: "test_test"
-#   key: bolier-CD.zip
-#   bucket: wooyc
-#   bundle_type: zip
-#   on:
-#     branch: main
-  
-#   access_key_id: $AWS_ACCESS_KEY
-#   secret_access_key: $AWS_SECRET_ACCESS_KEY
-language: generic
+node_js:
+  - "10.14"
 
 sudo: required
+
+branches:
+  only:
+    - main
 
 services:
   - docker
 
-before_install: 
-  - docker build -t dudckd/react-test-app -f ./frontend/Dockerfile.dev ./frontend
-
-script:
-  - docker run -e CI=true dudckd/react-test-app npm run test
+before_deploy:
+  - mkdir -p before-deploy # zip에 포함시킬 파일들을 담을 디렉토리 생성
+  - cp Dockerfile before-deploy/     # Dockerfile 복사하기 
+  - cp appspec.yml before-deploy/    # CodeDeploy 에게 필요한 appspec.yml 파일
+  - cd before-deploy && zip -r before-deploy * # before-deploy로 이동후 전체 압축
+  - cd ../ && mkdir -p deploy # 상위 디렉토리로 이동후 deploy 디렉토리 생성
+  - mv before-deploy/before-deploy.zip deploy/bolier-CD.zip # deploy로 zip파일 이동
 
 after_success:
-  - docker build -t dudckd/docker-frontend ./frontend
-  - docker build -t dudckd/docker-backend ./backend
-  - docker build -t dudckd/docker-nginx ./nginx
-
-  - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_ID" --password-stdin
-
-  - docker push dudckd/docker-frontend
-  - docker push dudckd/docker-backend
-  - docker push dudckd/docker-nginx
+  - echo "success"
 
 deploy:
-  # edge: true
-  timeout: 30
-  provider: elasticbeanstalk
+  provider: codedeploy
   region: "ap-northeast-2"
-  app: "re-docker-fulls"
-  env: "Redockerfulls-env"
-  bucket_name: "elasticbeanstalk-ap-northeast-2-840213432037"
-  bucket_pass: "re-docker-fulls"
+  application: "test"
+  deployment_group: "test_test"
+  key: bolier-CD.zip
+  bucket: wooyc
+  bundle_type: zip
   on:
-    branch: master
+    branch: main
   
   access_key_id: $AWS_ACCESS_KEY
   secret_access_key: $AWS_SECRET_ACCESS_KEY
+
+# language: generic
+
+# sudo: required
+
+# services:
+#   - docker
+
+# before_install: 
+#   - docker build -t dudckd/react-test-app -f ./frontend/Dockerfile.dev ./frontend
+
+# script:
+#   - docker run -e CI=true dudckd/react-test-app npm run test
+
+# after_success:
+#   - docker build -t dudckd/docker-frontend ./frontend
+#   - docker build -t dudckd/docker-backend ./backend
+#   - docker build -t dudckd/docker-nginx ./nginx
+
+#   - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_ID" --password-stdin
+
+#   - docker push dudckd/docker-frontend
+#   - docker push dudckd/docker-backend
+#   - docker push dudckd/docker-nginx
+
+# deploy:
+#   # edge: true
+#   timeout: 30
+#   provider: elasticbeanstalk
+#   region: "ap-northeast-2"
+#   app: "re-docker-fulls"
+#   env: "Redockerfulls-env"
+#   bucket_name: "elasticbeanstalk-ap-northeast-2-840213432037"
+#   bucket_pass: "re-docker-fulls"
+#   on:
+#     branch: master
+  
+#   access_key_id: $AWS_ACCESS_KEY
+#   secret_access_key: $AWS_SECRET_ACCESS_KEY
