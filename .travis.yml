@@ -3,7 +3,7 @@ language: node_js
 node_js:
     - "10"
     - "12"
-    
+
 sudo: required
 
 services:
@@ -18,7 +18,7 @@ before_deploy:
   - mv before-deploy/before-deploy.zip deploy/bolier-CD.zip # deploy로 zip파일 이동
 
 script:
-  - docker run -e CI=true dudckd/bolier npm run test
+  - docker run -e CI=true dudckd/bolier npm run test -- --coverage
 
 deploy:
   provider: codedeploy
