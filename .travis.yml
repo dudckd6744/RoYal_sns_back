@@ -24,7 +24,7 @@ deploy:
   access_key_id: $AWS_ACCESS_KEY
   secret_access_key: $AWS_SECRET_ACCESS_KEY
   provider: codedeploy
-  bucket: wooyc
+  bucket: ci-cd-test-1
   bundle_type: zip
   key: node-koa-server.zip
   application: test
