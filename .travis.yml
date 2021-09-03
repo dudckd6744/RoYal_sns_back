@@ -21,28 +21,27 @@ before_deploy:
   # - mv node-koa-server.zip deploy/node-koa-server.zip
 
 deploy: # 배포
-  provider: s3 # AWS S3를 의미
-  access_key_id: $AWS_ACCESS_KEY # Travis repo settings에 설정된 값
-  secret_access_key: $AWS_SECRET_KEY # Travis repo settings에 설정된 값
-  bucket: ci-cd-test-1 # S3에 생성한 버킷
-  region: ap-northeast-2
-  skip_cleanup: true 
-  local_dir: deploy # deploy 디렉터리에 있는 파일을 s3로 업로드 하겠다는 의미
-  wait-until-deployed: true
+  - provider: s3 # AWS S3를 의미
+    access_key_id: $AWS_ACCESS_KEY # Travis repo settings에 설정된 값
+    secret_access_key: $AWS_SECRET_KEY # Travis repo settings에 설정된 값
+    bucket: ci-cd-test-1 # S3에 생성한 버킷
+    region: ap-northeast-2
+    skip_cleanup: true 
+    local_dir: deploy # deploy 디렉터리에 있는 파일을 s3로 업로드 하겠다는 의미
+    # wait-until-deployed: true
 
-deploy:
-  provider: codedeploy
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key: $AWS_SECRET_ACCESS_KEY
-  bucket: ci-cd-test-1
-  bundle_type: zip
-  key: bolier-CD.zip
-  application: test
-  deployment_group: test_test
-  region: ap-northeast-2
-  wait-until-deployed: true
-  on:
-    branch: main
+  - provider: codedeploy
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    bucket: ci-cd-test-1
+    bundle_type: zip
+    key: bolier-CD.zip
+    application: test
+    deployment_group: test_test
+    region: ap-northeast-2
+    # wait-until-deployed: true
+    on:
+      branch: main
   
   
 
