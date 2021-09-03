@@ -26,7 +26,7 @@ deploy:
   provider: codedeploy
   bucket: ci-cd-test-1
   bundle_type: zip
-  key: node-koa-server.zip
+  key: node-koa-server
   application: test
   deployment_group: test_test
   region: ap-northeast-2
