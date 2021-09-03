@@ -1,9 +1,7 @@
 version: "3.3"
 services: 
   nest:
-    build:
-      dockerfile: Dockerfile
-      context: .
+    image: dudckd/bolier-nest
     container_name: nest
     ports: 
       - "5000:5000"
@@ -12,7 +10,7 @@ services:
       - .:/app
 
   mysql:
-    build: ./mysql
+    image: dudckd/bolier-mysql
     restart: always
     container_name: mysql
     ports:
