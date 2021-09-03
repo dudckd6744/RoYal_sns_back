@@ -42,7 +42,7 @@ deploy: # 배포
     region: ap-northeast-2
     on:
       branch: main
-  
+   
   
 
 # language: generic
