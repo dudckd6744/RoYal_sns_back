@@ -17,3 +17,19 @@ export const typeORMConfig: TypeOrmModuleOptions = {
     // connectTimeout: 30000,
     // acquireTimeout: 30000
 }
+
+
+// host: 'process.env.DB_HOST',
+// port: 3306,
+// username: 'process.env.DB_USER',
+// password: 'process.env.DB_PW',
+// database: 'process.env.DB_HOST',
+
+
+
+
+// host: 'database-1.cyv7cj2693bb.ap-northeast-2.rds.amazonaws.com',
+// port: 3306,
+// username: 'user',
+// password: 'djajsl11',
+// database: 'bolier',

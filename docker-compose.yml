@@ -2,6 +2,7 @@ version: "3.3"
 services: 
   nest:
     image: dudckd/bolier-nest
+    restart: always
     container_name: nest
     ports: 
       - "5000:5000"
