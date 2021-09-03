@@ -32,19 +32,20 @@ before_deploy:
   - mv before-deploy/before-deploy.zip deploy/bolier-CD.zip # deploy로 zip파일 이동
 
 deploy:
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_ACCESS_KEY
   provider: codedeploy
-  region: ap-northeast-2
-  application: test
-  deployment_group: test_test
+  bucket: wooyc
   bundle_type: zip
   key: bolier-CD.zip
-  bucket: wooyc
-  # wait-until-deployed: true
+  application: test
+  deployment_group: test_test
+  region: ap-northeast-2
+  wait-until-deployed: true
   on:
     branch: main
   
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key: $AWS_SECRET_ACCESS_KEY
+  
 
 # language: generic
 
