@@ -8,17 +8,17 @@ branches:
     - main
 
 before_deploy:
-  - rm -rf node_modules 
-  - mkdir -p before-deploy # zip에 포함시킬 파일들을 담을 디렉토리 생성
-  - cp Dockerfile before-deploy/     # Dockerfile 복사하기 
-  - cp appspec.yml before-deploy/    # CodeDeploy 에게 필요한 appspec.yml 파일
-  - cd before-deploy && zip -r before-deploy * # before-deploy로 이동후 전체 압축
-  - cd ../ && mkdir -p deploy # 상위 디렉토리로 이동후 deploy 디렉토리 생성
-  - mv before-deploy/before-deploy.zip deploy/bolier-CD.zip # deploy로 zip파일 이동
-  # - rm -rf node_modules # travis가 설치한 node_moduels를 삭제
-  # - zip -r node-koa-server * # node-koa-server 라는 이름으로 zip 파일 생성
-  # - mkdir -p deploy # deploy 라는 디렉터리를 만듬
-  # - mv node-koa-server.zip deploy/node-koa-server.zip
+  # - rm -rf node_modules 
+  # - mkdir -p before-deploy # zip에 포함시킬 파일들을 담을 디렉토리 생성
+  # - cp Dockerfile before-deploy/     # Dockerfile 복사하기 
+  # - cp appspec.yml before-deploy/    # CodeDeploy 에게 필요한 appspec.yml 파일
+  # - cd before-deploy && zip -r before-deploy * # before-deploy로 이동후 전체 압축
+  # - cd ../ && mkdir -p deploy # 상위 디렉토리로 이동후 deploy 디렉토리 생성
+  # - mv before-deploy/before-deploy.zip deploy/bolier-CD.zip # deploy로 zip파일 이동
+  - rm -rf node_modules # travis가 설치한 node_moduels를 삭제
+  - zip -r node-koa-server * # node-koa-server 라는 이름으로 zip 파일 생성
+  - mkdir -p deploy # deploy 라는 디렉터리를 만듬
+  - mv node-koa-server.zip deploy/node-koa-server.zip
 
 deploy: # 배포
   - provider: s3 # AWS S3를 의미
@@ -28,20 +28,20 @@ deploy: # 배포
     region: ap-northeast-2
     skip_cleanup: true 
     local_dir: deploy # deploy 디렉터리에 있는 파일을 s3로 업로드 하겠다는 의미
-    # wait-until-deployed: true
+    wait-until-deployed: true
 
-  - provider: codedeploy
-    access_key_id: $AWS_ACCESS_KEY
-    secret_access_key: $AWS_SECRET_ACCESS_KEY
-    bucket: ci-cd-test-1
-    bundle_type: zip
-    key: bolier-CD.zip
-    application: test
-    deployment_group: test_test
-    region: ap-northeast-2
-    # wait-until-deployed: true
-    on:
-      branch: main
+  # - provider: codedeploy
+  #   access_key_id: $AWS_ACCESS_KEY
+  #   secret_access_key: $AWS_SECRET_ACCESS_KEY
+  #   bucket: ci-cd-test-1
+  #   bundle_type: zip
+  #   key: node-koa-server.zip
+  #   application: test
+  #   deployment_group: test_test
+  #   region: ap-northeast-2
+  #   wait-until-deployed: true
+  #   on:
+  #     branch: main
   
   
 
