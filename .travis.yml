@@ -40,7 +40,6 @@ deploy: # 배포
     application: test
     deployment_group: test_test
     region: ap-northeast-2
-    wait-until-deployed: true
     on:
       branch: main
   
