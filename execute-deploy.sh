@@ -14,6 +14,6 @@ else
   sleep 5
 fi
 
-cd /home/ec2-user/app/step2/zip/        # 해당 디렉토리로 이동 (Dockerfile 을 해당 디렉토리에 옮겼기 때문에)
-sudo docker build -t dudckd ./          # Docker Image 생성 
-sudo docker run -d -p 5000:5000 dudckd  # Docker Container 생성
+cd /home/ubuntu/deploy/bolier-CD     # 해당 디렉토리로 이동 (Dockerfile 을 해당 디렉토리에 옮겼기 때문에)
+sudo docker-compose up        # Docker Image 생성 
+# sudo docker run -d -p 5000:5000 dudckd  # Docker Container 생성
