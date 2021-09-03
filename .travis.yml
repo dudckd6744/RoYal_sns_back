@@ -8,12 +8,10 @@ branches:
     - main
 
 after_success:
-  - docker build -t dudckd/bolier-mysql ./mysql
   - docker build -t dudckd/bolier-nest .
 
   - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_ID" --password-stdin
 
-  - docker push dudckd/bolier-mysql
   - docker push dudckd/bolier-nest
 
 before_deploy:
