@@ -16,9 +16,9 @@ services:
     restart: always
     container_name: mysql
     ports:
-      - "3306:3306"
+      - "13306:3306"
     volumes:
       - ./mysql/mysql_data:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: asdfzxcv
+      MYSQL_ROOT_PASSWORD: djajsl11
       MYSQL_DATABASE: bolier
