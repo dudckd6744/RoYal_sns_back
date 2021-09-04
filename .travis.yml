@@ -7,6 +7,9 @@ branches:
   only:
     - main
 
+before_install:
+  - cat .env.bolier | envsubst > .env
+
 after_success:
   - cat .env.bolier | envsubst > .env
 

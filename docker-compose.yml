@@ -6,8 +6,6 @@ services:
     container_name: nest
     ports: 
       - "5000:5000"
-    volumes:
-      - /home/ubuntu/deploy/bolier-CD:/app
 
 
   # mysql:
