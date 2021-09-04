@@ -5,11 +5,11 @@ config();
 
 export const typeORMConfig: TypeOrmModuleOptions = {
     type: "mysql",
-    host: 'process.env.DB_HOST',
+    host: process.env.DB_HOST,
     port: 3306,
-    username: 'process.env.DB_USER',
-    password: 'process.env.DB_PW',
-    database: 'process.env.DB_HOST',
+    username: process.env.DB_USER,
+    password: process.env.DB_PW,
+    database: process.env.DB_HOST,
     entities: [__dirname + '/../**/*.entity.{js,ts}'],
     synchronize: true,
     autoLoadEntities: true,
