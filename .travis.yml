@@ -8,6 +8,8 @@ branches:
     - main
 
 after_success:
+  - cat .env.example | envsubst > .env
+
   - docker build -t dudckd/bolier-nest .
 
   - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_ID" --password-stdin
