@@ -9,7 +9,7 @@ echo "> 현재 실행 중인 Docker 컨테이너 pid 확인"
 
 docker-compose down
 # docker rmi dudckd/bolier-nest
-docker rmi `$(docker ps -a -q)`
+docker rmi `$(docker images -a -q)`
 
 `docker volume prune`
 
