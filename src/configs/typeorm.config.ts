@@ -1,4 +1,5 @@
-import { TypeOrmModuleOptions } from "@nestjs/typeorm";
+
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { config } from 'dotenv';
 
 config();
@@ -14,8 +15,7 @@ export const typeORMConfig: TypeOrmModuleOptions = {
     synchronize: true,
     autoLoadEntities: true,
     timezone: '+09:00',
-    // connectTimeout: 30000,
-    // acquireTimeout: 30000
+    acquireTimeout: 30000,
 }
 
 
