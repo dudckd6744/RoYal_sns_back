@@ -6,9 +6,6 @@ services:
     container_name: nest
     ports: 
       - "5000:5000"
-    volumes:
-      - /app/node_modules
-
 
   # mysql:
   #   image: dudckd/bolier-mysql

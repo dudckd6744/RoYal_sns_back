@@ -23,10 +23,6 @@ before_deploy:
   - cd before-deploy && zip -r before-deploy * # before-deploy로 이동후 전체 압축
   - cd ../ && mkdir -p deploy # 상위 디렉토리로 이동후 deploy 디렉토리 생성
   - mv before-deploy/before-deploy.zip deploy/bolier-CD.zip # deploy로 zip파일 이동
-  # - rm -rf node_modules # travis가 설치한 node_moduels를 삭제
-  # - zip -r node-koa-server * # node-koa-server 라는 이름으로 zip 파일 생성
-  # - mkdir -p deploy # deploy 라는 디렉터리를 만듬
-  # - mv node-koa-server.zip deploy/bolier-CD.zip
 
 deploy: # 배포
   - provider: s3 # AWS S3를 의미
@@ -50,44 +46,3 @@ deploy: # 배포
     region: ap-northeast-2
     on:
       branch: main
-   
-  
-
-# language: generic
-
-# sudo: required
-
-# services:
-#   - docker
- 
-# before_install: 
-#   - docker build -t dudckd/react-test-app -f ./frontend/Dockerfile.dev ./frontend
-
-# script:
-#   - docker run -e CI=true dudckd/react-test-app npm run test
-
-# after_success:
-#   - docker build -t dudckd/docker-frontend ./frontend
-#   - docker build -t dudckd/docker-backend ./backend
-#   - docker build -t dudckd/docker-nginx ./nginx
-
-#   - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_ID" --password-stdin
-
-#   - docker push dudckd/docker-frontend
-#   - docker push dudckd/docker-backend
-#   - docker push dudckd/docker-nginx
-
-# deploy:
-#   # edge: true
-#   timeout: 30
-#   provider: elasticbeanstalk
-#   region: "ap-northeast-2"
-#   app: "re-docker-fulls"
-#   env: "Redockerfulls-env"
-#   bucket_name: "elasticbeanstalk-ap-northeast-2-840213432037"
-#   bucket_pass: "re-docker-fulls"
-#   on:
-#     branch: master
-  
-#   access_key_id: $AWS_ACCESS_KEY
-#   secret_access_key: $AWS_SECRET_ACCESS_KEY
