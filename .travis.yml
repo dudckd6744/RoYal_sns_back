@@ -8,7 +8,7 @@ branches:
     - main
 
 after_success:
-  - cat .env.example | envsubst > .env
+  - cat .env.bolier | envsubst > .env
 
   - docker build -t dudckd/bolier-nest .
 
