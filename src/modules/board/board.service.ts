@@ -106,26 +106,26 @@ export class BoardService {
         return reply_data
     }
 
-    async getReply(
-        id: number
-    ): Promise<{reply_count: number, reply: Reply[]}> {
-        const reply_count = await Reply.createQueryBuilder('reply')
-            .where({boardId:id})
-            .getCount();
+    // async getReply(
+    //     id: number
+    // ): Promise<{reply_count: number, reply: Reply[]}> {
+    //     const reply_count = await Reply.createQueryBuilder('reply')
+    //         .where({boardId:id})
+    //         .getCount();
 
-        const reply = await Reply.createQueryBuilder('reply')
-        .where({boardId:id})
-        .leftJoinAndSelect('reply.user', 'user')
-        .select([
-            'reply.id',
-            'reply.userId',
-            'user.name',
-            'reply.boardId',
-            'reply.comment',
-            'reply.createdAt'
-        ])
-        .getMany();
+    //     const reply = await Reply.createQueryBuilder('reply')
+    //     .where({boardId:id})
+    //     .leftJoinAndSelect('reply.user', 'user')
+    //     .select([
+    //         'reply.id',
+    //         'reply.userId',
+    //         'user.name',
+    //         'reply.boardId',
+    //         'reply.comment',
+    //         'reply.createdAt'
+    //     ])
+    //     .getMany();
 
-        return {reply_count, reply}
-    }
+    //     return {reply_count, reply}
+    // }
 }
