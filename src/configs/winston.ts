@@ -53,16 +53,10 @@ if (process.env.NODE_ENV !== "production") {
     );
 }
 
-const stream_1 = {
+const stream = {
     write: (message) => {
         logger.error(message);
     },
 };
 
-const stream = {
-    write: (message) => {
-        logger.info(message);
-    },
-};
-
-export { stream_1, stream };
+export { stream ,logger};
