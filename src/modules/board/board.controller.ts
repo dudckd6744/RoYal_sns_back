@@ -36,7 +36,7 @@ export class BoardController {
     @Get('/:id')
     getDeatailBoard(
         @ReqUser() user: User,
-        @Param('id', ParseIntPipe) id: number
+        @Param('id', ParseIntPipe) id: string
     ): Promise<Board> {
         return this.boardSerivce.getDetailBoard(user, id);
     }
@@ -46,7 +46,7 @@ export class BoardController {
     @UseGuards(AuthGuard)
     updateBoard(
         @ReqUser() user: User,
-        @Param('id', ParseIntPipe) id: number,
+        @Param('id', ParseIntPipe) id: string,
         @Body() createBoardDto: CreateBoardDto,
         @Body('status', BoardStatusPipe) status: BoardStatus
     ): Promise<{message: string}> {
@@ -62,7 +62,7 @@ export class BoardController {
     @UseGuards(AuthGuard)
     deleteBoard(
         @ReqUser() user:User,
-        @Param('id', ParseIntPipe) id: number
+        @Param('id', ParseIntPipe) id: string
     ): Promise<{message: string}> {
         return this.boardSerivce.deleteBoard(user, id)
     }
@@ -71,7 +71,7 @@ export class BoardController {
     @UseGuards(AuthGuard)
     like(
         @ReqUser() user:User,
-        @Param('id', ParseIntPipe) id:number
+        @Param('id', ParseIntPipe) id:string
     ): Promise<{message: string}> {
         return this.boardSerivce.like(user, id)
     }
@@ -80,7 +80,7 @@ export class BoardController {
     @UseGuards(AuthGuard)
     unlike(
         @ReqUser() user:User,
-        @Param('id', ParseIntPipe) id:number
+        @Param('id', ParseIntPipe) id:string
     ): Promise<{message: string}> {
         return this.boardSerivce.unlike(user, id)
     }
@@ -91,14 +91,14 @@ export class BoardController {
     createReply(
         @ReqUser() user: User,
         @Body() createReplyDto: CreateReplyDto,
-        @Param('id', ParseIntPipe) id: number 
+        @Param('id', ParseIntPipe) id: string 
     ): Promise<Reply> {
         return this.boardSerivce.createReply(user, id, createReplyDto)
     }
 
     @Get('/:id/reply')
     getReply(
-        @Param('id', ParseIntPipe) id: number
+        @Param('id', ParseIntPipe) id: string
     ): Promise<{reply_count: number, reply: Reply[]}> {
         return this.boardSerivce.getReply(id);
     }

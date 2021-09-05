@@ -34,14 +34,14 @@ export class BoardService {
 
     getDetailBoard(
         user: User,
-        id: number
+        id: string
     ): Promise<Board> {
         return this.boardRepository.getDetailBoard(user ,id);
     }
 
     updateBoard(
         user: User,
-        id: number,
+        id: string,
         createBoardDto: CreateBoardDto,
         status: BoardStatus
     ): Promise<{message: string}> {
@@ -55,28 +55,28 @@ export class BoardService {
 
     deleteBoard(
         user: User,
-        id: number
+        id: string
     ): Promise<{message: string}> {
         return this.boardRepository.deleteBoard(user, id);
     }
 
     like(
         user: User,
-        id: number
+        id: string
     ): Promise<{message: string}> {
         return this.boardRepository.like(user, id);
     }
 
     unlike(
         user: User,
-        id: number
+        id: string
     ): Promise<{message: string}> {
         return this.boardRepository.unlike(user, id);
     }
 
     async createReply(
         user: User,
-        id: number,
+        id: string,
         createReplyDto: CreateReplyDto
     ): Promise<Reply> {
         const { comment } = createReplyDto;
@@ -107,7 +107,7 @@ export class BoardService {
     }
 
     async getReply(
-        id: number
+        id: string
     ): Promise<{reply_count: number, reply: Reply[]}> {
         const reply_count = await Reply.createQueryBuilder('reply')
             .where({boardId:id})

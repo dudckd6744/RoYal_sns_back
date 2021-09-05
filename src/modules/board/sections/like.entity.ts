@@ -6,20 +6,23 @@ import { Board } from "../board.entity";
 @Entity()
 export class Like extends BaseEntity{
 
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @Column()
-    userId: number;
+    userId: string;
 
     @ManyToOne(type => User)
     user: User;
 
     @Column()
-    boardId: number;
+    boardId: string;
 
     @ManyToOne(type => Board)
     board: Board;
+
+    @Column()
+    parentId: string;
 
     @CreateDateColumn()
     createdAt: Date;

@@ -5,11 +5,11 @@ import { BoardStatus } from "./utils/board.status.enum";
 @Entity()
 export class Board extends BaseEntity{
 
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @Column()
-    userId: number;
+    userId: string;
 
     @ManyToOne(type => User)
     user: User;

@@ -57,7 +57,7 @@ export class BoardRepository extends Repository<Board>{
     
     async getDetailBoard(
         user: User,
-        id: number
+        id: string
     ): Promise<Board> {
         const board = await this.createQueryBuilder('board')
             .where({id})
@@ -93,7 +93,7 @@ export class BoardRepository extends Repository<Board>{
 
     async updateBoard(
         user: User,
-        id: number,
+        id: string,
         creatreBoardDto: CreateBoardDto,
         status: BoardStatus
     ): Promise<{message: string}> {
@@ -112,7 +112,7 @@ export class BoardRepository extends Repository<Board>{
 
     async deleteBoard(
         user: User,
-        id: number
+        id: string
     ): Promise<{message: string}> {
         const board = await this.findBoard(user, id)
 
@@ -123,7 +123,7 @@ export class BoardRepository extends Repository<Board>{
 
     async like(
         user:User,
-        id: number
+        id: string
     ): Promise<{message: 'success'}> {
         const board = await this.findOne(id)
         if(!board) throw new BadRequestException('해당 게시글이 존재 하지않습니다.')
@@ -148,7 +148,7 @@ export class BoardRepository extends Repository<Board>{
 
     async unlike(
         user:User,
-        id: number
+        id: string
     ): Promise<{message: 'success'}> {
         const board = await this.findOne(id)
         if(!board) throw new BadRequestException('해당 게시글이 존재 하지않습니다.')
