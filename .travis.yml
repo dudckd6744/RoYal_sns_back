@@ -8,6 +8,7 @@ branches:
     - main
 
 before_install:
+# 배포시 env 파일은 gitignore 에 등록되어있어 실행이안된다
   - cat .env.bolier | envsubst > .env
 
 after_success:

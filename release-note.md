@@ -12,4 +12,25 @@
      - 댓글 생성하기 API 개발
           - 생성후 그 해당 댓글 바로 찾아서 반환
           - 해당 게시글에 댓글 생성시 게시글 댓글수 증가
+###  2021-09-04
+     - 자동화 배포 시스템 설정 완료
+          -AWS 구성
+               - IAM 키 생성 후 파일 다운
+               - ec2(보안그룹,rds보안그룹)
+               - s3 버킷생성
+               - rds(서브넷,파라미터생성) 데이터 생성
+               - codeDeploy
+                    - 애플리케이션, 배포그룹 생성
+          - dockerfile
+          - docker-compose.yml
+          - travis.yml 
+               - 환경변수 최종 설정 이후 깃 푸쉬
+          - appspec.yml
+               - 깃푸쉬이후 s3파일을 ec2로 가져가서 deploy.sh 실행 
+          - execute-deploy.sh
+               - ec2 에서 실행될 명령어 입력
+     - 로깅 설정 완료
+          - winston , morgan
+               - api 실행시 err ,info 정보들 자동 저장
+
 ### to do
