@@ -27,10 +27,10 @@ export class Board extends BaseEntity{
     view: number;
 
     @Column({default: 0})
-    like: number;
+    like_count: number;
 
     @Column({default: 0})
-    reply: number;
+    reply_count: number;
 
     @Column({default: false})
     IsLike: boolean;

@@ -62,9 +62,10 @@ export class BoardService {
 
     like(
         user: User,
-        id: string
+        id: string,
+        parentId: string
     ): Promise<{message: string}> {
-        return this.boardRepository.like(user, id);
+        return this.boardRepository.like(user, id, parentId);
     }
 
     unlike(
@@ -80,11 +81,14 @@ export class BoardService {
         createReplyDto: CreateReplyDto
     ): Promise<Reply> {
         const { comment } = createReplyDto;
+        const parentId = createReplyDto.parentId ? createReplyDto.parentId:null
+
         const reply = await Reply.create({
             userId:user.id,
             user,
             boardId:id,
-            comment
+            comment,
+            parentId
         })
         const save_reply = await Reply.save(reply)
 
@@ -97,12 +101,22 @@ export class BoardService {
                 'user.name',
                 'reply.boardId',
                 'reply.comment',
-                'reply.createdAt'
+                'reply.createdAt',
+                'reply.parentId'
             ])
             .getOne();
+
         const board = await this.boardRepository.findOne(id)
-        board.reply ++
-        await this.boardRepository.save(board)
+        const reply_count_data = await Reply.findOne(parentId)
+        if(parentId == reply_count_data.id){
+            reply_count_data.reply_count ++
+            await Reply.save(reply_count_data)
+            board.reply_count ++
+            await this.boardRepository.save(board)
+        }else if(parentId == null){
+            board.reply_count ++
+            await this.boardRepository.save(board)
+        }
         return reply_data
     }
 

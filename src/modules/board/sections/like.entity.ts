@@ -21,7 +21,7 @@ export class Like extends BaseEntity{
     @ManyToOne(type => Board)
     board: Board;
 
-    @Column()
+    @Column({nullable:true})
     parentId: string;
 
     @CreateDateColumn()

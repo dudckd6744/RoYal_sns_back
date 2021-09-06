@@ -19,9 +19,18 @@ export class Reply extends BaseEntity {
     @Column()
     comment: string;
 
-    @Column()
+    @Column({nullable:true})
     parentId: string;
 
     @CreateDateColumn()
     createdAt: Date;
+
+    @Column({default: 0})
+    like_count: number;
+
+    @Column({default: 0})
+    reply_count: number;
+
+    @Column({default: false})
+    IsLike: boolean;
 }

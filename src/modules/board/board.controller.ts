@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from 'src/utils/auth.guard';
 import { ReqUser } from 'src/utils/user.decorater';
 import { User } from '../auth/user.entity';
@@ -9,7 +9,7 @@ import { BoardStatusPipe } from './pipes/board.status.pipes';
 import { Reply } from './sections/reply.entity';
 import { BoardStatus } from './utils/board.status.enum';
 
-@Controller('boards')
+@Controller('api/boards')
 export class BoardController {
     constructor( private boardSerivce: BoardService){}
 
@@ -36,7 +36,7 @@ export class BoardController {
     @Get('/:id')
     getDeatailBoard(
         @ReqUser() user: User,
-        @Param('id', ParseIntPipe) id: string
+        @Param('id') id: string
     ): Promise<Board> {
         return this.boardSerivce.getDetailBoard(user, id);
     }
@@ -46,7 +46,7 @@ export class BoardController {
     @UseGuards(AuthGuard)
     updateBoard(
         @ReqUser() user: User,
-        @Param('id', ParseIntPipe) id: string,
+        @Param('id') id: string,
         @Body() createBoardDto: CreateBoardDto,
         @Body('status', BoardStatusPipe) status: BoardStatus
     ): Promise<{message: string}> {
@@ -62,7 +62,7 @@ export class BoardController {
     @UseGuards(AuthGuard)
     deleteBoard(
         @ReqUser() user:User,
-        @Param('id', ParseIntPipe) id: string
+        @Param('id') id: string
     ): Promise<{message: string}> {
         return this.boardSerivce.deleteBoard(user, id)
     }
@@ -71,16 +71,17 @@ export class BoardController {
     @UseGuards(AuthGuard)
     like(
         @ReqUser() user:User,
-        @Param('id', ParseIntPipe) id:string
+        @Param('id') id:string,
+        @Body('parentId') parentId:string
     ): Promise<{message: string}> {
-        return this.boardSerivce.like(user, id)
+        return this.boardSerivce.like(user, id, parentId)
     }
 
-    @Post('/:id/unlike')
+    @Delete('/:id/unlike')
     @UseGuards(AuthGuard)
     unlike(
         @ReqUser() user:User,
-        @Param('id', ParseIntPipe) id:string
+        @Param('id') id:string
     ): Promise<{message: string}> {
         return this.boardSerivce.unlike(user, id)
     }
@@ -91,14 +92,14 @@ export class BoardController {
     createReply(
         @ReqUser() user: User,
         @Body() createReplyDto: CreateReplyDto,
-        @Param('id', ParseIntPipe) id: string 
+        @Param('id') id: string 
     ): Promise<Reply> {
         return this.boardSerivce.createReply(user, id, createReplyDto)
     }
 
     @Get('/:id/reply')
     getReply(
-        @Param('id', ParseIntPipe) id: string
+        @Param('id') id: string
     ): Promise<{reply_count: number, reply: Reply[]}> {
         return this.boardSerivce.getReply(id);
     }

@@ -12,4 +12,6 @@ export class CreateBoardDto {
 export class CreateReplyDto {
     @IsNotEmpty()
     comment: string;
+
+    parentId: string;
 }

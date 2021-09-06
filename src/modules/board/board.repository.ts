@@ -4,6 +4,7 @@ import { User } from "../auth/user.entity";
 import { Board } from "./board.entity";
 import { CreateBoardDto } from "./dto/board.dto";
 import { Like } from "./sections/like.entity";
+import { Reply } from "./sections/reply.entity";
 import { BoardStatus } from "./utils/board.status.enum";
 
 @EntityRepository(Board)
@@ -45,7 +46,10 @@ export class BoardRepository extends Repository<Board>{
                 "board.description",
                 "board.userId",
                 "board.view",
-                "board.like",
+                "board.like_count",
+                "board.reply_count",
+                "board.status",
+                "board.IsLike",
                 "user.name",
                 "board.createdAt",
             ])
@@ -68,7 +72,8 @@ export class BoardRepository extends Repository<Board>{
                 "board.description",
                 "board.userId",
                 "board.view",
-                "board.like",
+                "board.like_count",
+                "board.reply_count",
                 "board.status",
                 "board.IsLike",
                 "user.name",
@@ -123,25 +128,34 @@ export class BoardRepository extends Repository<Board>{
 
     async like(
         user:User,
-        id: string
+        id: string,
+        parentId:string
     ): Promise<{message: 'success'}> {
+        const parent_id = parentId ? parentId:null
+
         const board = await this.findOne(id)
         if(!board) throw new BadRequestException('해당 게시글이 존재 하지않습니다.')
 
-        const liked = await Like.findOne({userId:user.id, boardId:board.id})
+        const liked = await Like.findOne({userId:user.id, boardId:board.id ,parentId:parent_id})
         if(liked) throw new BadRequestException('이미 좋아요 누른 게시글입니다.')
 
         const like = await Like.create({
             userId: user.id,
             user,
             boardId:board.id,
-            board
+            board,
+            parentId:parent_id
         })
 
         await Like.save(like)
-
-        board.like ++
-        await this.save(board)
+        const reply = await Reply.findOne(parent_id)
+        if(parent_id == reply.id){
+            reply.like_count ++
+            await Reply.save(reply)
+        }else if(parent_id == null){
+            board.like_count ++
+            await this.save(board)
+        }
         
         return {message: 'success'}
     }
@@ -158,7 +172,7 @@ export class BoardRepository extends Repository<Board>{
 
         Like.delete({userId:user.id, boardId:board.id})
 
-        board.like --
+        board.like_count --
         await this.save(board)
         
         return {message: 'success'}
