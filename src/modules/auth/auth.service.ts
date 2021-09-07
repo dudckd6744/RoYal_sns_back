@@ -43,19 +43,17 @@ export class AuthService {
 
         if(google_user) return user;
 
-        const user_name = [user.firstName,...user.lastName]
-
         await this.userRepository.save({
             type:"google",
             email: user.email,
-            name: user_name.join(""),
+            name: user.name,
             profile:user.picture
         })
-        // this.userRepository.save(user_data)
         return {
           user: user
         }
       }
+      
       async kakaoLogin(req) {
 
         if (!req.user) {
