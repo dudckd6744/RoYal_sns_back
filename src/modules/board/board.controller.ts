@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
-import { AuthGuard } from 'src/utils/auth.guard';
+import { AuthGuard_renewal } from 'src/utils/auth.guard';
 import { ReqUser } from 'src/utils/user.decorater';
 import { User } from '../auth/user.entity';
 import { Board } from './board.entity';
@@ -15,7 +15,7 @@ export class BoardController {
 
     @Post('/')
     @UsePipes(ValidationPipe)
-    @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard_renewal)
     createBoard(
         @ReqUser() user: User,
         @Body() createBoardDto: CreateBoardDto,
@@ -43,7 +43,7 @@ export class BoardController {
 
     @Put('/:id')
     @UsePipes(ValidationPipe)
-    @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard_renewal)
     updateBoard(
         @ReqUser() user: User,
         @Param('id') id: string,
@@ -59,7 +59,7 @@ export class BoardController {
     }
 
     @Delete("/:id")
-    @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard_renewal)
     deleteBoard(
         @ReqUser() user:User,
         @Param('id') id: string
@@ -68,7 +68,7 @@ export class BoardController {
     }
 
     @Post('/:id/like')
-    @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard_renewal)
     like(
         @ReqUser() user:User,
         @Param('id') id:string,
@@ -78,7 +78,7 @@ export class BoardController {
     }
 
     @Delete('/:id/unlike')
-    @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard_renewal)
     unlike(
         @ReqUser() user:User,
         @Param('id') id:string
@@ -87,7 +87,7 @@ export class BoardController {
     }
 
     @Post('/:id/reply')
-    @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard_renewal)
     @UsePipes(ValidationPipe)
     createReply(
         @ReqUser() user: User,

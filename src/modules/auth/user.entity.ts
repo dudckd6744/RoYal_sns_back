@@ -7,13 +7,19 @@ export class User extends BaseEntity{
     id : string;
 
     @Column()
+    type: string;
+
+    @Column()
     name: string;
 
     @Column()
     email: string;
 
-    @Column()
+    @Column({nullable:true})
     password: string;
+
+    @Column({nullable:true})
+    profile: string;
  
     @CreateDateColumn()
     createdAt: Date

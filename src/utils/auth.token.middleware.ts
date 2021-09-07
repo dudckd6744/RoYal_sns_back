@@ -8,9 +8,9 @@ import { verifyToken } from './utils.jwt'
 @Injectable()
 export class AuthTokenMiddleware implements NestMiddleware {
   constructor(private userService: UserRepository) {}
-
   // eslint-disable-next-line @typescript-eslint/ban-types
   public async use(req: Request, res: Response, next: NextFunction) {
+
     const email = await this.parseUserId(req)
 
     const anyReq = req as any

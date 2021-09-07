@@ -15,7 +15,6 @@ export class BoardRepository extends Repository<Board>{
         status: BoardStatus
     ): Promise<{message: string}> {
         const {title, description} = createBoardDto;
-        
         const board = await this.create({
             userId: user.id,
             user,

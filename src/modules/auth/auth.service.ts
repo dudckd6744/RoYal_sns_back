@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto, LoginUser } from './dto/user.create.dto';
 import { User } from './user.entity';
@@ -31,4 +31,53 @@ export class AuthService {
             throw new UnauthorizedException('비밀번호를 다시 확인해주세요.');
         }
     }
+    async googleLogin(req) {
+
+        if (!req.user) {
+          throw new BadRequestException('잘못된 계정입니다.')
+        }
+
+        const user = req.user
+
+        const google_user = await this.userRepository.findOne({email:user.email})
+
+        if(google_user) return user;
+
+        const user_name = [user.firstName,...user.lastName]
+
+        await this.userRepository.save({
+            type:"google",
+            email: user.email,
+            name: user_name.join(""),
+            profile:user.picture
+        })
+        // this.userRepository.save(user_data)
+        return {
+          user: user
+        }
+      }
+      async kakaoLogin(req) {
+
+        if (!req.user) {
+          throw new BadRequestException('잘못된 계정입니다.')
+        }
+
+        const user = req.user
+
+        const kakao_user = await this.userRepository.findOne({email:user.email})
+        
+        if(kakao_user) return user;
+
+        await this.userRepository.save({
+            type:"kakao",
+            email: user.email,
+            name: user.name,
+            profile:user.picture
+        })
+
+        return {
+          user: user
+        }
+    }
+    
 }

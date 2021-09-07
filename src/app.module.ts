@@ -5,6 +5,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UserRepository } from './modules/auth/user.repository';
 import { AuthTokenMiddleware } from './utils/auth.token.middleware';
 import { BoardModule } from './modules/board/board.module';
+import { GoogleStrategy } from './utils/google.auth';
+import { KakaoStrategy } from './utils/kakao.auth';
 
 @Module({
   imports: [
@@ -14,6 +16,7 @@ import { BoardModule } from './modules/board/board.module';
     AuthModule,
     BoardModule,
   ],
+  providers:[GoogleStrategy, KakaoStrategy]
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

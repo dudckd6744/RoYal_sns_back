@@ -1,5 +1,7 @@
-import { Body, Controller, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
-import { AuthGuard } from 'src/utils/auth.guard';
+/* eslint-disable @typescript-eslint/no-empty-function */
+import { Body, Controller, Get, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard_renewal } from 'src/utils/auth.guard';
 import { ReqUser } from 'src/utils/user.decorater';
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUser } from './dto/user.create.dto';
@@ -25,9 +27,27 @@ export class AuthController {
         return this.userService.loginUser(loginUser);
     }
 
-    @Post('/test')
-    @UseGuards(AuthGuard)
-    test(@ReqUser() user:User){
-        return user;
+    @Get('/google')
+    @UseGuards(AuthGuard('google'))
+    async googleAuth(@Req() req) {}
+
+    @Get('/google/redirect')
+    @UseGuards(AuthGuard('google'))
+    googleAuthRedirect(@Req() req){
+        return this.userService.googleLogin(req)
     }
-}
+
+    @Get('/kakao')
+    @UseGuards(AuthGuard('kakao'))
+    async kakaoAuth(@Req() req) {}
+
+    @Get('/kakao/redirect')
+    @UseGuards(AuthGuard('kakao'))
+    kakaoAuthRedirect(@Req() req){
+        return this.userService.kakaoLogin(req)
+    }
+
+    @Post("/test")
+    test(@ReqUser() user: User) {
+        return user;
+    }}
