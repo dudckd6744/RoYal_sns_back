@@ -13,7 +13,7 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     super({
         clientID: process.env.KAKAO_CLIENT_ID,
         clientSecret: "", // clientSecret을 사용하지 않는다면 넘기지 말거나 빈 스트링을 넘길 것
-        callbackURL: "http://localhost:5000/api/auth/kakao/redirect",
+        callbackURL: "http://3.36.94.177:5000/api/auth/kakao/redirect",
       });
   }
 
