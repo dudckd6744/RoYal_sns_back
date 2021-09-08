@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { Body, Controller, Get, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { AuthGuard_renewal } from 'src/utils/auth.guard';
 import { ReqUser } from 'src/utils/user.decorater';
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUser } from './dto/user.create.dto';
@@ -50,4 +49,7 @@ export class AuthController {
     @Post("/test")
     test(@ReqUser() user: User) {
         return user;
-    }}
+    }
+
+}
+
