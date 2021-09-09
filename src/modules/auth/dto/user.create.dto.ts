@@ -28,6 +28,8 @@ export class CreateUserDto {
     message: '영문과 숫자가 포함되어 있지않습니다.',
   })
   password: string;
+
+  profile: string;
 }
 
 export class LoginUser {
@@ -39,3 +41,17 @@ export class LoginUser {
   @IsString()
   password: string;
 }
+
+export class PasswordUserDto {
+    @IsNotEmpty({ message: '비밀번호가 비어있습니다.' })
+    @IsEmail()
+    password: string;
+  
+    @IsNotEmpty({ message: '새로운 비밀번호를 입력해주세요!' })
+    @IsString()
+    new_password: string;
+
+    @IsNotEmpty({ message: '비밀번호 확인란이 비어있습니다.' })
+    @IsString()
+    confirm_new_password: string;
+  }

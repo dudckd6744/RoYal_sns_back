@@ -8,6 +8,7 @@ import { BoardModule } from './modules/board/board.module';
 import { GoogleStrategy } from './utils/google.auth';
 import { KakaoStrategy } from './utils/kakao.auth';
 import { UploadModule } from './utils/upload/upload.module';
+import { AuthMailerModule } from './utils/mailer/mailer.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { UploadModule } from './utils/upload/upload.module';
     AuthModule,
     BoardModule,
     UploadModule,
+    AuthMailerModule,
   ],
   providers: [GoogleStrategy, KakaoStrategy],
 })

@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { Body, Controller, Get, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard_renewal } from 'src/utils/auth.guard';
 import { ReqUser } from 'src/utils/user.decorater';
 import { AuthService } from './auth.service';
-import { CreateUserDto, LoginUser } from './dto/user.create.dto';
+import { CreateUserDto, LoginUser, PasswordUserDto } from './dto/user.create.dto';
 import { User } from './user.entity';
 
 @Controller('api/auth')
@@ -25,6 +26,16 @@ export class AuthController {
     ): Promise<{token : string}> {
         return this.userService.loginUser(loginUser);
     }
+
+    @Put('/update_password')
+    @UseGuards(AuthGuard_renewal)
+    passwordUpdateUser(
+        @ReqUser() user:User,
+        @Body() passwordUserDto: PasswordUserDto
+    ): Promise<{message: string}> {
+        return this.userService.passwordUpdateUser(user,passwordUserDto);
+    }
+
 
     @Get('/google')
     @UseGuards(AuthGuard('google'))

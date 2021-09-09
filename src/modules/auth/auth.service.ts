@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto, LoginUser } from './dto/user.create.dto';
+import { CreateUserDto, LoginUser, PasswordUserDto } from './dto/user.create.dto';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcryptjs';
@@ -35,6 +35,14 @@ export class AuthService {
       throw new UnauthorizedException('비밀번호를 다시 확인해주세요.');
     }
   }
+
+  passwordUpdateUser(
+      user: User,
+      passwordUserDto: PasswordUserDto
+  ): Promise<{message: string}> {
+      return this.userRepository.passwordUpdateUser(user, passwordUserDto);
+  }
+
   async googleLogin(req) {
     if (!req.user) {
       throw new BadRequestException('잘못된 계정입니다.');
