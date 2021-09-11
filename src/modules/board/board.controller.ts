@@ -1,111 +1,131 @@
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-  Query,
-  UseGuards,
-  UsePipes,
-  ValidationPipe,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Post,
+    Put,
+    Query,
+    UseGuards,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
+import { Board } from 'src/schemas/Board';
+import { Reply } from 'src/schemas/Reply';
 import { AuthGuard_renewal } from 'src/utils/auth.guard';
 import { ReqUser } from 'src/utils/user.decorater';
-import { User } from '../auth/user.entity';
-import { Board } from './board.entity';
+
 import { BoardService } from './board.service';
-import { CreateBoardDto, CreateReplyDto } from './dto/board.dto';
+import {
+    CreateBoardDto,
+    CreateReplyDto,
+    GetBoardsDto,
+    TagFileDto,
+} from './dto/board.dto';
 import { BoardStatusPipe } from './pipes/board.status.pipes';
-import { Reply } from './sections/reply.entity';
 import { BoardStatus } from './utils/board.status.enum';
 
 @Controller('api/boards')
 export class BoardController {
-  constructor(private boardSerivce: BoardService) {}
+    constructor(private boardSerivce: BoardService) {}
 
-  @Post('/')
-  @UsePipes(ValidationPipe)
-  @UseGuards(AuthGuard_renewal)
-  createBoard(
-    @ReqUser() user: User,
-    @Body() createBoardDto: CreateBoardDto,
-    @Body('status', BoardStatusPipe) status: BoardStatus,
-  ): Promise<{ message: string }> {
-    return this.boardSerivce.createBoard(user, createBoardDto, status);
-  }
+    @Post('/')
+    @UsePipes(ValidationPipe)
+    @UseGuards(AuthGuard_renewal)
+    createBoard(
+        @ReqUser() email: string,
+        @Body() createBoardDto: CreateBoardDto,
+        @Body('status', BoardStatusPipe) status: BoardStatus,
+    ): Promise<{ message: string }> {
+        return this.boardSerivce.createBoard(email, createBoardDto, status);
+    }
 
-  @Get('/')
-  getBoard(
-    @Query('search') search: string,
-  ): Promise<{ board_count: number; boards: Board[] }> {
-    return this.boardSerivce.getBoard(search);
-  }
+    // @Post('/tag')
+    // @UsePipes(ValidationPipe)
+    // @UseGuards(AuthGuard_renewal)
+    // fileTaging(
+    //     @ReqUser() email: string,
+    //     @Body() tagFileDto: TagFileDto,
+    // ): Promise<{ message: string }> {
+    //     return this.boardSerivce.fileTaging(email, tagFileDto);
+    // }
 
-  @Get('/:id')
-  getDeatailBoard(
-    @ReqUser() user: User,
-    @Param('id') id: string,
-  ): Promise<Board> {
-    return this.boardSerivce.getDetailBoard(user, id);
-  }
+    @Get('/')
+    getBoard(@Query() getBoardDto: GetBoardsDto): Promise<Board[]> {
+        return this.boardSerivce.getBoard(getBoardDto);
+    }
 
-  @Put('/:id')
-  @UsePipes(ValidationPipe)
-  @UseGuards(AuthGuard_renewal)
-  updateBoard(
-    @ReqUser() user: User,
-    @Param('id') id: string,
-    @Body() createBoardDto: CreateBoardDto,
-    @Body('status', BoardStatusPipe) status: BoardStatus,
-  ): Promise<{ message: string }> {
-    return this.boardSerivce.updateBoard(user, id, createBoardDto, status);
-  }
+    @Get('/:boardId')
+    getDeatailBoard(
+        @ReqUser() email: string,
+        @Param('boardId') boardId: string,
+        @Query('over_view') over_view: boolean,
+    ): Promise<Board> {
+        return this.boardSerivce.getDetailBoard(email, boardId, over_view);
+    }
 
-  @Delete('/:id')
-  @UseGuards(AuthGuard_renewal)
-  deleteBoard(
-    @ReqUser() user: User,
-    @Param('id') id: string,
-  ): Promise<{ message: string }> {
-    return this.boardSerivce.deleteBoard(user, id);
-  }
+    @Put('/:boardId')
+    @UsePipes(ValidationPipe)
+    @UseGuards(AuthGuard_renewal)
+    updateBoard(
+        @ReqUser() email: string,
+        @Param('boardId') boardId: string,
+        @Body() createBoardDto: CreateBoardDto,
+        @Body('status', BoardStatusPipe) status: BoardStatus,
+    ): Promise<{ message: string }> {
+        return this.boardSerivce.updateBoard(
+            email,
+            boardId,
+            createBoardDto,
+            status,
+        );
+    }
 
-  @Post('/:id/like')
-  @UseGuards(AuthGuard_renewal)
-  like(
-    @ReqUser() user: User,
-    @Param('id') id: string,
-    @Body('parentId') parentId: string,
-  ): Promise<{ message: string }> {
-    return this.boardSerivce.like(user, id, parentId);
-  }
+    @Delete('/:boardId')
+    @UseGuards(AuthGuard_renewal)
+    deleteBoard(
+        @ReqUser() email: string,
+        @Param('boardId') boardId: string,
+    ): Promise<{ message: string }> {
+        return this.boardSerivce.deleteBoard(email, boardId);
+    }
 
-  @Delete('/:id/unlike')
-  @UseGuards(AuthGuard_renewal)
-  unlike(
-    @ReqUser() user: User,
-    @Param('id') id: string,
-  ): Promise<{ message: string }> {
-    return this.boardSerivce.unlike(user, id);
-  }
+    @Post('/:boardId/like')
+    @UseGuards(AuthGuard_renewal)
+    like(
+        @ReqUser() email: string,
+        @Param('boardId') boardId: string,
+        @Body('parentId') parentId: string,
+    ): Promise<{ message: string }> {
+        return this.boardSerivce.like(email, boardId, parentId);
+    }
 
-  @Post('/:id/reply')
-  @UseGuards(AuthGuard_renewal)
-  @UsePipes(ValidationPipe)
-  createReply(
-    @ReqUser() user: User,
-    @Body() createReplyDto: CreateReplyDto,
-    @Param('id') id: string,
-  ): Promise<Reply> {
-    return this.boardSerivce.createReply(user, id, createReplyDto);
-  }
+    @Delete('/:boardId/unlike')
+    @UseGuards(AuthGuard_renewal)
+    unlike(
+        @ReqUser() email: string,
+        @Param('boardId') boardId: string,
+        @Body('parentId') parentId: string,
+    ): Promise<{ message: string }> {
+        return this.boardSerivce.unlike(email, boardId, parentId);
+    }
 
-  @Get('/:id/reply')
-  getReply(
-    @Param('id') id: string,
-  ): Promise<{ reply_count: number; reply: Reply[] }> {
-    return this.boardSerivce.getReply(id);
-  }
+    @Post('/:boardId/reply')
+    @UseGuards(AuthGuard_renewal)
+    @UsePipes(ValidationPipe)
+    createReply(
+        @ReqUser() email: string,
+        @Body() createReplyDto: CreateReplyDto,
+        @Param('boardId') boardId: string,
+    ): Promise<Reply> {
+        return this.boardSerivce.createReply(email, boardId, createReplyDto);
+    }
+
+    @Get('/:boardId/reply')
+    getReply(
+        @Param('boardId') boardId: string,
+    ): Promise<{ reply_count: number; reply: Reply[] }> {
+        return this.boardSerivce.getReply(boardId);
+    }
 }

@@ -1,189 +1,306 @@
 import { BadRequestException } from '@nestjs/common';
-import { EntityRepository, Repository } from 'typeorm';
-import { User } from '../auth/user.entity';
-import { Board } from './board.entity';
-import { CreateBoardDto } from './dto/board.dto';
-import { Like } from './sections/like.entity';
-import { Reply } from './sections/reply.entity';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Schema } from 'mongoose';
+import { Board } from 'src/schemas/Board';
+import { Like } from 'src/schemas/Like';
+import { Reply } from 'src/schemas/Reply';
+import { Tag } from 'src/schemas/Tag';
+import { User } from 'src/schemas/User';
+
+import {
+    CreateBoardDto,
+    CreateReplyDto,
+    GetBoardsDto,
+    TagFileDto,
+} from './dto/board.dto';
 import { BoardStatus } from './utils/board.status.enum';
 
-@EntityRepository(Board)
-export class BoardRepository extends Repository<Board> {
-  async createBoard(
-    user: User,
-    createBoardDto: CreateBoardDto,
-    status: BoardStatus,
-  ): Promise<{ message: string }> {
-    const { title, description } = createBoardDto;
-    const board = await this.create({
-      userId: user.id,
-      user,
-      title,
-      description,
-      status,
-    });
-    await this.save(board);
+export class BoardRepository {
+    constructor(
+        @InjectModel(User.name) private userModel: Model<User>,
+        @InjectModel(Reply.name) private replyModel: Model<Reply>,
+        @InjectModel(Board.name) private boardModel: Model<Board>,
+        @InjectModel(Like.name) private likeModel: Model<Like>,
+        @InjectModel(Tag.name) private tagModel: Model<Tag>,
+    ) {}
 
-    return { message: 'success' };
-  }
+    async createBoard(
+        email: string,
+        createBoardDto: CreateBoardDto,
+        status: BoardStatus,
+    ): Promise<{ message: string }> {
+        const { description, files } = createBoardDto;
 
-  async getBoard(
-    search: string,
-  ): Promise<{ board_count: number; boards: Board[] }> {
-    const search_data = search ?? '';
+        const user = await this.userModel.findOne({ email });
 
-    const board_count = await this.createQueryBuilder('board')
-      .where('title like :searchTerm', { searchTerm: `%${search_data}%` })
-      .getCount();
+        const board = await this.boardModel.create({
+            writer: user._id,
+            description,
+            status,
+            files,
+        });
+        await board.save();
 
-    const boards = await this.createQueryBuilder('board')
-      .where('title like :searchTerm', { searchTerm: `%${search_data}%` })
-      .leftJoinAndSelect('board.user', 'user')
-      .select([
-        'board.id',
-        'board.title',
-        'board.description',
-        'board.userId',
-        'board.view',
-        'board.like_count',
-        'board.reply_count',
-        'board.status',
-        'board.IsLike',
-        'user.name',
-        'board.createdAt',
-      ])
-      .orderBy('board.createdAt', 'DESC')
-      .getMany();
-
-    return { board_count, boards };
-  }
-
-  async getDetailBoard(user: User, id: string): Promise<Board> {
-    const board = await this.createQueryBuilder('board')
-      .where({ id })
-      .leftJoinAndSelect('board.user', 'user')
-      .select([
-        'board.id',
-        'board.title',
-        'board.description',
-        'board.userId',
-        'board.view',
-        'board.like_count',
-        'board.reply_count',
-        'board.status',
-        'board.IsLike',
-        'user.name',
-        'board.createdAt',
-      ])
-      .getOne();
-
-    if (!board)
-      throw new BadRequestException('해당 게시글이 존재 하지않습니다.');
-
-    if (user) {
-      board.view++;
-      await this.save(board);
-    }
-    if (user) {
-      const like = await Like.findOne({ userId: user.id, boardId: board.id });
-      if (like) {
-        board.IsLike = true;
-      }
-    }
-    return board;
-  }
-
-  async updateBoard(
-    user: User,
-    id: string,
-    creatreBoardDto: CreateBoardDto,
-    status: BoardStatus,
-  ): Promise<{ message: string }> {
-    const { title, description } = creatreBoardDto;
-
-    const board = await this.findBoard(user, id);
-
-    board.title = title;
-    board.description = description;
-    board.status = status;
-
-    await this.save(board);
-
-    return { message: 'success' };
-  }
-
-  async deleteBoard(user: User, id: string): Promise<{ message: string }> {
-    const board = await this.findBoard(user, id);
-
-    await this.delete({ id: board.id, userId: user.id });
-
-    return { message: 'success' };
-  }
-
-  async like(
-    user: User,
-    id: string,
-    parentId: string,
-  ): Promise<{ message: 'success' }> {
-    const parent_id = parentId ? parentId : null;
-
-    const board = await this.findOne(id);
-    if (!board)
-      throw new BadRequestException('해당 게시글이 존재 하지않습니다.');
-
-    const liked = await Like.findOne({
-      userId: user.id,
-      boardId: board.id,
-      parentId: parent_id,
-    });
-    if (liked) throw new BadRequestException('이미 좋아요 누른 게시글입니다.');
-
-    const like = await Like.create({
-      userId: user.id,
-      user,
-      boardId: board.id,
-      board,
-      parentId: parent_id,
-    });
-
-    await Like.save(like);
-    const reply = await Reply.findOne(parent_id);
-    if (parent_id == reply.id) {
-      reply.like_count++;
-      await Reply.save(reply);
-    } else if (parent_id == null) {
-      board.like_count++;
-      await this.save(board);
+        return { message: 'success' };
     }
 
-    return { message: 'success' };
-  }
+    // async fileTaging(
+    //   email: string,
+    //   tagFileDto: TagFileDto
+    // ): Promise<{message: string}> {
+    //   const { files, tag } = tagFileDto
+    //   console.log(files)
+    //   const tag_data = await this.tagModel.create({
+    //     _id:files,
+    //     tag:tag
+    //   })
 
-  async unlike(user: User, id: string): Promise<{ message: 'success' }> {
-    const board = await this.findOne(id);
-    if (!board)
-      throw new BadRequestException('해당 게시글이 존재 하지않습니다.');
+    //   tag_data.save()
 
-    const liked = await Like.findOne({ userId: user.id, boardId: board.id });
-    if (!liked)
-      throw new BadRequestException('이미 좋아요를 취소한 게시글입니다.');
+    //   return {message: "success"}
+    // }
 
-    Like.delete({ userId: user.id, boardId: board.id });
+    async getBoard(getBoardDto: GetBoardsDto): Promise<Board[]> {
+        const { search, search_type } = getBoardDto;
 
-    board.like_count--;
-    await this.save(board);
+        let search_data;
+        switch (search_type) {
+            case 'tag':
+                break;
+            case 'title':
+                search_data = { writer: { $regex: '.*' + search + '.*' } };
+                break;
+            case 'writer':
+                break;
+        }
+        const boards = await this.boardModel
+            .find({ deletedAt: null })
+            .find(search_data)
+            .sort({ createdAt: -1 })
+            .select(
+                'description view like_count reply_count status IsLike files createdAt',
+            )
+            .populate('writer', 'name profile');
 
-    return { message: 'success' };
-  }
+        return boards;
+    }
 
-  private async findBoard(user, id) {
-    const board = await this.findOne(id);
+    async getDetailBoard(
+        email: string,
+        id: string,
+        over_view: boolean,
+    ): Promise<Board> {
+        const user = await this.userModel.findOne({ email });
 
-    if (!board)
-      throw new BadRequestException('해당 게시글이 존재 하지않습니다.');
-    else if (board.userId != user.id)
-      throw new BadRequestException('사용자 게시글이 아닙니다.');
+        const board = await this.boardModel
+            .findOne({ _id: id, deletedAt: null })
+            .select(
+                'description view like_count reply_count status IsLike files createdAt',
+            )
+            .populate('writer', 'name profile');
 
-    return board;
-  }
+        // // let file_tag =
+        // board.files.forEach(async (element, i) => {
+        //   const tag_data = await this.tagModel.findOne({_id:element})
+        //   console.log(tag_data.tag[i])
+        // })
+
+        if (!board)
+            throw new BadRequestException('해당 게시글이 존재 하지않습니다.');
+
+        if (user && !over_view) {
+            board.view++;
+            await board.save();
+        }
+        if (user) {
+            const like = await this.likeModel.findOne({
+                userId: user._id,
+                boardId: board._id,
+            });
+            if (like) {
+                board.IsLike = true;
+            }
+        }
+        return board;
+    }
+
+    async updateBoard(
+        email: string,
+        id: string,
+        creatreBoardDto: CreateBoardDto,
+        status: BoardStatus,
+    ): Promise<{ message: string }> {
+        const { description, tag, files } = creatreBoardDto;
+
+        const board = await this.findBoard(email, id);
+
+        board.description = description;
+        board.status = status;
+        board.files = files;
+        board.tag = tag;
+
+        await board.save();
+
+        return { message: 'success' };
+    }
+
+    async deleteBoard(
+        email: string,
+        boardId: string,
+    ): Promise<{ message: string }> {
+        const board = await this.findBoard(email, boardId);
+
+        board.deletedAt = new Date();
+
+        await board.save();
+
+        return { message: 'success' };
+    }
+
+    async like(
+        email: string,
+        boardId: string,
+        parentId: string,
+    ): Promise<{ message: 'success' }> {
+        const parent_id = parentId ? parentId : null;
+
+        const user = await this.userModel.findOne({ email });
+
+        const board = await this.boardModel.findOne({ _id: boardId });
+        if (!board)
+            throw new BadRequestException('해당 게시글이 존재 하지않습니다.');
+
+        const like = await this.likeModel.findOneAndUpdate(
+            {
+                userId: user._id,
+                boardId: board._id,
+                parentId: parent_id,
+            },
+            {
+                userId: user._id,
+                boardId: board._id,
+                parentId: parent_id,
+            },
+            { upsert: true },
+        );
+        if (parent_id) {
+            const reply = await this.replyModel.findOne({ _id: like.parentId });
+            reply.like_count++;
+            reply.save();
+        } else {
+            board.like_count++;
+            board.save();
+        }
+
+        return { message: 'success' };
+    }
+
+    async unlike(
+        email: string,
+        boardId: string,
+        parentId: string,
+    ): Promise<{ message: 'success' }> {
+        const parent_id = parentId ? parentId : null;
+
+        const user = await this.userModel.findOne({ email });
+
+        const board = await this.boardModel.findOne({ _id: boardId });
+        if (!board)
+            throw new BadRequestException('해당 게시글이 존재 하지않습니다.');
+
+        const liked = await this.likeModel.findOne({
+            userId: user._id,
+            boardId: boardId,
+            parentId: parent_id,
+        });
+
+        if (!liked)
+            throw new BadRequestException('이미 좋아요를 취소한 게시글입니다.');
+
+        liked.delete();
+
+        if (parent_id) {
+            const reply = await this.replyModel.findOne({ _id: parent_id });
+            reply.like_count++;
+            reply.save();
+        } else {
+            board.like_count++;
+            board.save();
+        }
+
+        return { message: 'success' };
+    }
+
+    async createReply(
+        email: string,
+        boardId: string,
+        createReplyDto: CreateReplyDto,
+    ): Promise<Reply> {
+        const { comment } = createReplyDto;
+        const parentId = createReplyDto.parentId
+            ? createReplyDto.parentId
+            : null;
+
+        const user = await this.userModel.findOne({ email });
+
+        const reply = await this.replyModel.create({
+            writer: user.id,
+            boardId: boardId,
+            comment,
+            parentId,
+        });
+        await reply.save();
+
+        const reply_data = await this.replyModel
+            .findOne({ _id: reply.id })
+            .select('writer boardId parentId comment createdAt ')
+            .populate('writer', 'name');
+
+        const board = await this.boardModel.findOne({ _id: boardId });
+
+        if (parentId == reply_data.id) {
+            reply_data.reply_count++;
+            await reply_data.save();
+            board.reply_count++;
+            await board.save();
+        } else if (parentId == null) {
+            board.reply_count++;
+            await board.save();
+        }
+        return reply_data;
+    }
+
+    async getReply(
+        boardId: string,
+    ): Promise<{ reply_count: number; reply: Reply[] }> {
+        const reply_count = await this.replyModel
+            .find({ boardId: boardId, deletedAt: null })
+            .count();
+
+        const reply = await this.replyModel
+            .find({ boardId: boardId })
+            .sort({ like_count: -1, reply_count: -1, createdAt: -1 })
+            .select(
+                'userId boardId parentId comment reply_count like_count IsLike createdAt',
+            )
+            .populate('writer', 'name');
+
+        return { reply_count, reply };
+    }
+
+    private async findBoard(email, boardId) {
+        const user = await this.userModel.findOne({ email });
+
+        const board = await this.boardModel.findOne({
+            writer: user._id,
+            _id: boardId,
+        });
+
+        if (!board)
+            throw new BadRequestException('해당 게시글이 존재 하지않습니다.');
+        else if (board.writer != user.id)
+            throw new BadRequestException('사용자 게시글이 아닙니다.');
+
+        return board;
+    }
 }

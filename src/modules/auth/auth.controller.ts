@@ -1,11 +1,26 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { Body, Controller, Get, Post, Put, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Post,
+    Put,
+    Req,
+    UseGuards,
+    UsePipes,
+    ValidationPipe,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { User } from 'src/schemas/User';
 import { AuthGuard_renewal } from 'src/utils/auth.guard';
 import { ReqUser } from 'src/utils/user.decorater';
+
 import { AuthService } from './auth.service';
-import { CreateUserDto, LoginUser, PasswordUserDto } from './dto/user.create.dto';
-import { User } from './user.entity';
+import {
+    CreateUserDto,
+    LoginUser,
+    PasswordUserDto,
+} from './dto/user.create.dto';
 
 @Controller('api/auth')
 export class AuthController {
@@ -15,27 +30,24 @@ export class AuthController {
     @UsePipes(ValidationPipe)
     registerUser(
         @Body() createUserDto: CreateUserDto,
-    ): Promise<{message: string}>{
+    ): Promise<{ message: string }> {
         return this.userService.registerUser(createUserDto);
     }
 
     @Post('/login')
     @UsePipes(ValidationPipe)
-    loginUser(
-        @Body() loginUser:LoginUser
-    ): Promise<{token : string}> {
+    loginUser(@Body() loginUser: LoginUser): Promise<{ token: string }> {
         return this.userService.loginUser(loginUser);
     }
 
     @Put('/update_password')
     @UseGuards(AuthGuard_renewal)
     passwordUpdateUser(
-        @ReqUser() user:User,
-        @Body() passwordUserDto: PasswordUserDto
-    ): Promise<{message: string}> {
-        return this.userService.passwordUpdateUser(user,passwordUserDto);
+        @ReqUser() email: string,
+        @Body() passwordUserDto: PasswordUserDto,
+    ): Promise<{ message: string }> {
+        return this.userService.passwordUpdateUser(email, passwordUserDto);
     }
-
 
     @Get('/google')
     @UseGuards(AuthGuard('google'))
@@ -43,8 +55,8 @@ export class AuthController {
 
     @Get('/google/redirect')
     @UseGuards(AuthGuard('google'))
-    googleAuthRedirect(@Req() req){
-        return this.userService.googleLogin(req)
+    googleAuthRedirect(@Req() req) {
+        return this.userService.googleLogin(req);
     }
 
     @Get('/kakao')
@@ -53,14 +65,12 @@ export class AuthController {
 
     @Get('/kakao/redirect')
     @UseGuards(AuthGuard('kakao'))
-    kakaoAuthRedirect(@Req() req){
-        return this.userService.kakaoLogin(req)
+    kakaoAuthRedirect(@Req() req) {
+        return this.userService.kakaoLogin(req);
     }
 
-    @Post("/test")
-    test(@ReqUser() user: User) {
-        return user;
+    @Post('/test')
+    test(@ReqUser() email: string) {
+        return email;
     }
-
 }
-

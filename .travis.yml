@@ -13,11 +13,11 @@ before_install:
 
 after_success:
 
-  - docker build -t dudckd/bolier-nest .
+  - docker build -t dudckd/bolier-nest:0.5 .
 
   - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_ID" --password-stdin
 
-  - docker push dudckd/bolier-nest
+  - docker push dudckd/bolier-nest:0.5
 
 before_deploy:
   - rm -rf node_modules 

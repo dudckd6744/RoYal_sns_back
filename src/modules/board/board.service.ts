@@ -1,119 +1,92 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../auth/user.entity';
-import { Board } from './board.entity';
+import { Board } from 'src/schemas/Board';
+import { Reply } from 'src/schemas/Reply';
+
 import { BoardRepository } from './board.repository';
-import { CreateBoardDto, CreateReplyDto } from './dto/board.dto';
-import { Reply } from './sections/reply.entity';
+import {
+    CreateBoardDto,
+    CreateReplyDto,
+    GetBoardsDto,
+    TagFileDto,
+} from './dto/board.dto';
 import { BoardStatus } from './utils/board.status.enum';
 
 @Injectable()
 export class BoardService {
-  constructor(
-    @InjectRepository(BoardRepository)
-    private boardRepository: BoardRepository,
-  ) {}
+    constructor(private boardRepository: BoardRepository) {}
 
-  createBoard(
-    user: User,
-    createBoardDto: CreateBoardDto,
-    status: BoardStatus,
-  ): Promise<{ message: string }> {
-    return this.boardRepository.createBoard(user, createBoardDto, status);
-  }
-
-  getBoard(search: string): Promise<{ board_count: number; boards: Board[] }> {
-    return this.boardRepository.getBoard(search);
-  }
-
-  getDetailBoard(user: User, id: string): Promise<Board> {
-    return this.boardRepository.getDetailBoard(user, id);
-  }
-
-  updateBoard(
-    user: User,
-    id: string,
-    createBoardDto: CreateBoardDto,
-    status: BoardStatus,
-  ): Promise<{ message: string }> {
-    return this.boardRepository.updateBoard(user, id, createBoardDto, status);
-  }
-
-  deleteBoard(user: User, id: string): Promise<{ message: string }> {
-    return this.boardRepository.deleteBoard(user, id);
-  }
-
-  like(user: User, id: string, parentId: string): Promise<{ message: string }> {
-    return this.boardRepository.like(user, id, parentId);
-  }
-
-  unlike(user: User, id: string): Promise<{ message: string }> {
-    return this.boardRepository.unlike(user, id);
-  }
-
-  async createReply(
-    user: User,
-    id: string,
-    createReplyDto: CreateReplyDto,
-  ): Promise<Reply> {
-    const { comment } = createReplyDto;
-    const parentId = createReplyDto.parentId ? createReplyDto.parentId : null;
-
-    const reply = await Reply.create({
-      userId: user.id,
-      user,
-      boardId: id,
-      comment,
-      parentId,
-    });
-    const save_reply = await Reply.save(reply);
-
-    const reply_data = await Reply.createQueryBuilder('reply')
-      .where({ id: save_reply.id })
-      .leftJoinAndSelect('reply.user', 'user')
-      .select([
-        'reply.id',
-        'reply.userId',
-        'user.name',
-        'reply.boardId',
-        'reply.comment',
-        'reply.createdAt',
-        'reply.parentId',
-      ])
-      .getOne();
-
-    const board = await this.boardRepository.findOne(id);
-    const reply_count_data = await Reply.findOne(parentId);
-    if (parentId == reply_count_data.id) {
-      reply_count_data.reply_count++;
-      await Reply.save(reply_count_data);
-      board.reply_count++;
-      await this.boardRepository.save(board);
-    } else if (parentId == null) {
-      board.reply_count++;
-      await this.boardRepository.save(board);
+    createBoard(
+        email: string,
+        createBoardDto: CreateBoardDto,
+        status: BoardStatus,
+    ): Promise<{ message: string }> {
+        return this.boardRepository.createBoard(email, createBoardDto, status);
     }
-    return reply_data;
-  }
 
-  async getReply(id: string): Promise<{ reply_count: number; reply: Reply[] }> {
-    const reply_count = await Reply.createQueryBuilder('reply')
-      .where({ boardId: id })
-      .getCount();
+    // fileTaging(
+    //   email: string,
+    //   tagFileDto: TagFileDto
+    // ): Promise<{message: string}> {
+    //   return this.boardRepository.fileTaging(email, tagFileDto);
+    // }
 
-    const reply = await Reply.createQueryBuilder('reply')
-      .where({ boardId: id })
-      .leftJoinAndSelect('reply.user', 'user')
-      .select([
-        'reply.id',
-        'reply.userId',
-        'user.name',
-        'reply.boardId',
-        'reply.comment',
-        'reply.createdAt',
-      ])
-      .getMany();
+    getBoard(getBoardDto: GetBoardsDto): Promise<Board[]> {
+        return this.boardRepository.getBoard(getBoardDto);
+    }
 
-    return { reply_count, reply };
-  }
+    getDetailBoard(
+        email: string,
+        boardId: string,
+        over_view: boolean,
+    ): Promise<Board> {
+        return this.boardRepository.getDetailBoard(email, boardId, over_view);
+    }
+
+    updateBoard(
+        email: string,
+        boardId: string,
+        createBoardDto: CreateBoardDto,
+        status: BoardStatus,
+    ): Promise<{ message: string }> {
+        return this.boardRepository.updateBoard(
+            email,
+            boardId,
+            createBoardDto,
+            status,
+        );
+    }
+
+    deleteBoard(email: string, boardId: string): Promise<{ message: string }> {
+        return this.boardRepository.deleteBoard(email, boardId);
+    }
+
+    like(
+        email: string,
+        boardId: string,
+        parentId: string,
+    ): Promise<{ message: string }> {
+        return this.boardRepository.like(email, boardId, parentId);
+    }
+
+    unlike(
+        email: string,
+        boardId: string,
+        parentId: string,
+    ): Promise<{ message: string }> {
+        return this.boardRepository.unlike(email, boardId, parentId);
+    }
+
+    async createReply(
+        email: string,
+        boardId: string,
+        createReplyDto: CreateReplyDto,
+    ): Promise<Reply> {
+        return this.boardRepository.createReply(email, boardId, createReplyDto);
+    }
+
+    async getReply(
+        boardId: string,
+    ): Promise<{ reply_count: number; reply: Reply[] }> {
+        return this.boardRepository.getReply(boardId);
+    }
 }
