@@ -12,6 +12,7 @@ before_install:
   - cat .env.bolier | envsubst > .env
 
 after_success:
+  - cat .env.bolier | envsubst > .env
 
   - docker build -t dudckd/bolier-nest:0.5 .
 
