@@ -5,32 +5,41 @@ import {
     LoginUser,
     PasswordUserDto,
 } from './dto/user.create.dto';
-import { UserRepository } from './user.repository';
+import { AuthRepository } from './auth.repository';
+import { User } from 'src/schemas/User';
 
 @Injectable()
 export class AuthService {
-    constructor(private userRepository: UserRepository) {}
+    constructor(private authRepository: AuthRepository) {}
 
     registerUser(createUserDto: CreateUserDto): Promise<{ message: string }> {
-        return this.userRepository.registerUser(createUserDto);
+        return this.authRepository.registerUser(createUserDto);
     }
 
     async loginUser(loginUser: LoginUser): Promise<{ token: string }> {
-        return this.userRepository.loginUser(loginUser);
+        return this.authRepository.loginUser(loginUser);
     }
 
     passwordUpdateUser(
         email: string,
         passwordUserDto: PasswordUserDto,
     ): Promise<{ message: string }> {
-        return this.userRepository.passwordUpdateUser(email, passwordUserDto);
+        return this.authRepository.passwordUpdateUser(email, passwordUserDto);
     }
 
     async googleLogin(req) {
-        return this.userRepository.googleLogin(req);
+        return this.authRepository.googleLogin(req);
     }
 
     async kakaoLogin(req) {
-        return this.userRepository.kakaoLogin(req);
+        return this.authRepository.kakaoLogin(req);
+    }
+
+    followUser(user: User, othersId:string): Promise<{message: string}> {
+        return this.authRepository.followUser(user, othersId)
+    }
+
+    unfollowUser(user: User, othersId:string): Promise<{message: string}> {
+        return this.authRepository.unfollowUser(user, othersId)
     }
 }

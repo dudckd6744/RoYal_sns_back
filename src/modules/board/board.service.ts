@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Board } from 'src/schemas/Board';
 import { Reply } from 'src/schemas/Reply';
+import { User } from 'src/schemas/User';
 
 import { BoardRepository } from './board.repository';
 import {
@@ -16,72 +17,78 @@ export class BoardService {
     constructor(private boardRepository: BoardRepository) {}
 
     createBoard(
-        email: string,
+        user: User,
         createBoardDto: CreateBoardDto,
         status: BoardStatus,
     ): Promise<{ message: string }> {
-        return this.boardRepository.createBoard(email, createBoardDto, status);
+        return this.boardRepository.createBoard(user, createBoardDto, status);
     }
 
     // fileTaging(
-    //   email: string,
+    //   user: User,
     //   tagFileDto: TagFileDto
     // ): Promise<{message: string}> {
-    //   return this.boardRepository.fileTaging(email, tagFileDto);
+    //   return this.boardRepository.fileTaging(user, tagFileDto);
     // }
 
-    getBoard(getBoardDto: GetBoardsDto): Promise<Board[]> {
-        return this.boardRepository.getBoard(getBoardDto);
+    getBoard(
+        user: User,
+        getBoardDto: GetBoardsDto
+    ): Promise<Board[]> {
+        return this.boardRepository.getBoard(user, getBoardDto);
     }
 
     getDetailBoard(
-        email: string,
+        user: User,
         boardId: string,
         over_view: boolean,
     ): Promise<Board> {
-        return this.boardRepository.getDetailBoard(email, boardId, over_view);
+        return this.boardRepository.getDetailBoard(user, boardId, over_view);
     }
 
     updateBoard(
-        email: string,
+        user: User,
         boardId: string,
         createBoardDto: CreateBoardDto,
         status: BoardStatus,
     ): Promise<{ message: string }> {
         return this.boardRepository.updateBoard(
-            email,
+            user,
             boardId,
             createBoardDto,
             status,
         );
     }
 
-    deleteBoard(email: string, boardId: string): Promise<{ message: string }> {
-        return this.boardRepository.deleteBoard(email, boardId);
+    deleteBoard(
+        user: User,
+        boardId: string
+    ): Promise<{ message: string }> {
+        return this.boardRepository.deleteBoard(user, boardId);
     }
 
     like(
-        email: string,
+        user: User,
         boardId: string,
         parentId: string,
     ): Promise<{ message: string }> {
-        return this.boardRepository.like(email, boardId, parentId);
+        return this.boardRepository.like(user, boardId, parentId);
     }
 
     unlike(
-        email: string,
+        user: User,
         boardId: string,
         parentId: string,
     ): Promise<{ message: string }> {
-        return this.boardRepository.unlike(email, boardId, parentId);
+        return this.boardRepository.unlike(user, boardId, parentId);
     }
 
     async createReply(
-        email: string,
+        user: User,
         boardId: string,
         createReplyDto: CreateReplyDto,
     ): Promise<Reply> {
-        return this.boardRepository.createReply(email, boardId, createReplyDto);
+        return this.boardRepository.createReply(user, boardId, createReplyDto);
     }
 
     async getReply(

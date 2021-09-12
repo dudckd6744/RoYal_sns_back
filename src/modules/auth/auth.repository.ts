@@ -15,7 +15,7 @@ import {
     PasswordUserDto,
 } from './dto/user.create.dto';
 
-export class UserRepository {
+export class AuthRepository {
     constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
     async registerUser(
@@ -136,5 +136,47 @@ export class UserRepository {
         return {
             user: user,
         };
+    }
+
+    async followUser(
+        user: User,
+        othersId: string
+    ): Promise<{message: string}> {
+        const user_data = await this.userModel.findOne({_id:user._id})
+
+        user_data.followTo.forEach((element, i)=>{
+            if(element == othersId){
+                throw new BadRequestException('이미 follw 한 상대입니다.')
+            }
+        })
+
+        await this.userModel.findOneAndUpdate(
+             {_id: user._id},
+             { $push: { followTo: othersId  } }
+        )
+        return {message: 'success'}
+    }
+
+    async unfollowUser(
+        user: User,
+        othersId: string
+    ): Promise<{message: string}> {
+        const user_data = await this.userModel.findOne({_id:user._id})
+        
+        let others_data = ""
+
+        user_data.followTo.forEach(element =>{
+            if(element == othersId){
+                others_data = element
+            }
+        })
+        if(!others_data) throw new BadRequestException('이미 unfollow 한 상대입니다.')
+
+        await this.userModel.findOneAndUpdate(
+             {_id: user._id},
+             { $pull: { followTo: others_data } }
+        )
+
+        return {message: 'success'}
     }
 }

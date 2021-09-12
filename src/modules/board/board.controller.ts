@@ -11,8 +11,10 @@ import {
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common';
+import { logger } from 'src/configs/winston';
 import { Board } from 'src/schemas/Board';
 import { Reply } from 'src/schemas/Reply';
+import { User } from 'src/schemas/User';
 import { AuthGuard_renewal } from 'src/utils/auth.guard';
 import { ReqUser } from 'src/utils/user.decorater';
 
@@ -34,11 +36,11 @@ export class BoardController {
     @UsePipes(ValidationPipe)
     @UseGuards(AuthGuard_renewal)
     createBoard(
-        @ReqUser() email: string,
+        @ReqUser() user: User,
         @Body() createBoardDto: CreateBoardDto,
         @Body('status', BoardStatusPipe) status: BoardStatus,
     ): Promise<{ message: string }> {
-        return this.boardSerivce.createBoard(email, createBoardDto, status);
+        return this.boardSerivce.createBoard(user, createBoardDto, status);
     }
 
     // @Post('/tag')
@@ -52,30 +54,34 @@ export class BoardController {
     // }
 
     @Get('/')
-    getBoard(@Query() getBoardDto: GetBoardsDto): Promise<Board[]> {
-        return this.boardSerivce.getBoard(getBoardDto);
+    getBoard(
+      @ReqUser() user: User,
+      @Query() getBoardDto: GetBoardsDto
+    ): Promise<Board[]> {
+        return this.boardSerivce.getBoard(user, getBoardDto);
     }
 
     @Get('/:boardId')
     getDeatailBoard(
-        @ReqUser() email: string,
+       @ReqUser() user: User,  
         @Param('boardId') boardId: string,
         @Query('over_view') over_view: boolean,
     ): Promise<Board> {
-        return this.boardSerivce.getDetailBoard(email, boardId, over_view);
+        logger.info(`${user.email}님이 ${boardId} 게시글에 접속하였습니다.`)
+        return this.boardSerivce.getDetailBoard(user, boardId, over_view);
     }
 
     @Put('/:boardId')
     @UsePipes(ValidationPipe)
     @UseGuards(AuthGuard_renewal)
     updateBoard(
-        @ReqUser() email: string,
+        @ReqUser() user: User,
         @Param('boardId') boardId: string,
         @Body() createBoardDto: CreateBoardDto,
         @Body('status', BoardStatusPipe) status: BoardStatus,
     ): Promise<{ message: string }> {
         return this.boardSerivce.updateBoard(
-            email,
+            user,
             boardId,
             createBoardDto,
             status,
@@ -85,41 +91,43 @@ export class BoardController {
     @Delete('/:boardId')
     @UseGuards(AuthGuard_renewal)
     deleteBoard(
-        @ReqUser() email: string,
+        @ReqUser() user: User,
         @Param('boardId') boardId: string,
     ): Promise<{ message: string }> {
-        return this.boardSerivce.deleteBoard(email, boardId);
+        return this.boardSerivce.deleteBoard(user, boardId);
     }
 
     @Post('/:boardId/like')
     @UseGuards(AuthGuard_renewal)
     like(
-        @ReqUser() email: string,
+        @ReqUser() user: User,
         @Param('boardId') boardId: string,
         @Body('parentId') parentId: string,
     ): Promise<{ message: string }> {
-        return this.boardSerivce.like(email, boardId, parentId);
+      logger.info(`${user.email}님이 ${boardId} 게시글에 좋아요눌렀습니다.`)
+        return this.boardSerivce.like(user, boardId, parentId);
     }
 
     @Delete('/:boardId/unlike')
     @UseGuards(AuthGuard_renewal)
     unlike(
-        @ReqUser() email: string,
+        @ReqUser() user: User,
         @Param('boardId') boardId: string,
         @Body('parentId') parentId: string,
     ): Promise<{ message: string }> {
-        return this.boardSerivce.unlike(email, boardId, parentId);
+        return this.boardSerivce.unlike(user, boardId, parentId);
     }
 
     @Post('/:boardId/reply')
     @UseGuards(AuthGuard_renewal)
     @UsePipes(ValidationPipe)
     createReply(
-        @ReqUser() email: string,
+        @ReqUser() user: User,
         @Body() createReplyDto: CreateReplyDto,
         @Param('boardId') boardId: string,
     ): Promise<Reply> {
-        return this.boardSerivce.createReply(email, boardId, createReplyDto);
+      logger.info(`${user.email}님이 ${boardId} 게시글에 댓글을 작성하였습니다..`)
+        return this.boardSerivce.createReply(user, boardId, createReplyDto);
     }
 
     @Get('/:boardId/reply')

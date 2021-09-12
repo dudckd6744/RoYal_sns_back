@@ -10,7 +10,7 @@ export class User extends Document {
     @Prop({ required: true })
     name: string;
 
-    @Prop({ required: true })
+    @Prop({ required: true, unique:true })
     email: string;
 
     @Prop({ default: null })
@@ -18,6 +18,12 @@ export class User extends Document {
 
     @Prop({ default: null })
     profile: string;
+
+    @Prop()
+    followTo: Array<string>;
+
+    @Prop({default:5})
+    point: number;
 
     @Prop({ default: null })
     deletedAt: Date;

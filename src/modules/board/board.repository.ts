@@ -6,6 +6,7 @@ import { Like } from 'src/schemas/Like';
 import { Reply } from 'src/schemas/Reply';
 import { Tag } from 'src/schemas/Tag';
 import { User } from 'src/schemas/User';
+import async from "async";
 
 import {
     CreateBoardDto,
@@ -25,19 +26,18 @@ export class BoardRepository {
     ) {}
 
     async createBoard(
-        email: string,
+        user: User,
         createBoardDto: CreateBoardDto,
         status: BoardStatus,
     ): Promise<{ message: string }> {
-        const { description, files } = createBoardDto;
-
-        const user = await this.userModel.findOne({ email });
+        const { description, files, tag } = createBoardDto;
 
         const board = await this.boardModel.create({
             writer: user._id,
             description,
             status,
             files,
+            tag
         });
         await board.save();
 
@@ -45,7 +45,7 @@ export class BoardRepository {
     }
 
     // async fileTaging(
-    //   email: string,
+    //   user: User,
     //   tagFileDto: TagFileDto
     // ): Promise<{message: string}> {
     //   const { files, tag } = tagFileDto
@@ -60,7 +60,10 @@ export class BoardRepository {
     //   return {message: "success"}
     // }
 
-    async getBoard(getBoardDto: GetBoardsDto): Promise<Board[]> {
+    async getBoard(
+      user: User,
+      getBoardDto: GetBoardsDto
+    ): Promise<Board[]> {
         const { search, search_type } = getBoardDto;
 
         let search_data;
@@ -82,15 +85,32 @@ export class BoardRepository {
             )
             .populate('writer', 'name profile');
 
-        return boards;
+          const board_heart = []
+          boards.forEach((board_data, i)=>{
+            board_heart.push(board_data._id)
+          })  
+
+        if(user){
+          const liked_board = await this.likeModel.find({userId:user._id, boardId:{$in: board_heart}})
+
+          boards.forEach(board_id=>{
+            liked_board.forEach(board_liked=>{
+              if(board_id._id.toString() == board_liked.boardId.toString()){
+                board_id.IsLike = true;
+              }
+            })
+          })
+          return boards
+        }else{
+          return boards;
+        }
     }
 
     async getDetailBoard(
-        email: string,
+        user: User,
         id: string,
         over_view: boolean,
     ): Promise<Board> {
-        const user = await this.userModel.findOne({ email });
 
         const board = await this.boardModel
             .findOne({ _id: id, deletedAt: null })
@@ -115,7 +135,7 @@ export class BoardRepository {
         if (user) {
             const like = await this.likeModel.findOne({
                 userId: user._id,
-                boardId: board._id,
+                boardId: board._id
             });
             if (like) {
                 board.IsLike = true;
@@ -125,14 +145,14 @@ export class BoardRepository {
     }
 
     async updateBoard(
-        email: string,
+        user: User,
         id: string,
         creatreBoardDto: CreateBoardDto,
         status: BoardStatus,
     ): Promise<{ message: string }> {
         const { description, tag, files } = creatreBoardDto;
 
-        const board = await this.findBoard(email, id);
+        const board = await this.findBoard(user, id);
 
         board.description = description;
         board.status = status;
@@ -145,10 +165,10 @@ export class BoardRepository {
     }
 
     async deleteBoard(
-        email: string,
+        user: User,
         boardId: string,
     ): Promise<{ message: string }> {
-        const board = await this.findBoard(email, boardId);
+        const board = await this.findBoard(user, boardId);
 
         board.deletedAt = new Date();
 
@@ -158,13 +178,11 @@ export class BoardRepository {
     }
 
     async like(
-        email: string,
+        user: User,
         boardId: string,
         parentId: string,
     ): Promise<{ message: 'success' }> {
         const parent_id = parentId ? parentId : null;
-
-        const user = await this.userModel.findOne({ email });
 
         const board = await this.boardModel.findOne({ _id: boardId });
         if (!board)
@@ -196,13 +214,11 @@ export class BoardRepository {
     }
 
     async unlike(
-        email: string,
+        user: User,
         boardId: string,
         parentId: string,
     ): Promise<{ message: 'success' }> {
         const parent_id = parentId ? parentId : null;
-
-        const user = await this.userModel.findOne({ email });
 
         const board = await this.boardModel.findOne({ _id: boardId });
         if (!board)
@@ -232,7 +248,7 @@ export class BoardRepository {
     }
 
     async createReply(
-        email: string,
+        user: User,
         boardId: string,
         createReplyDto: CreateReplyDto,
     ): Promise<Reply> {
@@ -241,10 +257,8 @@ export class BoardRepository {
             ? createReplyDto.parentId
             : null;
 
-        const user = await this.userModel.findOne({ email });
-
         const reply = await this.replyModel.create({
-            writer: user.id,
+            writer: user._id,
             boardId: boardId,
             comment,
             parentId,
@@ -288,8 +302,7 @@ export class BoardRepository {
         return { reply_count, reply };
     }
 
-    private async findBoard(email, boardId) {
-        const user = await this.userModel.findOne({ email });
+    private async findBoard(user, boardId) {
 
         const board = await this.boardModel.findOne({
             writer: user._id,
@@ -298,7 +311,7 @@ export class BoardRepository {
 
         if (!board)
             throw new BadRequestException('해당 게시글이 존재 하지않습니다.');
-        else if (board.writer != user.id)
+        else if (board.writer != user._id)
             throw new BadRequestException('사용자 게시글이 아닙니다.');
 
         return board;

@@ -5,7 +5,7 @@ import { UserSchema, User } from 'src/schemas/User';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { UserRepository } from './user.repository';
+import { AuthRepository } from './auth.repository';
 
 config();
 
@@ -15,6 +15,6 @@ config();
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     ],
     controllers: [AuthController],
-    providers: [AuthService, UserRepository],
+    providers: [AuthService, AuthRepository],
 })
 export class AuthModule {}

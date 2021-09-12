@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { BadRequestException, Injectable, NestMiddleware } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { NextFunction, Request, Response } from 'express';
 import { Model } from 'mongoose';
@@ -15,6 +15,7 @@ export class AuthTokenMiddleware implements NestMiddleware {
         const anyReq = req as any;
 
         const user = await this.userModel.findOne({ email });
+        if(!user) throw new BadRequestException('해당 유저가 존재하지않습니다.')
 
         anyReq.user = user;
         return next();
@@ -23,6 +24,9 @@ export class AuthTokenMiddleware implements NestMiddleware {
     private async parseUserId(req: Request): Promise<string> {
         let email: string;
         try {
+            if(req.body.email){
+                email = req.body.email
+            }else{
             const { authorization } = req.headers;
 
             const token = authorization
@@ -31,6 +35,7 @@ export class AuthTokenMiddleware implements NestMiddleware {
             const decoded = await verifyToken(token);
 
             email = decoded.email;
+            }
         } catch (err) {} /* eslint no-empty: "off" */
 
         return email;

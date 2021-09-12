@@ -2,6 +2,7 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     Post,
     Put,
@@ -68,9 +69,28 @@ export class AuthController {
     kakaoAuthRedirect(@Req() req) {
         return this.userService.kakaoLogin(req);
     }
+    
+    @Post("/follow")
+    @UseGuards(AuthGuard_renewal)
+    followUser(
+        @ReqUser() user:User,
+        @Body('othersId') othersId: string
+    ): Promise<{message: string}> {
+        return this.userService.followUser(user, othersId)
+    }
 
+    @Delete("/unfollow")
+    @UseGuards(AuthGuard_renewal)
+    unfollowUser(
+        @ReqUser() user:User,
+        @Body('othersId') othersId: string
+    ): Promise<{message: string}> {
+        return this.userService.unfollowUser(user, othersId)
+    }
+    
     @Post('/test')
     test(@ReqUser() email: string) {
         return email;
     }
+
 }
