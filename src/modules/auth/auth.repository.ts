@@ -88,7 +88,7 @@ export class AuthRepository {
         return { message: 'suucess' };
     }
 
-    async googleLogin(req) {
+    async googleLogin(req,res) {
         if (!req.user) {
             throw new BadRequestException('잘못된 계정입니다.');
         }
@@ -109,8 +109,8 @@ export class AuthRepository {
         );
 
         return {
-            user: user,
-        };
+            user: user
+      }
     }
 
     async kakaoLogin(req) {

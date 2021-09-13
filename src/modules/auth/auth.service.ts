@@ -27,8 +27,8 @@ export class AuthService {
         return this.authRepository.passwordUpdateUser(email, passwordUserDto);
     }
 
-    async googleLogin(req) {
-        return this.authRepository.googleLogin(req);
+    async googleLogin(req,res) {
+        return this.authRepository.googleLogin(req,res);
     }
 
     async kakaoLogin(req) {

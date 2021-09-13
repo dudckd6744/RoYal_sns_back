@@ -7,11 +7,13 @@ import {
     Post,
     Put,
     Req,
+    Res,
     UseGuards,
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { Response } from 'express';
 import { User } from 'src/schemas/User';
 import { AuthGuard_renewal } from 'src/utils/auth.guard';
 import { ReqUser } from 'src/utils/user.decorater';
@@ -56,8 +58,8 @@ export class AuthController {
 
     @Get('/google/redirect')
     @UseGuards(AuthGuard('google'))
-    googleAuthRedirect(@Req() req) {
-        return this.userService.googleLogin(req);
+    async googleAuthRedirect(@Req() req, @Res() res: Response) {
+        return res.redirect('/');
     }
 
     @Get('/kakao')
@@ -66,8 +68,8 @@ export class AuthController {
 
     @Get('/kakao/redirect')
     @UseGuards(AuthGuard('kakao'))
-    kakaoAuthRedirect(@Req() req) {
-        return this.userService.kakaoLogin(req);
+    kakaoAuthRedirect(@Req() req, @Res() res:Response) {
+        return res.redirect('/');
     }
     
     @Post("/follow")
