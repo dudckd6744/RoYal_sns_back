@@ -59,7 +59,7 @@ export class AuthController {
     @Get('/google/redirect')
     @UseGuards(AuthGuard('google'))
     async googleAuthRedirect(@Req() req, @Res() res: Response) {
-        return res.redirect('/');
+        return res.redirect('http://localhost:8080');
     }
 
     @Get('/kakao')
@@ -69,7 +69,7 @@ export class AuthController {
     @Get('/kakao/redirect')
     @UseGuards(AuthGuard('kakao'))
     kakaoAuthRedirect(@Req() req, @Res() res:Response) {
-        return res.redirect('/');
+        return res.redirect('http://localhost:8080');
     }
     
     @Post("/follow")
