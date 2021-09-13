@@ -15,6 +15,7 @@ export class AuthTokenMiddleware implements NestMiddleware {
         const anyReq = req as any;
 
         const user = await this.userModel.findOne({ email });
+        
         anyReq.user = user;
 
         return next();
