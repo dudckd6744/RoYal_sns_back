@@ -34,6 +34,7 @@ export class BoardRepository {
 
         const board = await this.boardModel.create({
             writer: user._id,
+            userName: user.name,
             description,
             status,
             files,
@@ -59,6 +60,39 @@ export class BoardRepository {
 
     //   return {message: "success"}
     // }
+    async getFollowBoard(
+      user: User
+    ): Promise<Board[]> {
+
+        const boards = await this.boardModel
+            .find({ deletedAt: null })
+            .find({ writer: { $in : user.followTo}})
+            .sort({ createdAt: -1 })
+            .select(
+                'description view like_count tag reply_count status IsLike files createdAt',
+            )
+            .populate('writer', 'name profile');
+
+          const board_heart = []
+          boards.forEach((board_data, i)=>{
+            board_heart.push(board_data._id)
+          })  
+
+        if(user){
+          const liked_board = await this.likeModel.find({userId:user._id, boardId:{$in: board_heart}})
+
+          boards.forEach(board_id=>{
+            liked_board.forEach(board_liked=>{
+              if(board_id._id.toString() == board_liked.boardId.toString()){
+                board_id.IsLike = true;
+              }
+            })
+          })
+          return boards
+        }else{
+          return boards;
+        }
+    }
 
     async getBoard(
       user: User,
@@ -69,11 +103,12 @@ export class BoardRepository {
         let search_data;
         switch (search_type) {
             case 'tag':
-                break;
-            case 'title':
-                search_data = { writer: { $regex: '.*' + search + '.*' } };
+              search_data = { tag: { $regex: '.*' + search + '.*' } };
                 break;
             case 'writer':
+                search_data = { userName: { $regex: '.*' + search + '.*' } };
+                break;
+            case '장소':
                 break;
         }
         const boards = await this.boardModel
@@ -81,7 +116,7 @@ export class BoardRepository {
             .find(search_data)
             .sort({ createdAt: -1 })
             .select(
-                'description view like_count reply_count status IsLike files createdAt',
+                'description view like_count tag reply_count status IsLike files createdAt',
             )
             .populate('writer', 'name profile');
 
@@ -115,7 +150,7 @@ export class BoardRepository {
         const board = await this.boardModel
             .findOne({ _id: id, deletedAt: null })
             .select(
-                'description view like_count reply_count status IsLike files createdAt',
+                'description view like_count tag reply_count status IsLike files createdAt',
             )
             .populate('writer', 'name profile');
 

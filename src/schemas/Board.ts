@@ -9,6 +9,9 @@ export class Board extends Document {
     writer: string;
 
     @Prop()
+    userName: string;
+
+    @Prop()
     tag: Array<string>;
 
     @Prop({ required: true })

@@ -15,9 +15,8 @@ export class AuthTokenMiddleware implements NestMiddleware {
         const anyReq = req as any;
 
         const user = await this.userModel.findOne({ email });
-        if(!user) throw new BadRequestException('해당 유저가 존재하지않습니다.')
-
         anyReq.user = user;
+
         return next();
     }
 

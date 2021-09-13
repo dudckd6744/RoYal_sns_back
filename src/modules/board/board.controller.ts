@@ -53,6 +53,14 @@ export class BoardController {
     //     return this.boardSerivce.fileTaging(email, tagFileDto);
     // }
 
+    @Get('/followBoard')
+    @UseGuards(AuthGuard_renewal)
+    getFollowBoard(
+      @ReqUser() user: User
+    ): Promise<Board[]> {
+        return this.boardSerivce.getFollowBoard(user);
+    }
+
     @Get('/')
     getBoard(
       @ReqUser() user: User,

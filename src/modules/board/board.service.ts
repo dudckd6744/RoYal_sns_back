@@ -31,6 +31,12 @@ export class BoardService {
     //   return this.boardRepository.fileTaging(user, tagFileDto);
     // }
 
+    getFollowBoard(
+        user: User
+    ): Promise<Board[]> {
+        return this.boardRepository.getFollowBoard(user);
+    }
+
     getBoard(
         user: User,
         getBoardDto: GetBoardsDto
