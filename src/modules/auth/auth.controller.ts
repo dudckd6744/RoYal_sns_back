@@ -43,6 +43,12 @@ export class AuthController {
         return this.userService.loginUser(loginUser);
     }
 
+    // @Post('/login')//로그아웃
+    // @UsePipes(ValidationPipe)
+    // loginUser(@Body() loginUser: LoginUser): Promise<{ token: string }> {
+    //     return this.userService.loginUser(loginUser);
+    // }
+
     @Put('/update_password')
     @UseGuards(AuthGuard_renewal)
     passwordUpdateUser(
@@ -52,26 +58,6 @@ export class AuthController {
         return this.userService.passwordUpdateUser(email, passwordUserDto);
     }
 
-    @Get('/google')
-    @UseGuards(AuthGuard('google'))
-    async googleAuth(@Req() req) {}
-
-    @Get('/google/redirect')
-    @UseGuards(AuthGuard('google'))
-    async googleAuthRedirect(@Req() req, @Res() res: Response) {
-        return res.redirect('http://localhost:8080');
-    }
-
-    @Get('/kakao')
-    @UseGuards(AuthGuard('kakao'))
-    async kakaoAuth(@Req() req) {}
-
-    @Get('/kakao/redirect')
-    @UseGuards(AuthGuard('kakao'))
-    kakaoAuthRedirect(@Req() req, @Res() res:Response) {
-        return res.redirect('http://localhost:8080');
-    }
-    
     @Post("/follow")
     @UseGuards(AuthGuard_renewal)
     followUser(
@@ -91,8 +77,31 @@ export class AuthController {
     }
     
     @Post('/test')
-    test(@ReqUser() email: string) {
-        return email;
+    @UseGuards(AuthGuard_renewal)
+    test(@ReqUser() user: User) {
+        return user;
+    }
+
+    @Get('/google')
+    @UseGuards(AuthGuard('google'))
+    async googleAuth(@Req() req) {}
+
+    @Get('/google/redirect')
+    @UseGuards(AuthGuard('google'))
+    async googleAuthRedirect(@Req() req, @Res() res: Response) {
+        return res.redirect('http://localhost:8080');
+    }
+
+    @Get('/kakao')
+    @UseGuards(AuthGuard('kakao'))
+    async kakaoAuth(@Req() req) {
+        console.log(req)
+    }
+
+    @Get('/kakao/redirect')
+    @UseGuards(AuthGuard('kakao'))
+    kakaoAuthRedirect(@Req() req, @Res() res:Response) {
+        return this.userService.kakaoLogin(req, res);
     }
 
 }

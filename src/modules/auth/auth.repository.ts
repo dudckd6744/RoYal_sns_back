@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcryptjs';
+import { Response } from 'express';
 import { Model } from 'mongoose';
 import { User } from 'src/schemas/User';
 import { signToken } from 'src/utils/utils.jwt';
@@ -113,7 +114,7 @@ export class AuthRepository {
       }
     }
 
-    async kakaoLogin(req) {
+    async kakaoLogin(req, res:Response) {
         if (!req.user) {
             throw new BadRequestException('잘못된 계정입니다.');
         }
@@ -133,9 +134,7 @@ export class AuthRepository {
             { upsert: true },
         );
 
-        return {
-            user: user,
-        };
+        return res.redirect("http://localhost:8080")
     }
 
     async followUser(

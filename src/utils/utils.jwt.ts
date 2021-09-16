@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
+import { BadRequestException } from '@nestjs/common';
 import { config } from 'dotenv';
 import * as jwt from 'jsonwebtoken';
 
@@ -15,7 +16,7 @@ export async function signToken(
         jwt.sign(
             payload,
             jwtSecret,
-            { expiresIn: expiresIn ?? '1d' },
+            { expiresIn: expiresIn ?? '7d' },
             (err, token) => {
                 if (err) rej(err);
                 res(token);

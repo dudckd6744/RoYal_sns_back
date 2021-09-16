@@ -21,9 +21,12 @@ export class User extends Document {
 
     @Prop()
     followTo: Array<string>;
-
+    // 1개당 5000원 결제수단
     @Prop({default:5})
-    point: number;
+    royal: number;
+
+    @Prop({default:false})
+    isActive: boolean;
 
     @Prop({ default: null })
     deletedAt: Date;

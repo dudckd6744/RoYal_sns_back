@@ -15,7 +15,8 @@ export class AuthTokenMiddleware implements NestMiddleware {
         const anyReq = req as any;
 
         const user = await this.userModel.findOne({ email });
-        
+        //인증부분 재검토
+
         anyReq.user = user;
 
         return next();
@@ -24,18 +25,16 @@ export class AuthTokenMiddleware implements NestMiddleware {
     private async parseUserId(req: Request): Promise<string> {
         let email: string;
         try {
-            if(req.body.email){
-                email = req.body.email
-            }else{
             const { authorization } = req.headers;
 
             const token = authorization
                 .replace('Bearer ', '')
                 .replace('bearer ', '');
-            const decoded = await verifyToken(token);
 
+
+            const decoded = await verifyToken(token);
+            
             email = decoded.email;
-            }
         } catch (err) {} /* eslint no-empty: "off" */
 
         return email;
