@@ -52,10 +52,10 @@ export class AuthController {
     @Put('/update_password')
     @UseGuards(AuthGuard_renewal)
     passwordUpdateUser(
-        @ReqUser() email: string,
+        @ReqUser() user: User,
         @Body() passwordUserDto: PasswordUserDto,
     ): Promise<{ message: string }> {
-        return this.userService.passwordUpdateUser(email, passwordUserDto);
+        return this.userService.passwordUpdateUser(user, passwordUserDto);
     }
 
     @Post("/follow")

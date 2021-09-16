@@ -22,10 +22,10 @@ export class AuthService {
     }
 
     passwordUpdateUser(
-        email: string,
+        user: User,
         passwordUserDto: PasswordUserDto,
     ): Promise<{ message: string }> {
-        return this.authRepository.passwordUpdateUser(email, passwordUserDto);
+        return this.authRepository.passwordUpdateUser(user, passwordUserDto);
     }
 
     async googleLogin(req,res) {

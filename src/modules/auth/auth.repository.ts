@@ -64,7 +64,7 @@ export class AuthRepository {
     }
 
     async passwordUpdateUser(
-        email: string,
+        user: User,
         passwordUserDto: PasswordUserDto,
     ): Promise<{ message: string }> {
         const { password, new_password, confirm_new_password } =
@@ -73,7 +73,7 @@ export class AuthRepository {
         if (new_password != confirm_new_password)
             throw new BadRequestException('다시 한번 비밀번호를 확인해주세요!');
 
-        const user_data = await this.userModel.findOne({ email });
+        const user_data = await this.userModel.findOne({ _id:user._id });
 
         if (await bcrypt.compare(password, user_data.password)) {
             const salt = await bcrypt.genSalt();
