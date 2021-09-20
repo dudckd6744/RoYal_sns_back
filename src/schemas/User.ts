@@ -24,6 +24,9 @@ export class User extends Document {
     // 1개당 5000원 결제수단
     @Prop({default:5})
     royal: number;
+    // 등급 지정 ex) 1% 3% 5% 10%
+    @Prop({ default: null })
+    status: string;
 
     @Prop({default:false})
     isActive: boolean;

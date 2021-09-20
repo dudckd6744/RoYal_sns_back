@@ -13,3 +13,5 @@ hooks:
   AfterInstall: # 배포가 끝나면 아래 명령어를 실행
     - location: execute-deploy.sh
       timeout: 600
+
+      # Travis CI가 빌드와 테스트가 끝난 코드를 S3에 업로드 하고 AWS CodeDeploy 이벤트를 발생시켰을때 appspec.yml 이라는 파일로 AWS CodeDeploy가 어떻게 행동을 할 것인지 정의

@@ -26,6 +26,10 @@ export class AuthRepository {
 
         const image = profile ? profile : null;
 
+        const user_data = await this.userModel.findOne({email})
+
+        if(user_data) throw new BadRequestException("이미 해당 이메일이 존재합니다.")
+        
         const salt = await bcrypt.genSalt();
         const hash_password = await bcrypt.hash(password, salt);
 
@@ -148,6 +152,19 @@ export class AuthRepository {
                 throw new BadRequestException('이미 follw 한 상대입니다.')
             }
         })
+
+        const otherUser = await this.userModel.findOne({_id:othersId})
+        if(otherUser){
+
+            if(otherUser.status == "1%" && user_data.royal > 10){user_data.royal = user_data.royal -10,user_data.save()}
+            else if(otherUser.status == "3%" && user_data.royal > 0){user_data.royal = user_data.royal -8, user_data.save()}
+            else if(otherUser.status == "5%" && user_data.royal > 5){user_data.royal = user_data.royal -5, user_data.save()}
+            else if(otherUser.status == "10%" && user_data.royal > 1){user_data.royal = user_data.royal -1, user_data.save()}
+            else{
+                throw new BadRequestException(`유저의 로얄이 ${user_data.royal} royal 남아있습니다. 충전이 필요합니다.`)
+            }
+
+        }
 
         await this.userModel.findOneAndUpdate(
              {_id: user._id},
