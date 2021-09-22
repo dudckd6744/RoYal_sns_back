@@ -1,12 +1,12 @@
 import { BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import async from 'async';
 import { Model, Schema } from 'mongoose';
 import { Board } from 'src/schemas/Board';
 import { Like } from 'src/schemas/Like';
 import { Reply } from 'src/schemas/Reply';
 import { Tag } from 'src/schemas/Tag';
 import { User } from 'src/schemas/User';
-import async from "async";
 
 import {
     CreateBoardDto,
@@ -38,7 +38,7 @@ export class BoardRepository {
             description,
             status,
             files,
-            tag
+            tag,
         });
         await board.save();
 
@@ -60,50 +60,50 @@ export class BoardRepository {
 
     //   return {message: "success"}
     // }
-    async getFollowBoard(
-      user: User
-    ): Promise<Board[]> {
-
+    async getFollowBoard(user: User): Promise<Board[]> {
         const boards = await this.boardModel
             .find({ deletedAt: null })
-            .find({ writer: { $in : user.followTo}})
+            .find({ writer: { $in: user.followTo } })
             .sort({ createdAt: -1 })
             .select(
                 'description view like_count tag reply_count status IsLike files createdAt',
             )
             .populate('writer', 'name profile');
 
-          const board_heart = []
-          boards.forEach((board_data, i)=>{
-            board_heart.push(board_data._id)
-          })  
+        const board_heart = [];
+        boards.forEach((board_data, i) => {
+            board_heart.push(board_data._id);
+        });
 
-        if(user){
-          const liked_board = await this.likeModel.find({userId:user._id, boardId:{$in: board_heart}})
+        if (user) {
+            const liked_board = await this.likeModel.find({
+                userId: user._id,
+                boardId: { $in: board_heart },
+            });
 
-          boards.forEach(board_id=>{
-            liked_board.forEach(board_liked=>{
-              if(board_id._id.toString() == board_liked.boardId.toString()){
-                board_id.IsLike = true;
-              }
-            })
-          })
-          return boards
-        }else{
-          return boards;
+            boards.forEach((board_id) => {
+                liked_board.forEach((board_liked) => {
+                    if (
+                        board_id._id.toString() ==
+                        board_liked.boardId.toString()
+                    ) {
+                        board_id.IsLike = true;
+                    }
+                });
+            });
+            return boards;
+        } else {
+            return boards;
         }
     }
 
-    async getBoard(
-      user: User,
-      getBoardDto: GetBoardsDto
-    ): Promise<Board[]> {
+    async getBoard(user: User, getBoardDto: GetBoardsDto): Promise<Board[]> {
         const { search, search_type } = getBoardDto;
 
         let search_data;
         switch (search_type) {
             case 'tag':
-              search_data = { tag: { $regex: '.*' + search + '.*' } };
+                search_data = { tag: { $regex: '.*' + search + '.*' } };
                 break;
             case 'writer':
                 search_data = { userName: { $regex: '.*' + search + '.*' } };
@@ -120,24 +120,30 @@ export class BoardRepository {
             )
             .populate('writer', 'name profile');
 
-          const board_heart = []
-          boards.forEach((board_data, i)=>{
-            board_heart.push(board_data._id)
-          })  
+        const board_heart = [];
+        boards.forEach((board_data, i) => {
+            board_heart.push(board_data._id);
+        });
 
-        if(user){
-          const liked_board = await this.likeModel.find({userId:user._id, boardId:{$in: board_heart}})
+        if (user) {
+            const liked_board = await this.likeModel.find({
+                userId: user._id,
+                boardId: { $in: board_heart },
+            });
 
-          boards.forEach(board_id=>{
-            liked_board.forEach(board_liked=>{
-              if(board_id._id.toString() == board_liked.boardId.toString()){
-                board_id.IsLike = true;
-              }
-            })
-          })
-          return boards
-        }else{
-          return boards;
+            boards.forEach((board_id) => {
+                liked_board.forEach((board_liked) => {
+                    if (
+                        board_id._id.toString() ==
+                        board_liked.boardId.toString()
+                    ) {
+                        board_id.IsLike = true;
+                    }
+                });
+            });
+            return boards;
+        } else {
+            return boards;
         }
     }
 
@@ -146,7 +152,6 @@ export class BoardRepository {
         id: string,
         over_view: boolean,
     ): Promise<Board> {
-
         const board = await this.boardModel
             .findOne({ _id: id, deletedAt: null })
             .select(
@@ -170,7 +175,7 @@ export class BoardRepository {
         if (user) {
             const like = await this.likeModel.findOne({
                 userId: user._id,
-                boardId: board._id
+                boardId: board._id,
             });
             if (like) {
                 board.IsLike = true;
@@ -338,7 +343,6 @@ export class BoardRepository {
     }
 
     private async findBoard(user, boardId) {
-
         const board = await this.boardModel.findOne({
             writer: user._id,
             _id: boardId,

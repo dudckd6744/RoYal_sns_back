@@ -31,16 +31,11 @@ export class BoardService {
     //   return this.boardRepository.fileTaging(user, tagFileDto);
     // }
 
-    getFollowBoard(
-        user: User
-    ): Promise<Board[]> {
+    getFollowBoard(user: User): Promise<Board[]> {
         return this.boardRepository.getFollowBoard(user);
     }
 
-    getBoard(
-        user: User,
-        getBoardDto: GetBoardsDto
-    ): Promise<Board[]> {
+    getBoard(user: User, getBoardDto: GetBoardsDto): Promise<Board[]> {
         return this.boardRepository.getBoard(user, getBoardDto);
     }
 
@@ -66,10 +61,7 @@ export class BoardService {
         );
     }
 
-    deleteBoard(
-        user: User,
-        boardId: string
-    ): Promise<{ message: string }> {
+    deleteBoard(user: User, boardId: string): Promise<{ message: string }> {
         return this.boardRepository.deleteBoard(user, boardId);
     }
 

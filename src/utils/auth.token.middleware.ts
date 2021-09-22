@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NestMiddleware } from '@nestjs/common';
+import {
+    BadRequestException,
+    Injectable,
+    NestMiddleware,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { NextFunction, Request, Response } from 'express';
 import { Model } from 'mongoose';
@@ -31,9 +35,8 @@ export class AuthTokenMiddleware implements NestMiddleware {
                 .replace('Bearer ', '')
                 .replace('bearer ', '');
 
-
             const decoded = await verifyToken(token);
-            
+
             email = decoded.email;
         } catch (err) {} /* eslint no-empty: "off" */
 

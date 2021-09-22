@@ -4,8 +4,8 @@ import { config } from 'dotenv';
 import { UserSchema, User } from 'src/schemas/User';
 
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
 import { AuthRepository } from './auth.repository';
+import { AuthService } from './auth.service';
 
 config();
 
