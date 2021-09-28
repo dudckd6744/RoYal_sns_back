@@ -44,6 +44,15 @@ export class CreateUserDto {
     password: string;
 
     @ApiProperty({
+        example: '010-1111-1111',
+        required: true,
+        description: '사용자 폰번호',
+    })
+    @IsNotEmpty({ message: '핸드폰 번호를 입력해주세요!' })
+    @IsString()
+    phone: string;
+
+    @ApiProperty({
         example: '홍길동.jpg',
         required: false,
         description: '사용자 이미지',
@@ -58,7 +67,6 @@ export class LoginUser {
         description: '사용자 이메일',
     })
     @IsNotEmpty({ message: '이메일이 비어있습니다.' })
-    @IsEmail()
     email: string;
 
     @ApiProperty({

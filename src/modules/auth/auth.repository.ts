@@ -19,17 +19,15 @@ import {
 export class AuthRepository {
     constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-    async registerUser(
-        createUserDto: CreateUserDto,
-    ): Promise<{ message: string }> {
-        const { name, email, password, profile } = createUserDto;
+    async registerUser(createUserDto: CreateUserDto) {
+        const { name, email, password, profile, phone } = createUserDto;
 
         const image = profile ? profile : null;
 
         const user_data = await this.userModel.findOne({ email });
 
         if (user_data)
-            throw new BadRequestException('이미 해당 이메일이 존재합니다.');
+            return new BadRequestException('이미 해당 이메일이 존재합니다.');
 
         const salt = await bcrypt.genSalt();
         const hash_password = await bcrypt.hash(password, salt);
@@ -39,6 +37,7 @@ export class AuthRepository {
             name,
             email,
             password: hash_password,
+            phone,
             profile: image,
         });
 
@@ -46,25 +45,24 @@ export class AuthRepository {
             await user.save();
         } catch (err) {
             if (err.code == 'ER_DUP_ENTRY')
-                throw new ConflictException('이미 해당 유저가 존재합니다.');
+                return new ConflictException('이미 해당 유저가 존재합니다.');
         }
 
         return { message: 'Success' };
     }
 
-    async loginUser(loginUser: LoginUser): Promise<{ token: string }> {
+    async loginUser(loginUser: LoginUser) {
         const { email, password } = loginUser;
         const user = await this.userModel.findOne({ email });
 
         if (!user)
-            throw new UnauthorizedException('해당 유저가 존재하지않습니다.');
+            return new UnauthorizedException('해당 유저가 존재하지않습니다.');
         else if (await bcrypt.compare(password, user.password)) {
             const email = user.email;
             const token = await signToken({ email });
-
             return { token };
         } else {
-            throw new UnauthorizedException('비밀번호를 다시 확인해주세요.');
+            return new UnauthorizedException('비밀번호를 다시 확인해주세요.');
         }
     }
 

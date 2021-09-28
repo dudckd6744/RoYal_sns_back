@@ -45,9 +45,7 @@ export class AuthController {
     @ApiOperation({ summary: '회원가입' })
     @Post('/register')
     @UsePipes(ValidationPipe)
-    registerUser(
-        @Body() createUserDto: CreateUserDto,
-    ): Promise<{ message: string }> {
+    registerUser(@Body() createUserDto: CreateUserDto) {
         return this.userService.registerUser(createUserDto);
     }
 
@@ -56,15 +54,20 @@ export class AuthController {
     @ApiOperation({ summary: '로그인' })
     @Post('/login')
     @UsePipes(ValidationPipe)
-    loginUser(@Body() loginUser: LoginUser): Promise<{ token: string }> {
+    loginUser(@Body() loginUser: LoginUser) {
         return this.userService.loginUser(loginUser);
     }
 
-    // @Post('/login')//로그아웃
-    // @UsePipes(ValidationPipe)
-    // loginUser(@Body() loginUser: LoginUser): Promise<{ token: string }> {
-    //     return this.userService.loginUser(loginUser);
-    // }
+    @Get('/')
+    userAuth(@ReqUser() user: User) {
+        return this.userService.userAuth(user);
+    }
+
+    @Post('/logout') //로그아웃
+    @UseGuards(AuthGuard_renewal)
+    logoutUSer(@ReqUser() user: User) {
+        return { message: Success };
+    }
 
     @ApiOkResponse({ description: 'success', type: Success })
     @ApiBadRequestResponse({ description: 'false', type: errStatus })
@@ -105,12 +108,6 @@ export class AuthController {
         @Body('othersId') othersId: string,
     ): Promise<{ message: string }> {
         return this.userService.unfollowUser(user, othersId);
-    }
-
-    @Post('/test')
-    @UseGuards(AuthGuard_renewal)
-    test(@ReqUser() user: User) {
-        return user;
     }
 
     @Get('/google')

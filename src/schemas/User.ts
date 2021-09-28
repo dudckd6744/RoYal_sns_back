@@ -16,6 +16,9 @@ export class User extends Document {
     @Prop({ default: null })
     password: string;
 
+    @Prop({ required: true })
+    phone: string;
+
     @Prop({ default: null })
     profile: string;
 

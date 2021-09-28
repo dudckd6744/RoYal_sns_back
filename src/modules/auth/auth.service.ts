@@ -13,12 +13,35 @@ import {
 export class AuthService {
     constructor(private authRepository: AuthRepository) {}
 
-    registerUser(createUserDto: CreateUserDto): Promise<{ message: string }> {
+    registerUser(createUserDto: CreateUserDto) {
         return this.authRepository.registerUser(createUserDto);
     }
 
-    async loginUser(loginUser: LoginUser): Promise<{ token: string }> {
+    async loginUser(loginUser: LoginUser) {
         return this.authRepository.loginUser(loginUser);
+    }
+
+    userAuth(user: User) {
+        if (!user)
+            return {
+                isAuth: false,
+                error: true,
+            };
+
+        const user_data = {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            profile: user.profile,
+            isAuth: true,
+            royal: user.royal,
+            followTo: user.followTo,
+            status: user.status,
+            isActive: user.isActive,
+        };
+
+        return user_data;
     }
 
     passwordUpdateUser(
