@@ -62,7 +62,7 @@ export class BoardController {
     }
 
     // @Post('/tag')
-    // @UsePipes(ValidationPipe)
+    // @UsePipes(ValidationPipe)s
     // @UseGuards(AuthGuard_renewal)
     // fileTaging(
     //     @ReqUser() email: string,
