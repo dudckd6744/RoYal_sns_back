@@ -43,7 +43,7 @@ import { BoardStatus } from './utils/board.status.enum';
 
 @Controller('api/boards')
 export class BoardController {
-    constructor(private boardSerivce: BoardService) {}
+    constructor(private boardSerivce: BoardService) { }
 
     @ApiOkResponse({ description: 'success', type: Success })
     @ApiBadRequestResponse({ description: 'false', type: errStatus })
