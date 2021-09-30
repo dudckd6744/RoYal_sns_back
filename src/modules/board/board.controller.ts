@@ -69,7 +69,7 @@ export class BoardController {
     //     @Body() tagFileDto: TagFileDto,
     // ): Promise<{ message: string }> {
     //     return this.boardSerivce.fileTaging(email, tagFileDto);
-    // }
+    // s}
 
     @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })
     @ApiBadRequestResponse({ description: 'false', type: errStatus })
