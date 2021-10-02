@@ -66,7 +66,7 @@ export class AuthController {
     @Post('/logout') //로그아웃
     @UseGuards(AuthGuard_renewal)
     logoutUSer(@ReqUser() user: User) {
-        return { message: Success };
+        return { success: true };
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
@@ -108,6 +108,16 @@ export class AuthController {
         @Body('othersId') othersId: string,
     ): Promise<{ message: string }> {
         return this.userService.unfollowUser(user, othersId);
+    }
+
+    @ApiOkResponse({ description: 'success', type: Success })
+    @ApiBadRequestResponse({ description: 'false', type: errStatus })
+    @ApiOperation({ summary: '유저 리스트 불러오기' })
+    @ApiBearerAuth()
+    @Get('/userList')
+    @UseGuards(AuthGuard_renewal)
+    getUserList(@ReqUser() user: User) {
+        return this.userService.getUserList(user);
     }
 
     @Get('/google')

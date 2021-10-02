@@ -51,6 +51,10 @@ export class AuthService {
         return this.authRepository.passwordUpdateUser(user, passwordUserDto);
     }
 
+    getUserList(user: User) {
+        return this.authRepository.getUserList(user);
+    }
+
     async googleLogin(req, res) {
         return this.authRepository.googleLogin(req, res);
     }

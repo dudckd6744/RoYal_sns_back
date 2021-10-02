@@ -199,4 +199,9 @@ export class AuthRepository {
 
         return { message: 'success' };
     }
+
+    async getUserList(user: User) {
+        const userList = await this.userModel.find({ _id: { $ne: user._id } });
+        return userList;
+    }
 }
