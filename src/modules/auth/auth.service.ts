@@ -44,10 +44,7 @@ export class AuthService {
         return user_data;
     }
 
-    passwordUpdateUser(
-        user: User,
-        passwordUserDto: PasswordUserDto,
-    ): Promise<{ message: string }> {
+    passwordUpdateUser(user: User, passwordUserDto: PasswordUserDto) {
         return this.authRepository.passwordUpdateUser(user, passwordUserDto);
     }
 

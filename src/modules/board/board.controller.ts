@@ -150,7 +150,7 @@ export class BoardController {
         @ReqUser() user: User,
         @Param('boardId') boardId: string,
         @Body('parentId') parentId: string,
-    ): Promise<{ message: string }> {
+    ) {
         logger.info(`${user.email}님이 ${boardId} 게시글에 좋아요눌렀습니다.`);
         return this.boardSerivce.like(user, boardId, parentId);
     }
@@ -166,7 +166,7 @@ export class BoardController {
         @ReqUser() user: User,
         @Param('boardId') boardId: string,
         @Body('parentId') parentId: string,
-    ): Promise<{ message: string }> {
+    ) {
         return this.boardSerivce.unlike(user, boardId, parentId);
     }
 

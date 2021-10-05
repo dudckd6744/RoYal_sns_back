@@ -20,7 +20,7 @@ export class MailerController {
     @ApiOperation({ summary: '이메일 인증하기' })
     @ApiBody({ type: emailDto })
     @Post('/')
-    sendEmail(@Body('email') email: string): Promise<{ message: string }> {
+    sendEmail(@Body('email') email: string) {
         return this.mailerService.sendEmail(email);
     }
 }

@@ -78,7 +78,7 @@ export class AuthController {
     passwordUpdateUser(
         @ReqUser() user: User,
         @Body() passwordUserDto: PasswordUserDto,
-    ): Promise<{ message: string }> {
+    ) {
         return this.userService.passwordUpdateUser(user, passwordUserDto);
     }
 

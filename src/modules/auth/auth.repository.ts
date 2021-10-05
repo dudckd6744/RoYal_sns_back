@@ -66,15 +66,14 @@ export class AuthRepository {
         }
     }
 
-    async passwordUpdateUser(
-        user: User,
-        passwordUserDto: PasswordUserDto,
-    ): Promise<{ message: string }> {
+    async passwordUpdateUser(user: User, passwordUserDto: PasswordUserDto) {
         const { password, new_password, confirm_new_password } =
             passwordUserDto;
 
         if (new_password != confirm_new_password)
-            throw new BadRequestException('다시 한번 비밀번호를 확인해주세요!');
+            return new BadRequestException(
+                '다시 한번 비밀번호를 확인해주세요!',
+            );
 
         const user_data = await this.userModel.findOne({ _id: user._id });
 
@@ -82,14 +81,13 @@ export class AuthRepository {
             const salt = await bcrypt.genSalt();
             const hash_password = await bcrypt.hash(new_password, salt);
             user_data.password = hash_password;
-
             await user_data.save();
         } else {
-            throw new BadRequestException(
+            return new BadRequestException(
                 '기존에 있던 비밀번호를 다시 입력해주세요',
             );
         }
-        return { message: 'suucess' };
+        return { success: true };
     }
 
     async googleLogin(req, res) {

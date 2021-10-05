@@ -15,10 +15,11 @@ export class AuthMailerService {
         private readonly mailerService: MailerService,
     ) {}
 
-    async sendEmail(email: string): Promise<{ message: string }> {
+    async sendEmail(email: string) {
+        console.log(email);
         const user = await this.userModel.findOne({ email });
 
-        if (!user) throw new BadRequestException('이메일을 다시 확인해주세요');
+        if (!user) return new BadRequestException('이메일을 다시 확인해주세요');
 
         const passowrd = Math.random().toString(36).slice(2);
 
@@ -35,6 +36,6 @@ export class AuthMailerService {
             subject: '이메일 인증 요청 메일입니다.',
             html: `<h2>${user.email}님의</h2> <h3> 비밀번호 인증 코드 <b> ${passowrd}</b> 를 입력해주세요.<h3>`, // HTML body content
         });
-        return { message: 'success' };
+        return { success: true };
     }
 }

@@ -65,19 +65,11 @@ export class BoardService {
         return this.boardRepository.deleteBoard(user, boardId);
     }
 
-    like(
-        user: User,
-        boardId: string,
-        parentId: string,
-    ): Promise<{ message: string }> {
+    like(user: User, boardId: string, parentId: string) {
         return this.boardRepository.like(user, boardId, parentId);
     }
 
-    unlike(
-        user: User,
-        boardId: string,
-        parentId: string,
-    ): Promise<{ message: string }> {
+    unlike(user: User, boardId: string, parentId: string) {
         return this.boardRepository.unlike(user, boardId, parentId);
     }
 
