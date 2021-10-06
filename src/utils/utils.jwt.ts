@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { BadRequestException } from '@nestjs/common';
 import { config } from 'dotenv';
 import * as jwt from 'jsonwebtoken';
 

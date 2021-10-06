@@ -19,6 +19,7 @@ import {
     ApiOperation,
     ApiQuery,
 } from '@nestjs/swagger';
+import { query } from 'express';
 import { logger } from 'src/configs/winston';
 import { Board } from 'src/schemas/Board';
 import { Reply } from 'src/schemas/Reply';
@@ -34,6 +35,7 @@ import {
     GetBoardsDto,
     GetFallowBoardsDto,
     SwaggerCreateBoardDto,
+    SwaggerGetLikeDto,
     SwaggerLikeDto,
     SwaggerReplyDto,
     TagFileDto,
@@ -137,6 +139,21 @@ export class BoardController {
         @Param('boardId') boardId: string,
     ): Promise<{ message: string }> {
         return this.boardSerivce.deleteBoard(user, boardId);
+    }
+
+    @ApiOkResponse({ description: 'success', type: Success })
+    @ApiBadRequestResponse({ description: 'false', type: errStatus })
+    @ApiOperation({ summary: '좋아요 가져오기' })
+    @ApiBearerAuth()
+    @Get('/like/all')
+    @UseGuards(AuthGuard_renewal)
+    @ApiBody({ type: SwaggerGetLikeDto })
+    getLike(
+        @ReqUser() user: User,
+        @Param('boardId') boardId: string,
+        @Query('parentId') parentId: string,
+    ) {
+        return this.boardSerivce.getLike(user, boardId, parentId);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })

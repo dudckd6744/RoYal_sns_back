@@ -122,6 +122,30 @@ export class SwaggerReplyDto {
     IsLike: boolean;
 }
 
+export class SwaggerGetLikeDto {
+    @ApiProperty({
+        example: 'sdkja12jk12jk2hk',
+        description: '좋아요 pk 값',
+    })
+    _id: string;
+    @ApiProperty({
+        example: 'sdkja12jk12jk2hk',
+        description: '게시글 아이디',
+    })
+    boardId: string;
+    @ApiProperty({
+        example: 'sdkja12jk12jk2hk',
+        description:
+            '댓글 좋아요할시에 parentId 에 댓글 _id 입력, 게시글 좋아요시 null',
+    })
+    parentId: string;
+    @ApiProperty({
+        example: 'sdkja12jk12jk2hk',
+        description: '유저아이디',
+    })
+    userId: string;
+}
+
 export class SwaggerLikeDto {
     @ApiProperty({
         example: 'sdkja12jk12jk2hk',

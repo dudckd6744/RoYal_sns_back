@@ -217,6 +217,14 @@ export class BoardRepository {
         return { message: 'success' };
     }
 
+    async getLike(user: User, boardId: string, parentId: string) {
+        const parent_id = parentId ? parentId : null;
+
+        const like = await this.likeModel.find({ userId: user._id });
+
+        return like;
+    }
+
     async like(user: User, boardId: string, parentId: string) {
         const parent_id = parentId ? parentId : null;
 
@@ -244,9 +252,12 @@ export class BoardRepository {
         } else {
             board.like_count++;
             board.save();
+            if (user) {
+                board.IsLike = true;
+            }
         }
 
-        return { success: true };
+        return { success: true, board };
     }
 
     async unlike(user: User, boardId: string, parentId: string) {
@@ -271,14 +282,17 @@ export class BoardRepository {
 
         if (parent_id) {
             const reply = await this.replyModel.findOne({ _id: parent_id });
-            reply.like_count++;
+            reply.like_count--;
             reply.save();
         } else {
-            board.like_count++;
+            board.like_count--;
             board.save();
+            if (user) {
+                board.IsLike = false;
+            }
         }
 
-        return { success: true };
+        return { success: true, board };
     }
 
     async createReply(

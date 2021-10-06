@@ -65,6 +65,9 @@ export class BoardService {
         return this.boardRepository.deleteBoard(user, boardId);
     }
 
+    getLike(user: User, boardId: string, parentId: string) {
+        return this.boardRepository.getLike(user, boardId, parentId);
+    }
     like(user: User, boardId: string, parentId: string) {
         return this.boardRepository.like(user, boardId, parentId);
     }
