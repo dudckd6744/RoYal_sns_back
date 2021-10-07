@@ -77,8 +77,8 @@ export class BoardController {
     @ApiBadRequestResponse({ description: 'false', type: errStatus })
     @ApiOperation({ summary: '팔로잉한 유저 게시글 가져오기' })
     @Get('/followBoard')
-    @UseGuards(AuthGuard_renewal)
-    getFollowBoard(@ReqUser() user: User): Promise<Board[]> {
+    // @UseGuards(AuthGuard_renewal)
+    getFollowBoard(@ReqUser() user: User) {
         return this.boardSerivce.getFollowBoard(user);
     }
 

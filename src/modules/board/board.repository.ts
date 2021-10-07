@@ -60,7 +60,8 @@ export class BoardRepository {
 
     //   return {message: "success"}
     // }
-    async getFollowBoard(user: User): Promise<Board[]> {
+    async getFollowBoard(user: User) {
+        console.log(user);
         const boards = await this.boardModel
             .find({ deletedAt: null })
             .find({ writer: { $in: user.followTo } })
