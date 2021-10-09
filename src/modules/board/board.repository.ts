@@ -23,7 +23,7 @@ export class BoardRepository {
         @InjectModel(Board.name) private boardModel: Model<Board>,
         @InjectModel(Like.name) private likeModel: Model<Like>,
         @InjectModel(Tag.name) private tagModel: Model<Tag>,
-    ) {}
+    ) { }
 
     async createBoard(
         user: User,
@@ -61,7 +61,6 @@ export class BoardRepository {
     //   return {message: "success"}
     // }
     async getFollowBoard(user: User) {
-        console.log(user);
         const boards = await this.boardModel
             .find({ deletedAt: null })
             .find({ writer: { $in: user.followTo } })

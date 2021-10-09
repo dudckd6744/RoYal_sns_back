@@ -14,14 +14,12 @@ export class UploadService {
                     .json(`Failed to upload image file: ${error}`);
             }
             const files = req.files;
-            // const file_data = files.map((files)=>({
-            // name: files.originalname,
-            // mimeType: files.mimetype,
-            // location: files.location,
-            // }))
-            const file_data = [];
-            await files.forEach((element) => {
-                file_data.push(element.location);
+
+            const file_data = await files.map((element) => {
+                return {
+                    file_image: element.location,
+                    file_key: element.key,
+                };
             });
 
             return res.json({
