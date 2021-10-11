@@ -20,7 +20,7 @@ export class BoardService {
         user: User,
         createBoardDto: CreateBoardDto,
         status: BoardStatus,
-    ): Promise<{ message: string }> {
+    ) {
         return this.boardRepository.createBoard(user, createBoardDto, status);
     }
 
@@ -65,9 +65,6 @@ export class BoardService {
         return this.boardRepository.deleteBoard(user, boardId);
     }
 
-    getLike(user: User, boardId: string, parentId: string) {
-        return this.boardRepository.getLike(user, boardId, parentId);
-    }
     like(user: User, boardId: string, parentId: string) {
         return this.boardRepository.like(user, boardId, parentId);
     }

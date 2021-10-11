@@ -18,7 +18,7 @@ export class Board extends Document {
     description: string;
     // 공개 비공개
     @Prop({ default: 'PUBLIC' })
-    status: BoardStatus;
+    status: string;
     //이미지 , 영상
     @Prop()
     files: Array<string>;

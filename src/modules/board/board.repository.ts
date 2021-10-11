@@ -1,7 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import async from 'async';
-import { Model, Schema } from 'mongoose';
+import { Model } from 'mongoose';
 import { Board } from 'src/schemas/Board';
 import { Like } from 'src/schemas/Like';
 import { Reply } from 'src/schemas/Reply';
@@ -23,14 +22,19 @@ export class BoardRepository {
         @InjectModel(Board.name) private boardModel: Model<Board>,
         @InjectModel(Like.name) private likeModel: Model<Like>,
         @InjectModel(Tag.name) private tagModel: Model<Tag>,
-    ) { }
+    ) {}
 
     async createBoard(
         user: User,
         createBoardDto: CreateBoardDto,
         status: BoardStatus,
-    ): Promise<{ message: string }> {
+    ) {
         const { description, files, tag } = createBoardDto;
+
+        if (tag.length >= 30)
+            return new BadRequestException(
+                '태그 수는 30개 이하로 입력해주세요!',
+            );
 
         const board = await this.boardModel.create({
             writer: user._id,
@@ -42,7 +46,7 @@ export class BoardRepository {
         });
         await board.save();
 
-        return { message: 'success' };
+        return { success: true };
     }
 
     // async fileTaging(
@@ -61,17 +65,30 @@ export class BoardRepository {
     //   return {message: "success"}
     // }
     async getFollowBoard(user: User) {
-        const boards = await this.boardModel
+        const follow_boards = await this.boardModel
             .find({ deletedAt: null })
-            .find({ writer: { $in: user.followTo } })
-            .sort({ createdAt: -1 })
+            .find({
+                $or: [
+                    {
+                        $and: [
+                            {
+                                writer: { $in: user.followTo },
+                                status: 'PUBLIC',
+                            },
+                        ],
+                    },
+                    { writer: user._id },
+                ],
+            })
             .select(
                 'description view like_count tag reply_count status IsLike files createdAt',
             )
+            .sort({ createdAt: -1 })
             .populate('writer', 'name profile');
 
         const board_heart = [];
-        boards.forEach((board_data, i) => {
+
+        follow_boards.forEach((board_data) => {
             board_heart.push(board_data._id);
         });
 
@@ -81,7 +98,7 @@ export class BoardRepository {
                 boardId: { $in: board_heart },
             });
 
-            boards.forEach((board_id) => {
+            follow_boards.forEach((board_id) => {
                 liked_board.forEach((board_liked) => {
                     if (
                         board_id._id.toString() ==
@@ -91,9 +108,9 @@ export class BoardRepository {
                     }
                 });
             });
-            return boards;
+            return follow_boards;
         } else {
-            return boards;
+            return follow_boards;
         }
     }
 
@@ -215,14 +232,6 @@ export class BoardRepository {
         await board.save();
 
         return { message: 'success' };
-    }
-
-    async getLike(user: User, boardId: string, parentId: string) {
-        const parent_id = parentId ? parentId : null;
-
-        const like = await this.likeModel.find({ userId: user._id });
-
-        return like;
     }
 
     async like(user: User, boardId: string, parentId: string) {
