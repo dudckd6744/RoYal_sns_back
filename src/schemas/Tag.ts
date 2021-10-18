@@ -8,7 +8,7 @@ export class Tag extends Document {
     _id: string;
 
     @Prop()
-    tag: Array<string>;
+    tag: string;
 }
 
 export const TagSchema = SchemaFactory.createForClass(Tag);

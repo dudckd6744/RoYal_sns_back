@@ -20,8 +20,14 @@ export class BoardService {
         user: User,
         createBoardDto: CreateBoardDto,
         status: BoardStatus,
+        tag: any,
     ) {
-        return this.boardRepository.createBoard(user, createBoardDto, status);
+        return this.boardRepository.createBoard(
+            user,
+            createBoardDto,
+            status,
+            tag,
+        );
     }
 
     // fileTaging(
@@ -39,11 +45,7 @@ export class BoardService {
         return this.boardRepository.getBoard(user, getBoardDto);
     }
 
-    getDetailBoard(
-        user: User,
-        boardId: string,
-        over_view: boolean,
-    ): Promise<Board> {
+    getDetailBoard(user: User, boardId: string, over_view: boolean) {
         return this.boardRepository.getDetailBoard(user, boardId, over_view);
     }
 
@@ -52,12 +54,14 @@ export class BoardService {
         boardId: string,
         createBoardDto: CreateBoardDto,
         status: BoardStatus,
+        tag: any,
     ): Promise<{ message: string }> {
         return this.boardRepository.updateBoard(
             user,
             boardId,
             createBoardDto,
             status,
+            tag,
         );
     }
 
@@ -77,13 +81,11 @@ export class BoardService {
         user: User,
         boardId: string,
         createReplyDto: CreateReplyDto,
-    ): Promise<Reply> {
+    ) {
         return this.boardRepository.createReply(user, boardId, createReplyDto);
     }
 
-    async getReply(
-        boardId: string,
-    ): Promise<{ reply_count: number; reply: Reply[] }> {
-        return this.boardRepository.getReply(boardId);
+    async getReply(user: User, boardId: string, skip: number, limit: number) {
+        return this.boardRepository.getReply(user, boardId, skip, limit);
     }
 }

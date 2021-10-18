@@ -28,8 +28,9 @@ export class BoardRepository {
         user: User,
         createBoardDto: CreateBoardDto,
         status: BoardStatus,
+        tag: any,
     ) {
-        const { description, files, tag } = createBoardDto;
+        const { description, files } = createBoardDto;
 
         if (tag.length >= 30)
             return new BadRequestException(
@@ -45,6 +46,15 @@ export class BoardRepository {
             tag,
         });
         await board.save();
+        const tag_data = tag.map((doc) => ({
+            updateOne: {
+                filter: { tag: doc },
+                update: doc,
+                upsert: true,
+            },
+        }));
+
+        await this.tagModel.bulkWrite(tag_data);
 
         return { success: true };
     }
@@ -164,11 +174,7 @@ export class BoardRepository {
         }
     }
 
-    async getDetailBoard(
-        user: User,
-        id: string,
-        over_view: boolean,
-    ): Promise<Board> {
+    async getDetailBoard(user: User, id: string, over_view: boolean) {
         const board = await this.boardModel
             .findOne({ _id: id, deletedAt: null })
             .select(
@@ -183,7 +189,7 @@ export class BoardRepository {
         // })
 
         if (!board)
-            throw new BadRequestException('해당 게시글이 존재 하지않습니다.');
+            return new BadRequestException('해당 게시글이 존재 하지않습니다.');
 
         if (user && !over_view) {
             board.view++;
@@ -198,7 +204,7 @@ export class BoardRepository {
                 board.IsLike = true;
             }
         }
-        return board;
+        return { success: true, board };
     }
 
     async updateBoard(
@@ -206,8 +212,9 @@ export class BoardRepository {
         id: string,
         creatreBoardDto: CreateBoardDto,
         status: BoardStatus,
+        tag: any,
     ): Promise<{ message: string }> {
-        const { description, tag, files } = creatreBoardDto;
+        const { description, files } = creatreBoardDto;
 
         const board = await this.findBoard(user, id);
 
@@ -217,7 +224,15 @@ export class BoardRepository {
         board.tag = tag;
 
         await board.save();
+        const tag_data = tag.map((doc) => ({
+            updateOne: {
+                filter: { tag: doc },
+                update: doc,
+                upsert: true,
+            },
+        }));
 
+        await this.tagModel.bulkWrite(tag_data);
         return { message: 'success' };
     }
 
@@ -236,7 +251,6 @@ export class BoardRepository {
 
     async like(user: User, boardId: string, parentId: string) {
         const parent_id = parentId ? parentId : null;
-
         const board = await this.boardModel.findOne({ _id: boardId });
         if (!board)
             return new BadRequestException('해당 게시글이 존재 하지않습니다.');
@@ -254,8 +268,8 @@ export class BoardRepository {
             },
             { upsert: true },
         );
-        if (parent_id) {
-            const reply = await this.replyModel.findOne({ _id: like.parentId });
+        if (parent_id != null) {
+            const reply = await this.replyModel.findOne({ _id: parent_id });
             reply.like_count++;
             reply.save();
         } else {
@@ -271,7 +285,6 @@ export class BoardRepository {
 
     async unlike(user: User, boardId: string, parentId: string) {
         const parent_id = parentId ? parentId : null;
-
         const board = await this.boardModel.findOne({ _id: boardId });
         if (!board)
             return new BadRequestException('해당 게시글이 존재 하지않습니다.');
@@ -289,7 +302,7 @@ export class BoardRepository {
 
         liked.delete();
 
-        if (parent_id) {
+        if (liked.parentId) {
             const reply = await this.replyModel.findOne({ _id: parent_id });
             reply.like_count--;
             reply.save();
@@ -308,7 +321,7 @@ export class BoardRepository {
         user: User,
         boardId: string,
         createReplyDto: CreateReplyDto,
-    ): Promise<Reply> {
+    ) {
         const { comment } = createReplyDto;
         const parentId = createReplyDto.parentId
             ? createReplyDto.parentId
@@ -324,8 +337,10 @@ export class BoardRepository {
 
         const reply_data = await this.replyModel
             .findOne({ _id: reply.id })
-            .select('writer boardId parentId comment createdAt ')
-            .populate('writer', 'name');
+            .select(
+                'userId boardId parentId comment reply_count like_count IsLike createdAt',
+            )
+            .populate('writer', 'name profile');
 
         const board = await this.boardModel.findOne({ _id: boardId });
 
@@ -338,12 +353,10 @@ export class BoardRepository {
             board.reply_count++;
             await board.save();
         }
-        return reply_data;
+        return { success: true, reply_data };
     }
 
-    async getReply(
-        boardId: string,
-    ): Promise<{ reply_count: number; reply: Reply[] }> {
+    async getReply(user: User, boardId: string, skip: number, limit: number) {
         const reply_count = await this.replyModel
             .find({ boardId: boardId, deletedAt: null })
             .count();
@@ -351,12 +364,38 @@ export class BoardRepository {
         const reply = await this.replyModel
             .find({ boardId: boardId })
             .sort({ like_count: -1, reply_count: -1, createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
             .select(
                 'userId boardId parentId comment reply_count like_count IsLike createdAt',
             )
-            .populate('writer', 'name');
+            .populate('writer', 'name profile');
 
-        return { reply_count, reply };
+        const reply_heart = [];
+        reply.forEach((reply_data, i) => {
+            reply_heart.push(reply_data._id);
+        });
+
+        if (user) {
+            const liked_board = await this.likeModel.find({
+                userId: user._id,
+                parentId: { $in: reply_heart },
+            });
+
+            reply.forEach((reply_data) => {
+                liked_board.forEach((board_liked) => {
+                    if (
+                        reply_data._id.toString() ==
+                        board_liked.parentId.toString()
+                    ) {
+                        reply_data.IsLike = true;
+                    }
+                });
+            });
+            return { success: true, reply, reply_count };
+        } else {
+            return { success: true, reply, reply_count };
+        }
     }
 
     private async findBoard(user, boardId) {

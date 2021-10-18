@@ -4,6 +4,7 @@ import {
     Delete,
     Get,
     Param,
+    ParseIntPipe,
     Post,
     Put,
     Query,
@@ -56,8 +57,9 @@ export class BoardController {
         @ReqUser() user: User,
         @Body() createBoardDto: CreateBoardDto,
         @Body('status', BoardStatusPipe) status: BoardStatus,
+        @Body('tag') tag: any,
     ) {
-        return this.boardSerivce.createBoard(user, createBoardDto, status);
+        return this.boardSerivce.createBoard(user, createBoardDto, status, tag);
     }
 
     // @Post('/tag')
@@ -98,7 +100,7 @@ export class BoardController {
         @ReqUser() user: User,
         @Param('boardId') boardId: string,
         @Query('over_view') over_view: boolean,
-    ): Promise<Board> {
+    ) {
         logger.info(`${user.email}님이 ${boardId} 게시글에 접속하였습니다.`);
         return this.boardSerivce.getDetailBoard(user, boardId, over_view);
     }
@@ -116,12 +118,14 @@ export class BoardController {
         @Param('boardId') boardId: string,
         @Body() createBoardDto: CreateBoardDto,
         @Body('status', BoardStatusPipe) status: BoardStatus,
+        @Body('tag') tag: any,
     ): Promise<{ message: string }> {
         return this.boardSerivce.updateBoard(
             user,
             boardId,
             createBoardDto,
             status,
+            tag,
         );
     }
 
@@ -180,7 +184,7 @@ export class BoardController {
         @ReqUser() user: User,
         @Body() createReplyDto: CreateReplyDto,
         @Param('boardId') boardId: string,
-    ): Promise<Reply> {
+    ) {
         logger.info(
             `${user.email}님이 ${boardId} 게시글에 댓글을 작성하였습니다..`,
         );
@@ -194,7 +198,10 @@ export class BoardController {
     @Get('/:boardId/reply')
     getReply(
         @Param('boardId') boardId: string,
-    ): Promise<{ reply_count: number; reply: Reply[] }> {
-        return this.boardSerivce.getReply(boardId);
+        @ReqUser() user: User,
+        @Query('skip', ParseIntPipe) skip: number,
+        @Query('limit', ParseIntPipe) limit: number,
+    ) {
+        return this.boardSerivce.getReply(user, boardId, skip, limit);
     }
 }

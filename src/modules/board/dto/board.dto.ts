@@ -6,12 +6,6 @@ import { BoardStatus } from '../utils/board.status.enum';
 
 export class CreateBoardDto {
     @ApiProperty({
-        example: '#인생',
-        description: '태그',
-    })
-    tag: Array<string>;
-
-    @ApiProperty({
         example: '여긴 내용적는곳입니다.',
         required: true,
         description: '내용',
