@@ -25,10 +25,12 @@ export class AuthRepository {
         const image = profile ? profile : null;
 
         const user_data = await this.userModel.findOne({ email });
+        const user_data_name = await this.userModel.findOne({ name });
 
         if (user_data)
             return new BadRequestException('이미 해당 이메일이 존재합니다.');
-
+        if (user_data_name)
+            return new BadRequestException('이미 해당 이름이 존재합니다.');
         const salt = await bcrypt.genSalt();
         const hash_password = await bcrypt.hash(password, salt);
 

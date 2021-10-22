@@ -124,6 +124,18 @@ export class BoardRepository {
         }
     }
 
+    async getMyBoard(user: User) {
+        const boards = await this.boardModel
+            .find({ writer: user._id })
+            .select(
+                'description view like_count tag reply_count status IsLike files createdAt',
+            )
+            .sort({ createdAt: -1 })
+            .populate('writer', 'name profile');
+
+        return boards;
+    }
+
     async getBoard(user: User, getBoardDto: GetBoardsDto): Promise<Board[]> {
         const { search, search_type } = getBoardDto;
 
@@ -280,7 +292,7 @@ export class BoardRepository {
             }
         }
 
-        return { success: true, board };
+        return { success: true };
     }
 
     async unlike(user: User, boardId: string, parentId: string) {
@@ -314,7 +326,7 @@ export class BoardRepository {
             }
         }
 
-        return { success: true, board };
+        return { success: true };
     }
 
     async createReply(
@@ -336,17 +348,21 @@ export class BoardRepository {
         await reply.save();
 
         const reply_data = await this.replyModel
-            .findOne({ _id: reply.id })
+            .findOne({ _id: reply._id })
             .select(
                 'userId boardId parentId comment reply_count like_count IsLike createdAt',
             )
             .populate('writer', 'name profile');
 
-        const board = await this.boardModel.findOne({ _id: boardId });
+        const replyed = await this.replyModel.findOne({
+            _id: reply_data.parentId,
+        });
 
-        if (parentId == reply_data.id) {
-            reply_data.reply_count++;
-            await reply_data.save();
+        const board = await this.boardModel.findOne({ _id: boardId });
+        console.log(parentId, reply_data.parentId, replyed);
+        if (parentId == reply_data.parentId && parentId != null) {
+            replyed.reply_count++;
+            await replyed.save();
             board.reply_count++;
             await board.save();
         } else if (parentId == null) {
@@ -358,7 +374,7 @@ export class BoardRepository {
 
     async getReply(user: User, boardId: string, skip: number, limit: number) {
         const reply_count = await this.replyModel
-            .find({ boardId: boardId, deletedAt: null })
+            .find({ boardId: boardId, deletedAt: null, parentId: null })
             .count();
 
         const reply = await this.replyModel
