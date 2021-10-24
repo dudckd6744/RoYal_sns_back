@@ -23,7 +23,13 @@ export class User extends Document {
     profile: string;
 
     @Prop()
-    followTo: Array<string>;
+    follower: Array<string>;
+
+    @Prop()
+    following: Array<string>;
+
+    @Prop()
+    description: string;
     // 1개당 5000원 결제수단
     @Prop({ default: 5 })
     royal: number;

@@ -82,7 +82,7 @@ export class BoardRepository {
                     {
                         $and: [
                             {
-                                writer: { $in: user.followTo },
+                                writer: { $in: user.following },
                                 status: 'PUBLIC',
                             },
                         ],
@@ -124,16 +124,23 @@ export class BoardRepository {
         }
     }
 
-    async getMyBoard(user: User) {
+    async getMyBoard(user: User, userId: any) {
+        const usersId = userId['userId'];
         const boards = await this.boardModel
-            .find({ writer: user._id })
+            .find({ writer: usersId })
             .select(
                 'description view like_count tag reply_count status IsLike files createdAt',
             )
             .sort({ createdAt: -1 })
             .populate('writer', 'name profile');
 
-        return boards;
+        const board_user = await this.userModel
+            .findOne({ _id: usersId })
+            .select(
+                'name phone email profile follower following royal status isActive createdAt',
+            );
+
+        return { success: true, boards, board_user };
     }
 
     async getBoard(user: User, getBoardDto: GetBoardsDto): Promise<Board[]> {

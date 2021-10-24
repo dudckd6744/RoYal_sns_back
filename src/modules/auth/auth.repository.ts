@@ -140,16 +140,14 @@ export class AuthRepository {
         return res.redirect('http://localhost:8080');
     }
 
-    async followUser(
-        user: User,
-        othersId: string,
-    ): Promise<{ message: string }> {
+    async followUser(user: User, othersId: string) {
         const user_data = await this.userModel.findOne({ _id: user._id });
 
-        user_data.followTo.forEach((element, i) => {
+        user_data.following.forEach((element) => {
             if (element == othersId) {
-                throw new BadRequestException('이미 follw 한 상대입니다.');
+                return new BadRequestException('이미 follw 한 상대입니다.');
             }
+            return true;
         });
 
         const otherUser = await this.userModel.findOne({ _id: othersId });
@@ -163,7 +161,7 @@ export class AuthRepository {
             } else if (otherUser.status == '10%' && user_data.royal > 1) {
                 (user_data.royal = user_data.royal - 1), user_data.save();
             } else {
-                throw new BadRequestException(
+                return new BadRequestException(
                     `유저의 로얄이 ${user_data.royal} royal 남아있습니다. 충전이 필요합니다.`,
                 );
             }
@@ -171,37 +169,46 @@ export class AuthRepository {
 
         await this.userModel.findOneAndUpdate(
             { _id: user._id },
-            { $push: { followTo: othersId } },
+            { $push: { following: othersId } },
+        );
+        await this.userModel.findOneAndUpdate(
+            { _id: othersId },
+            { $push: { follower: user._id } },
         );
         return { message: 'success' };
     }
 
-    async unfollowUser(
-        user: User,
-        othersId: string,
-    ): Promise<{ message: string }> {
+    async unfollowUser(user: User, othersId: string) {
         const user_data = await this.userModel.findOne({ _id: user._id });
 
         let others_data = '';
 
-        user_data.followTo.forEach((element) => {
+        user_data.following.forEach((element) => {
             if (element == othersId) {
                 others_data = element;
             }
         });
         if (!others_data)
-            throw new BadRequestException('이미 unfollow 한 상대입니다.');
+            return new BadRequestException('이미 unfollow 한 상대입니다.');
 
         await this.userModel.findOneAndUpdate(
             { _id: user._id },
-            { $pull: { followTo: others_data } },
+            { $pull: { following: others_data } },
         );
 
+        await this.userModel.findOneAndUpdate(
+            { _id: othersId },
+            { $pull: { follower: user._id } },
+        );
         return { message: 'success' };
     }
 
     async getUserList(user: User) {
-        const userList = await this.userModel.find({ _id: { $ne: user._id } });
+        const userList = await this.userModel
+            .find({ _id: { $ne: user._id } })
+            .select(
+                'name phone email profile following follower royal status isActive createdAt',
+            );
         return userList;
     }
 }

@@ -89,10 +89,7 @@ export class AuthController {
     @ApiBearerAuth()
     @Post('/follow')
     @UseGuards(AuthGuard_renewal)
-    followUser(
-        @ReqUser() user: User,
-        @Body('othersId') othersId: string,
-    ): Promise<{ message: string }> {
+    followUser(@ReqUser() user: User, @Body('othersId') othersId: string) {
         return this.userService.followUser(user, othersId);
     }
 

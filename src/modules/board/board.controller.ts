@@ -94,10 +94,10 @@ export class BoardController {
 
     @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })
     @ApiBadRequestResponse({ description: 'false', type: errStatus })
-    @ApiOperation({ summary: '자신의 게시글 가져오기' })
-    @Get('/myPage')
-    getMyBoard(@ReqUser() user: User): Promise<Board[]> {
-        return this.boardSerivce.getMyBoard(user);
+    @ApiOperation({ summary: '유저 페이지에 해당되는 게시글 가져오기' })
+    @Get('/myPage/:userId')
+    getMyBoard(@ReqUser() user: User, @Param() userId: any) {
+        return this.boardSerivce.getMyBoard(user, userId);
     }
 
     @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })

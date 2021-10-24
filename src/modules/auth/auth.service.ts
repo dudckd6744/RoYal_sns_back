@@ -36,7 +36,8 @@ export class AuthService {
             profile: user.profile,
             isAuth: true,
             royal: user.royal,
-            followTo: user.followTo,
+            following: user.following,
+            follower: user.follower,
             status: user.status,
             isActive: user.isActive,
         };
@@ -60,7 +61,7 @@ export class AuthService {
         return this.authRepository.kakaoLogin(req, res);
     }
 
-    followUser(user: User, othersId: string): Promise<{ message: string }> {
+    followUser(user: User, othersId: string) {
         return this.authRepository.followUser(user, othersId);
     }
 
