@@ -65,7 +65,7 @@ export class AuthService {
         return this.authRepository.followUser(user, othersId);
     }
 
-    unfollowUser(user: User, othersId: string): Promise<{ message: string }> {
+    unfollowUser(user: User, othersId: string) {
         return this.authRepository.unfollowUser(user, othersId);
     }
 }

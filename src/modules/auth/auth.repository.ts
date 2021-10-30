@@ -152,13 +152,13 @@ export class AuthRepository {
 
         const otherUser = await this.userModel.findOne({ _id: othersId });
         if (otherUser) {
-            if (otherUser.status == '1%' && user_data.royal > 10) {
+            if (otherUser.status == '1%' && user_data.royal >= 10) {
                 (user_data.royal = user_data.royal - 10), user_data.save();
-            } else if (otherUser.status == '3%' && user_data.royal > 0) {
+            } else if (otherUser.status == '3%' && user_data.royal >= 8) {
                 (user_data.royal = user_data.royal - 8), user_data.save();
-            } else if (otherUser.status == '5%' && user_data.royal > 5) {
+            } else if (otherUser.status == '5%' && user_data.royal >= 5) {
                 (user_data.royal = user_data.royal - 5), user_data.save();
-            } else if (otherUser.status == '10%' && user_data.royal > 1) {
+            } else if (otherUser.status == '10%' && user_data.royal >= 1) {
                 (user_data.royal = user_data.royal - 1), user_data.save();
             } else {
                 return new BadRequestException(
@@ -175,7 +175,7 @@ export class AuthRepository {
             { _id: othersId },
             { $push: { follower: user._id } },
         );
-        return { message: 'success' };
+        return { success: true };
     }
 
     async unfollowUser(user: User, othersId: string) {
@@ -200,7 +200,7 @@ export class AuthRepository {
             { _id: othersId },
             { $pull: { follower: user._id } },
         );
-        return { message: 'success' };
+        return { success: true };
     }
 
     async getUserList(user: User) {

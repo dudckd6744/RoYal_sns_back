@@ -100,10 +100,7 @@ export class AuthController {
     @ApiBearerAuth()
     @Delete('/unfollow')
     @UseGuards(AuthGuard_renewal)
-    unfollowUser(
-        @ReqUser() user: User,
-        @Body('othersId') othersId: string,
-    ): Promise<{ message: string }> {
+    unfollowUser(@ReqUser() user: User, @Body('othersId') othersId: string) {
         return this.userService.unfollowUser(user, othersId);
     }
 

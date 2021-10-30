@@ -1,7 +1,7 @@
 version: "3.3"
 services: 
   nest:
-    image: dudckd/bolier-nest:0.5
+    image: dudckd/bolier-nest:v1
     restart: always
     container_name: nest
     ports: 

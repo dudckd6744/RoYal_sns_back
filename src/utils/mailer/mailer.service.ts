@@ -16,7 +16,6 @@ export class AuthMailerService {
     ) {}
 
     async sendEmail(email: string) {
-        console.log(email);
         const user = await this.userModel.findOne({ email });
 
         if (!user) return new BadRequestException('이메일을 다시 확인해주세요');

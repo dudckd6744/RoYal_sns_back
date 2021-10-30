@@ -366,7 +366,7 @@ export class BoardRepository {
         });
 
         const board = await this.boardModel.findOne({ _id: boardId });
-        console.log(parentId, reply_data.parentId, replyed);
+
         if (parentId == reply_data.parentId && parentId != null) {
             replyed.reply_count++;
             await replyed.save();
@@ -385,7 +385,7 @@ export class BoardRepository {
             .count();
 
         const reply = await this.replyModel
-            .find({ boardId: boardId })
+            .find({ boardId: boardId, parentId: null, deletedAt: null })
             .sort({ like_count: -1, reply_count: -1, createdAt: -1 })
             .skip(skip)
             .limit(limit)
@@ -394,9 +394,29 @@ export class BoardRepository {
             )
             .populate('writer', 'name profile');
 
+        const all_reply_data = [];
+
         const reply_heart = [];
         reply.forEach((reply_data, i) => {
             reply_heart.push(reply_data._id);
+            all_reply_data.push(reply_data);
+        });
+
+        const re_reply = await this.replyModel
+            .find({
+                boardId: boardId,
+                deletedAt: null,
+                parentId: { $in: reply_heart },
+            })
+            .sort({ like_count: -1, reply_count: -1, createdAt: -1 })
+            .select(
+                'userId boardId parentId comment reply_count like_count IsLike createdAt',
+            )
+            .populate('writer', 'name profile');
+
+        re_reply.forEach((re_reply_data) => {
+            reply_heart.push(re_reply_data._id);
+            all_reply_data.push(re_reply_data);
         });
 
         if (user) {
@@ -405,7 +425,7 @@ export class BoardRepository {
                 parentId: { $in: reply_heart },
             });
 
-            reply.forEach((reply_data) => {
+            all_reply_data.forEach((reply_data) => {
                 liked_board.forEach((board_liked) => {
                     if (
                         reply_data._id.toString() ==
@@ -415,9 +435,10 @@ export class BoardRepository {
                     }
                 });
             });
-            return { success: true, reply, reply_count };
+
+            return { success: true, reply: all_reply_data, reply_count };
         } else {
-            return { success: true, reply, reply_count };
+            return { success: true, reply: all_reply_data, reply_count };
         }
     }
 
