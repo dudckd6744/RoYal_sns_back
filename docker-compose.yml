@@ -5,7 +5,7 @@ services:
     restart: always
     container_name: nest
     ports: 
-      - "5000:5000"
+      - "5050:5050"
 
 
   # mysql:
