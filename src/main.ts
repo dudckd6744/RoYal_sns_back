@@ -32,7 +32,7 @@ async function bootstrap() {
             stream,
         }),
     );
-    await app.listen(port);
+    await app.listen(port, () => console.log(`server runing on ${port}`));
     console.log('mongoDB runnig');
 }
 bootstrap();
