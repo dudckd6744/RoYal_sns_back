@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserSchema, User } from 'src/schemas/User';
 
+import { AppController } from './app.controller';
 import { ConfigModule } from './configs/config/config.module';
 import { ConfigService } from './configs/config/config.service';
 import { typeORMConfig } from './configs/typeorm.config';
@@ -17,6 +18,7 @@ import { AuthMailerModule } from './utils/mailer/mailer.module';
 import { UploadModule } from './utils/upload/upload.module';
 
 @Module({
+    controllers: [AppController],
     imports: [
         //typeorm의 createConnection와 같은 파라미터를 제공받으며 App 전체에서 접근 가능한 Context의 connection을 주입받습니다.
         TypeOrmModule.forRoot(typeORMConfig),
