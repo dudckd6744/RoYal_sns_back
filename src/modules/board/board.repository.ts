@@ -126,24 +126,36 @@ export class BoardRepository {
 
     async getMyBoard(user: User, userId: any) {
         const usersId = userId['userId'];
-        const boards = await this.boardModel
-            .find({ writer: usersId })
-            .select(
-                'description view like_count tag reply_count status IsLike files createdAt',
-            )
-            .sort({ createdAt: -1 })
-            .populate('writer', 'name profile');
-
         const board_user = await this.userModel
             .findOne({ _id: usersId })
             .select(
                 'name phone email profile follower following royal status isActive createdAt',
             );
 
-        return { success: true, boards, board_user };
+        if (user._id === usersId) {
+            const boards = await this.boardModel
+                .find({ writer: usersId })
+                .select(
+                    'description view like_count tag reply_count status IsLike files createdAt',
+                )
+                .sort({ createdAt: -1 })
+                .populate('writer', 'name profile');
+
+            return { success: true, boards, board_user };
+        } else {
+            const boards = await this.boardModel
+                .find({ writer: usersId, status: 'PUBLIC' })
+                .select(
+                    'description view like_count tag reply_count status IsLike files createdAt',
+                )
+                .sort({ createdAt: -1 })
+                .populate('writer', 'name profile');
+
+            return { success: true, boards, board_user };
+        }
     }
 
-    async getBoard(user: User, getBoardDto: GetBoardsDto): Promise<Board[]> {
+    async getBoard(user: User, getBoardDto: GetBoardsDto) {
         const { search, search_type } = getBoardDto;
 
         let search_data;
@@ -159,6 +171,19 @@ export class BoardRepository {
         }
         const boards = await this.boardModel
             .find({ deletedAt: null })
+            .find({
+                $or: [
+                    {
+                        $and: [
+                            {
+                                writer: { $ne: user._id },
+                                status: 'PUBLIC',
+                            },
+                        ],
+                    },
+                    { writer: user._id },
+                ],
+            })
             .find(search_data)
             .sort({ createdAt: -1 })
             .select(
@@ -187,9 +212,9 @@ export class BoardRepository {
                     }
                 });
             });
-            return boards;
+            return { success: true, boards };
         } else {
-            return boards;
+            return { success: true, boards };
         }
     }
 

@@ -211,4 +211,12 @@ export class AuthRepository {
             );
         return userList;
     }
+
+    async updateProfile(user: User, profile: any) {
+        await this.userModel.findByIdAndUpdate(
+            { _id: user._id },
+            { profile: profile.profile },
+        );
+        return { success: true };
+    }
 }

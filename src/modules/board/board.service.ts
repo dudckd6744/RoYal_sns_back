@@ -45,7 +45,7 @@ export class BoardService {
         return this.boardRepository.getMyBoard(user, userId);
     }
 
-    getBoard(user: User, getBoardDto: GetBoardsDto): Promise<Board[]> {
+    getBoard(user: User, getBoardDto: GetBoardsDto) {
         return this.boardRepository.getBoard(user, getBoardDto);
     }
 

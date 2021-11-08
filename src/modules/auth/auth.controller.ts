@@ -114,6 +114,16 @@ export class AuthController {
         return this.userService.getUserList(user);
     }
 
+    @ApiOkResponse({ description: 'success', type: Success })
+    @ApiBadRequestResponse({ description: 'false', type: errStatus })
+    @ApiOperation({ summary: '유저 프로필 사진 변경하기' })
+    @ApiBearerAuth()
+    @Put('/profile')
+    @UseGuards(AuthGuard_renewal)
+    updateProfile(@ReqUser() user: User, @Body() profile: any) {
+        return this.userService.updateProfile(user, profile);
+    }
+
     @Get('/google')
     @UseGuards(AuthGuard('google'))
     async googleAuth(@Req() req) {}

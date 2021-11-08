@@ -68,4 +68,8 @@ export class AuthService {
     unfollowUser(user: User, othersId: string) {
         return this.authRepository.unfollowUser(user, othersId);
     }
+
+    updateProfile(user: User, profile: any) {
+        return this.authRepository.updateProfile(user, profile);
+    }
 }
