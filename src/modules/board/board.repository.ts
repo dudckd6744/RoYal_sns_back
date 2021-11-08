@@ -212,9 +212,9 @@ export class BoardRepository {
                     }
                 });
             });
-            return { success: true, boards };
+            return boards;
         } else {
-            return { success: true, boards };
+            return boards;
         }
     }
 
