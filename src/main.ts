@@ -9,7 +9,7 @@ import { stream } from './configs/winston';
 config();
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, { cors: true });
     const port = process.env.PORT || 5000;
 
     const config_swagger = new DocumentBuilder()

@@ -224,8 +224,7 @@ export class BoardRepository {
             .select(
                 'description view like_count tag reply_count status IsLike files createdAt',
             )
-            .populate('writer', 'name profile');
-
+            .populate('writer', 'name profile status');
         // // let file_tag =
         // board.files.forEach(async (element, i) => {
         //   const tag_data = await this.tagModel.findOne({_id:element})
