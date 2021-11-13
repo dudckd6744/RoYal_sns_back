@@ -69,7 +69,7 @@ export class BoardService {
         );
     }
 
-    deleteBoard(user: User, boardId: string): Promise<{ message: string }> {
+    deleteBoard(user: User, boardId: string) {
         return this.boardRepository.deleteBoard(user, boardId);
     }
 
@@ -91,5 +91,9 @@ export class BoardService {
 
     async getReply(user: User, boardId: string, skip: number, limit: number) {
         return this.boardRepository.getReply(user, boardId, skip, limit);
+    }
+
+    async deleteReply(user: User, boardId: string, replyId: string) {
+        return this.boardRepository.deleteReply(user, boardId, replyId);
     }
 }

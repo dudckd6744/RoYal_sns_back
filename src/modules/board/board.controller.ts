@@ -140,10 +140,7 @@ export class BoardController {
     @ApiBearerAuth()
     @Delete('/:boardId')
     @UseGuards(AuthGuard_renewal)
-    deleteBoard(
-        @ReqUser() user: User,
-        @Param('boardId') boardId: string,
-    ): Promise<{ message: string }> {
+    deleteBoard(@ReqUser() user: User, @Param('boardId') boardId: string) {
         return this.boardSerivce.deleteBoard(user, boardId);
     }
 
@@ -208,5 +205,18 @@ export class BoardController {
         @Query('limit', ParseIntPipe) limit: number,
     ) {
         return this.boardSerivce.getReply(user, boardId, skip, limit);
+    }
+
+    @ApiOkResponse({ description: 'success', type: Success })
+    @ApiBadRequestResponse({ description: 'false', type: errStatus })
+    @ApiOperation({ summary: '댓글 삭제하기' })
+    @ApiBearerAuth()
+    @Delete('/:boardId/:replyId')
+    deleteReply(
+        @Param('boardId') boardId: string,
+        @Param('replyId') replyId: string,
+        @ReqUser() user: User,
+    ) {
+        return this.boardSerivce.deleteReply(user, boardId, replyId);
     }
 }

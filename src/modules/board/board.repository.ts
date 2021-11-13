@@ -131,10 +131,9 @@ export class BoardRepository {
             .select(
                 'name phone email profile follower following royal status isActive createdAt',
             );
-
-        if (user._id === usersId) {
+        if (user._id == usersId) {
             const boards = await this.boardModel
-                .find({ writer: usersId })
+                .find({ writer: usersId, deletedAt: null })
                 .select(
                     'description view like_count tag reply_count status IsLike files createdAt',
                 )
@@ -144,7 +143,7 @@ export class BoardRepository {
             return { success: true, boards, board_user };
         } else {
             const boards = await this.boardModel
-                .find({ writer: usersId, status: 'PUBLIC' })
+                .find({ writer: usersId, status: 'PUBLIC', deletedAt: null })
                 .select(
                     'description view like_count tag reply_count status IsLike files createdAt',
                 )
@@ -279,17 +278,14 @@ export class BoardRepository {
         return { message: 'success' };
     }
 
-    async deleteBoard(
-        user: User,
-        boardId: string,
-    ): Promise<{ message: string }> {
+    async deleteBoard(user: User, boardId: string) {
         const board = await this.findBoard(user, boardId);
 
         board.deletedAt = new Date();
 
         await board.save();
 
-        return { message: 'success' };
+        return { success: true };
     }
 
     async like(user: User, boardId: string, parentId: string) {
@@ -466,6 +462,34 @@ export class BoardRepository {
         }
     }
 
+    async deleteReply(user: User, boardId: string, replyId: string) {
+        const reply = await this.replyModel.findOne({
+            writer: user._id,
+            _id: replyId,
+        });
+        await reply.save();
+
+        if (reply.parentId) {
+            const reply_data = await this.replyModel.findOne({
+                _id: reply.parentId,
+            });
+            reply.deletedAt = new Date();
+            await reply.save();
+
+            reply_data.reply_count - 1;
+            await reply_data.save();
+            return { success: true };
+        }
+        const board = await this.boardModel.findOne({ _id: boardId });
+
+        reply.deletedAt = new Date();
+        await reply.save();
+        board.reply_count - 1;
+        await board.save();
+
+        return { success: true };
+    }
+
     private async findBoard(user, boardId) {
         const board = await this.boardModel.findOne({
             writer: user._id,
@@ -474,8 +498,6 @@ export class BoardRepository {
 
         if (!board)
             throw new BadRequestException('해당 게시글이 존재 하지않습니다.');
-        else if (board.writer != user._id)
-            throw new BadRequestException('사용자 게시글이 아닙니다.');
 
         return board;
     }
