@@ -25,6 +25,12 @@ export class CreateUserDto {
     })
     @IsNotEmpty({ message: '이메일이 비어있습니다.' })
     @IsEmail({}, { message: '이메일 형식으로 입력해주세요!' })
+    @Matches(
+        /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i,
+        {
+            message: '이메일 형식에 맞게 입력해 주셔야됩니다.',
+        },
+    )
     email: string;
 
     @ApiProperty({

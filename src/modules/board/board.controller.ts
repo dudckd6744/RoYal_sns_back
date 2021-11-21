@@ -18,10 +18,9 @@ import {
     ApiBody,
     ApiOkResponse,
     ApiOperation,
+    ApiTags,
 } from '@nestjs/swagger';
 import { logger } from 'src/configs/winston';
-import { Board } from 'src/schemas/Board';
-import { Reply } from 'src/schemas/Reply';
 import { User } from 'src/schemas/User';
 import { AuthGuard_renewal } from 'src/utils/auth.guard';
 import { ReqUser } from 'src/utils/user.decorater';
@@ -41,6 +40,7 @@ import {
 import { BoardStatusPipe } from './pipes/board.status.pipes';
 import { BoardStatus } from './utils/board.status.enum';
 
+@ApiTags('boards')
 @Controller('api/boards')
 export class BoardController {
     constructor(private boardSerivce: BoardService) {}

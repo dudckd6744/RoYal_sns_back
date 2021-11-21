@@ -19,6 +19,7 @@ import {
     ApiBody,
     ApiOkResponse,
     ApiOperation,
+    ApiTags,
 } from '@nestjs/swagger';
 import { Response } from 'express';
 import { User } from 'src/schemas/User';
@@ -36,6 +37,7 @@ import {
     tokenSuccess,
 } from './dto/user.create.dto';
 
+@ApiTags('user')
 @Controller('api/auth')
 export class AuthController {
     constructor(private userService: AuthService) {}

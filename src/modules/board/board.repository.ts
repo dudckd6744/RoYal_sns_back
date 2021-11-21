@@ -467,7 +467,10 @@ export class BoardRepository {
             writer: user._id,
             _id: replyId,
         });
-        await reply.save();
+
+        if (!reply) {
+            return new BadRequestException('댓글을 삭제하는데 실패하였습니다.');
+        }
 
         if (reply.parentId) {
             const reply_data = await this.replyModel.findOne({
