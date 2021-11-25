@@ -6,7 +6,7 @@ import {
     ApiOperation,
     ApiTags,
 } from '@nestjs/swagger';
-import { errStatus } from 'src/modules/auth/dto/user.create.dto';
+import { errStatus } from 'src/resStatusDto/resStatus.dto';
 
 import { PostUploadDto, uploadDto } from './upload.dto';
 import { UploadService } from './upload.service';

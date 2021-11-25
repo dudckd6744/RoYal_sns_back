@@ -22,6 +22,7 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { Response } from 'express';
+import { errStatus, Success } from 'src/resStatusDto/resStatus.dto';
 import { User } from 'src/schemas/User';
 import { AuthGuard_renewal } from 'src/utils/auth.guard';
 import { ReqUser } from 'src/utils/user.decorater';
@@ -29,11 +30,9 @@ import { ReqUser } from 'src/utils/user.decorater';
 import { AuthService } from './auth.service';
 import {
     CreateUserDto,
-    errStatus,
     LoginUser,
     otherIdDto,
     PasswordUserDto,
-    Success,
     tokenSuccess,
 } from './dto/user.create.dto';
 
@@ -77,6 +76,7 @@ export class AuthController {
     @ApiBearerAuth()
     @Put('/update_password')
     @UseGuards(AuthGuard_renewal)
+    @UsePipes(ValidationPipe)
     passwordUpdateUser(
         @ReqUser() user: User,
         @Body() passwordUserDto: PasswordUserDto,

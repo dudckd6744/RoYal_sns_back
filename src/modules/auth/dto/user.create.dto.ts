@@ -1,89 +1,16 @@
-import { ApiBody, ApiProperty } from '@nestjs/swagger';
-import {
-    IsEmail,
-    IsNotEmpty,
-    IsString,
-    Matches,
-    MaxLength,
-    MinLength,
-} from 'class-validator';
+import { ApiProperty, PickType } from '@nestjs/swagger';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { User } from 'src/schemas/User';
 
-export class CreateUserDto {
-    @ApiProperty({
-        example: '홍길동',
-        required: true,
-        description: '사용자 이름',
-    })
-    @IsNotEmpty({ message: '이름이 비어있습니다.' })
-    @IsString()
-    name: string;
+export class CreateUserDto extends PickType(User, [
+    'name',
+    'email',
+    'password',
+    'phone',
+    'profile',
+] as const) {}
 
-    @ApiProperty({
-        example: 'test@test.com',
-        required: true,
-        description: '사용자 이메일',
-    })
-    @IsNotEmpty({ message: '이메일이 비어있습니다.' })
-    @IsEmail({}, { message: '이메일 형식으로 입력해주세요!' })
-    @Matches(
-        /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i,
-        {
-            message: '이메일 형식에 맞게 입력해 주셔야됩니다.',
-        },
-    )
-    email: string;
-
-    @ApiProperty({
-        example: '!@qwer1234',
-        required: true,
-        description: '사용자 비밀번호',
-    })
-    @IsNotEmpty({ message: '비밀번호가 비어있습니다.' })
-    @IsString()
-    @Matches(
-        /^(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+])(?!.*[^a-zA-z0-9$`~!@$!%*#^?&\\(\\)\-_=+]).{8,16}$/,
-        {
-            message:
-                '최소 8자 ~ 16자 이내에 영문과 숫자 특수문자가 가 포함되어 있지않습니다.',
-        },
-    )
-    password: string;
-
-    @ApiProperty({
-        example: '010-1111-1111',
-        required: true,
-        description: '사용자 폰번호',
-    })
-    @IsNotEmpty({ message: '핸드폰 번호를 입력해주세요!' })
-    @IsString()
-    phone: string;
-
-    @ApiProperty({
-        example: '홍길동.jpg',
-        required: false,
-        description: '사용자 이미지',
-    })
-    profile: string;
-}
-
-export class LoginUser {
-    @ApiProperty({
-        example: 'test@test.com',
-        required: true,
-        description: '사용자 이메일',
-    })
-    @IsNotEmpty({ message: '이메일이 비어있습니다.' })
-    email: string;
-
-    @ApiProperty({
-        example: '!@qwer1234',
-        required: true,
-        description: '사용자 비밀번호',
-    })
-    @IsNotEmpty({ message: '비밀번호가 비어있습니다.' })
-    @IsString()
-    password: string;
-}
+export class LoginUser extends PickType(User, ['email', 'password'] as const) {}
 
 export class PasswordUserDto {
     @ApiProperty({
@@ -132,34 +59,4 @@ export class tokenSuccess {
         description: '성공',
     })
     token: string;
-}
-
-export class Success {
-    @ApiProperty({
-        example: 'success',
-        required: true,
-        description: '성공',
-    })
-    message: string;
-}
-
-export class errStatus {
-    @ApiProperty({
-        example: 400,
-        required: true,
-        description: '에러코드',
-    })
-    statusCode: number;
-    @ApiProperty({
-        example: 'example',
-        required: true,
-        description: '상태메세지',
-    })
-    message: string;
-    @ApiProperty({
-        example: 'bad request',
-        required: true,
-        description: '에러 내용',
-    })
-    error: string;
 }

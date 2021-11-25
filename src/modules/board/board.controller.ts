@@ -21,11 +21,11 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { logger } from 'src/configs/winston';
+import { errStatus, Success } from 'src/resStatusDto/resStatus.dto';
 import { User } from 'src/schemas/User';
 import { AuthGuard_renewal } from 'src/utils/auth.guard';
 import { ReqUser } from 'src/utils/user.decorater';
 
-import { errStatus, Success } from '../auth/dto/user.create.dto';
 import { BoardService } from './board.service';
 import {
     CreateBoardDto,
@@ -35,7 +35,6 @@ import {
     SwaggerCreateBoardDto,
     SwaggerLikeDto,
     SwaggerReplyDto,
-    TagFileDto,
 } from './dto/board.dto';
 import { BoardStatusPipe } from './pipes/board.status.pipes';
 import { BoardStatus } from './utils/board.status.enum';

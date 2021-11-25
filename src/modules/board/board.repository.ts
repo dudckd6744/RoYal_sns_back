@@ -7,12 +7,7 @@ import { Reply } from 'src/schemas/Reply';
 import { Tag } from 'src/schemas/Tag';
 import { User } from 'src/schemas/User';
 
-import {
-    CreateBoardDto,
-    CreateReplyDto,
-    GetBoardsDto,
-    TagFileDto,
-} from './dto/board.dto';
+import { CreateBoardDto, CreateReplyDto, GetBoardsDto } from './dto/board.dto';
 import { BoardStatus } from './utils/board.status.enum';
 
 export class BoardRepository {
