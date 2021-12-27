@@ -34,7 +34,7 @@ import {
     otherIdDto,
     PasswordUserDto,
     tokenSuccess,
-} from './dto/user.create.dto';
+} from './dto/user.dto';
 
 @ApiTags('user')
 @Controller('api/auth')
@@ -61,6 +61,7 @@ export class AuthController {
 
     @Get('/')
     userAuth(@ReqUser() user: User) {
+        console.log(user);
         return this.userService.userAuth(user);
     }
 

@@ -60,3 +60,21 @@ export class tokenSuccess {
     })
     token: string;
 }
+
+export interface UnAuthUserDto {
+    isAuth: boolean;
+    error: boolean;
+}
+export interface AuthUserDto {
+    _id: string;
+    name: string;
+    email: string;
+    phone: string;
+    profile: string;
+    isAuth: boolean;
+    royal: number;
+    following: string[];
+    follower: string[];
+    status: string;
+    isActive: boolean;
+}

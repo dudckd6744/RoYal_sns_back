@@ -73,9 +73,7 @@ export class DMsRepository {
             });
         }
         if (leave_status) {
-            return new BadRequestException(
-                '이미 해당 채팅방에서 나가셨습니다.',
-            );
+            throw new BadRequestException('이미 해당 채팅방에서 나가셨습니다.');
         }
         await this.chatRoomModel.findOneAndUpdate(
             { _id: chatRoom_id },
@@ -151,7 +149,7 @@ export class DMsRepository {
         });
 
         if (!deleteDMs) {
-            return new BadRequestException('메세지 삭제에 실패 하였습니다.');
+            throw new BadRequestException('메세지 삭제에 실패 하였습니다.');
         }
         return { success: true };
     }
