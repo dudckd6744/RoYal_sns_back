@@ -270,4 +270,10 @@
      - TypeGuard 적용
           - auth Repository 완료 후에 auth services 진행중
 
+### 2022-01-27
+
+     - 게시글 좋아요비활성화 이슈발견 
+          - 좋아요 취소시 like데이터가 삭제가 안되고있어서 삭제시켜주므로써 이슈해결
+     <!-- - 나머지 typeGuard 적용 -->
+
 ### to do

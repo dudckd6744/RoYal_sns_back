@@ -29,11 +29,13 @@ import { ReqUser } from 'src/utils/user.decorater';
 
 import { AuthService } from './auth.service';
 import {
+    AuthUserDto,
     CreateUserDto,
     LoginUser,
     otherIdDto,
     PasswordUserDto,
     tokenSuccess,
+    UnAuthUserDto,
 } from './dto/user.dto';
 
 @ApiTags('user')
@@ -46,7 +48,9 @@ export class AuthController {
     @ApiOperation({ summary: '회원가입' })
     @Post('/register')
     @UsePipes(ValidationPipe)
-    registerUser(@Body() createUserDto: CreateUserDto) {
+    registerUser(
+        @Body() createUserDto: CreateUserDto,
+    ): Promise<{ message: string } | errStatus> {
         return this.userService.registerUser(createUserDto);
     }
 
@@ -55,19 +59,18 @@ export class AuthController {
     @ApiOperation({ summary: '로그인' })
     @Post('/login')
     @UsePipes(ValidationPipe)
-    loginUser(@Body() loginUser: LoginUser) {
+    loginUser(@Body() loginUser: LoginUser): Promise<{ token } | errStatus> {
         return this.userService.loginUser(loginUser);
     }
 
     @Get('/')
-    userAuth(@ReqUser() user: User) {
-        console.log(user);
+    userAuth(@ReqUser() user: User): AuthUserDto | UnAuthUserDto {
         return this.userService.userAuth(user);
     }
 
     @Post('/logout') //로그아웃
     @UseGuards(AuthGuard_renewal)
-    logoutUSer(@ReqUser() user: User) {
+    logoutUSer(@ReqUser() user: User): { success: true } {
         return { success: true };
     }
 
@@ -81,7 +84,7 @@ export class AuthController {
     passwordUpdateUser(
         @ReqUser() user: User,
         @Body() passwordUserDto: PasswordUserDto,
-    ) {
+    ): Promise<{ success: true } | errStatus> {
         return this.userService.passwordUpdateUser(user, passwordUserDto);
     }
 
@@ -92,7 +95,10 @@ export class AuthController {
     @ApiBearerAuth()
     @Post('/follow')
     @UseGuards(AuthGuard_renewal)
-    followUser(@ReqUser() user: User, @Body('othersId') othersId: string) {
+    followUser(
+        @ReqUser() user: User,
+        @Body('othersId') othersId: string,
+    ): Promise<{ success: true } | errStatus> {
         return this.userService.followUser(user, othersId);
     }
 
@@ -103,7 +109,10 @@ export class AuthController {
     @ApiBearerAuth()
     @Delete('/unfollow')
     @UseGuards(AuthGuard_renewal)
-    unfollowUser(@ReqUser() user: User, @Body('othersId') othersId: string) {
+    unfollowUser(
+        @ReqUser() user: User,
+        @Body('othersId') othersId: string,
+    ): Promise<{ success: true } | errStatus> {
         return this.userService.unfollowUser(user, othersId);
     }
 
@@ -123,7 +132,10 @@ export class AuthController {
     @ApiBearerAuth()
     @Put('/profile')
     @UseGuards(AuthGuard_renewal)
-    updateProfile(@ReqUser() user: User, @Body() profile: any) {
+    updateProfile(
+        @ReqUser() user: User,
+        @Body() profile: any,
+    ): Promise<{ success: true } | errStatus> {
         return this.userService.updateProfile(user, profile);
     }
 

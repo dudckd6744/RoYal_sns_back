@@ -49,11 +49,14 @@ export class AuthService {
         return user_data;
     }
 
-    passwordUpdateUser(user: User, passwordUserDto: PasswordUserDto) {
+    passwordUpdateUser(
+        user: User,
+        passwordUserDto: PasswordUserDto,
+    ): Promise<{ success: true } | errStatus> {
         return this.authRepository.passwordUpdateUser(user, passwordUserDto);
     }
 
-    getUserList(user: User) {
+    getUserList(user: User): Promise<User[] | errStatus> {
         return this.authRepository.getUserList(user);
     }
 
@@ -65,15 +68,24 @@ export class AuthService {
         return this.authRepository.kakaoLogin(req, res);
     }
 
-    followUser(user: User, othersId: string) {
+    followUser(
+        user: User,
+        othersId: string,
+    ): Promise<{ success: true } | errStatus> {
         return this.authRepository.followUser(user, othersId);
     }
 
-    unfollowUser(user: User, othersId: string) {
+    unfollowUser(
+        user: User,
+        othersId: string,
+    ): Promise<{ success: true } | errStatus> {
         return this.authRepository.unfollowUser(user, othersId);
     }
 
-    updateProfile(user: User, profile: any) {
+    updateProfile(
+        user: User,
+        profile: any,
+    ): Promise<{ success: true } | errStatus> {
         return this.authRepository.updateProfile(user, profile);
     }
 }

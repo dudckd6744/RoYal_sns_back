@@ -70,7 +70,7 @@ export class AuthRepository {
     async passwordUpdateUser(
         user: User,
         passwordUserDto: PasswordUserDto,
-    ): Promise<{ success: boolean } | errStatus> {
+    ): Promise<{ success: true } | errStatus> {
         const { password, new_password, confirm_new_password } =
             passwordUserDto;
 
@@ -143,7 +143,7 @@ export class AuthRepository {
     async followUser(
         user: User,
         othersId: string,
-    ): Promise<{ success: boolean } | errStatus> {
+    ): Promise<{ success: true } | errStatus> {
         const user_data = await this.userModel.findOne({ _id: user._id });
 
         user_data.following.forEach((element) => {
@@ -184,7 +184,7 @@ export class AuthRepository {
     async unfollowUser(
         user: User,
         othersId: string,
-    ): Promise<{ success: boolean } | errStatus> {
+    ): Promise<{ success: true } | errStatus> {
         const user_data = await this.userModel.findOne({ _id: user._id });
 
         let others_data = '';
@@ -221,7 +221,7 @@ export class AuthRepository {
     async updateProfile(
         user: User,
         profile: any,
-    ): Promise<{ success: boolean } | errStatus> {
+    ): Promise<{ success: true } | errStatus> {
         await this.userModel.findByIdAndUpdate(
             { _id: user._id },
             { profile: profile.profile },

@@ -309,9 +309,6 @@ export class BoardRepository {
         } else {
             board.like_count++;
             board.save();
-            if (user) {
-                board.IsLike = true;
-            }
         }
 
         return { success: true };
@@ -320,19 +317,18 @@ export class BoardRepository {
     async unlike(user: User, boardId: string, parentId: string) {
         const parent_id = parentId ? parentId : null;
         const board = await this.boardModel.findOne({ _id: boardId });
+
         if (!board)
             throw new BadRequestException('해당 게시글이 존재 하지않습니다.');
 
-        const liked = await this.likeModel.findOne({
+        const liked = await this.likeModel.findOneAndDelete({
             userId: user._id,
-            boardId: boardId,
+            boardId,
             parentId: parent_id,
         });
-
-        if (!liked)
+        if (!liked) {
             throw new BadRequestException('이미 좋아요를 취소한 게시글입니다.');
-
-        liked.delete();
+        }
 
         if (liked.parentId) {
             const reply = await this.replyModel.findOne({ _id: parent_id });
@@ -341,9 +337,6 @@ export class BoardRepository {
         } else {
             board.like_count--;
             board.save();
-            if (user) {
-                board.IsLike = false;
-            }
         }
 
         return { success: true };
