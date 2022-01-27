@@ -18,7 +18,7 @@ export class AuthMailerService {
     async sendEmail(email: string) {
         const user = await this.userModel.findOne({ email });
 
-        if (!user) return new BadRequestException('이메일을 다시 확인해주세요');
+        if (!user) throw new BadRequestException('이메일을 다시 확인해주세요');
 
         const passowrd = Math.random().toString(36).slice(2);
 

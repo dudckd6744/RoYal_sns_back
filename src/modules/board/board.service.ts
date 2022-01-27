@@ -1,15 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Board } from 'src/schemas/Board';
-import { Reply } from 'src/schemas/Reply';
 import { User } from 'src/schemas/User';
 
 import { BoardRepository } from './board.repository';
-import {
-    CreateBoardDto,
-    CreateReplyDto,
-    GetBoardsDto,
-    TagFileDto,
-} from './dto/board.dto';
+import { CreateBoardDto, CreateReplyDto, GetBoardsDto } from './dto/board.dto';
 import { BoardStatus } from './utils/board.status.enum';
 
 @Injectable()

@@ -1,34 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { Response } from 'express';
+import { errStatus } from 'src/resStatusDto/resStatus.dto';
 import { User } from 'src/schemas/User';
 
 import { AuthRepository } from './auth.repository';
 import {
+    AuthUserDto,
     CreateUserDto,
     LoginUser,
     PasswordUserDto,
-} from './dto/user.create.dto';
+    UnAuthUserDto,
+} from './dto/user.dto';
 
 @Injectable()
 export class AuthService {
     constructor(private authRepository: AuthRepository) {}
 
-    registerUser(createUserDto: CreateUserDto) {
+    registerUser(
+        createUserDto: CreateUserDto,
+    ): Promise<{ message: string } | errStatus> {
         return this.authRepository.registerUser(createUserDto);
     }
 
-    async loginUser(loginUser: LoginUser) {
+    async loginUser(loginUser: LoginUser): Promise<{ token } | errStatus> {
         return this.authRepository.loginUser(loginUser);
     }
 
-    userAuth(user: User) {
-        if (!user)
-            return {
-                isAuth: false,
-                error: true,
-            };
+    userAuth(user: User): AuthUserDto | UnAuthUserDto {
+        if (!user) {
+            const data: UnAuthUserDto = { isAuth: false, error: true };
+            return data;
+        }
 
-        const user_data = {
+        const user_data: AuthUserDto = {
             _id: user._id,
             name: user.name,
             email: user.email,
@@ -45,11 +49,14 @@ export class AuthService {
         return user_data;
     }
 
-    passwordUpdateUser(user: User, passwordUserDto: PasswordUserDto) {
+    passwordUpdateUser(
+        user: User,
+        passwordUserDto: PasswordUserDto,
+    ): Promise<{ success: true } | errStatus> {
         return this.authRepository.passwordUpdateUser(user, passwordUserDto);
     }
 
-    getUserList(user: User) {
+    getUserList(user: User): Promise<User[] | errStatus> {
         return this.authRepository.getUserList(user);
     }
 
@@ -61,15 +68,24 @@ export class AuthService {
         return this.authRepository.kakaoLogin(req, res);
     }
 
-    followUser(user: User, othersId: string) {
+    followUser(
+        user: User,
+        othersId: string,
+    ): Promise<{ success: true } | errStatus> {
         return this.authRepository.followUser(user, othersId);
     }
 
-    unfollowUser(user: User, othersId: string) {
+    unfollowUser(
+        user: User,
+        othersId: string,
+    ): Promise<{ success: true } | errStatus> {
         return this.authRepository.unfollowUser(user, othersId);
     }
 
-    updateProfile(user: User, profile: any) {
+    updateProfile(
+        user: User,
+        profile: any,
+    ): Promise<{ success: true } | errStatus> {
         return this.authRepository.updateProfile(user, profile);
     }
 }

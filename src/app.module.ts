@@ -10,6 +10,8 @@ import { typeORMConfig } from './configs/typeorm.config';
 //모듈
 import { AuthModule } from './modules/auth/auth.module';
 import { BoardModule } from './modules/board/board.module';
+import { ChatsModule } from './modules/chats/chats.module';
+import { DmsModule } from './modules/dms/dms.module';
 //인증
 import { AuthTokenMiddleware } from './utils/auth.token.middleware';
 import { GoogleStrategy } from './utils/google.auth';
@@ -17,11 +19,12 @@ import { KakaoStrategy } from './utils/kakao.auth';
 import { AuthMailerModule } from './utils/mailer/mailer.module';
 import { UploadModule } from './utils/upload/upload.module';
 
+// TODO: test
 @Module({
     controllers: [AppController],
     imports: [
         //typeorm의 createConnection와 같은 파라미터를 제공받으며 App 전체에서 접근 가능한 Context의 connection을 주입받습니다.
-        TypeOrmModule.forRoot(typeORMConfig),
+        // TypeOrmModule.forRoot(typeORMConfig),
         ConfigModule,
         MongooseModule.forRootAsync({
             inject: [ConfigService],
@@ -33,6 +36,8 @@ import { UploadModule } from './utils/upload/upload.module';
         BoardModule,
         UploadModule,
         AuthMailerModule,
+        ChatsModule,
+        DmsModule,
     ],
     providers: [GoogleStrategy, KakaoStrategy],
 })

@@ -4,12 +4,14 @@ import {
     ApiBody,
     ApiOkResponse,
     ApiOperation,
+    ApiTags,
 } from '@nestjs/swagger';
-import { errStatus } from 'src/modules/auth/dto/user.create.dto';
+import { errStatus } from 'src/resStatusDto/resStatus.dto';
 
 import { PostUploadDto, uploadDto } from './upload.dto';
 import { UploadService } from './upload.service';
 
+@ApiTags('upload')
 @Controller('api')
 export class UploadController {
     constructor(private uploadService: UploadService) {}

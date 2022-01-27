@@ -7,12 +7,7 @@ import { Reply } from 'src/schemas/Reply';
 import { Tag } from 'src/schemas/Tag';
 import { User } from 'src/schemas/User';
 
-import {
-    CreateBoardDto,
-    CreateReplyDto,
-    GetBoardsDto,
-    TagFileDto,
-} from './dto/board.dto';
+import { CreateBoardDto, CreateReplyDto, GetBoardsDto } from './dto/board.dto';
 import { BoardStatus } from './utils/board.status.enum';
 
 export class BoardRepository {
@@ -33,7 +28,7 @@ export class BoardRepository {
         const { description, files } = createBoardDto;
 
         if (tag.length >= 30)
-            return new BadRequestException(
+            throw new BadRequestException(
                 '태그 수는 30개 이하로 입력해주세요!',
             );
 
@@ -231,7 +226,7 @@ export class BoardRepository {
         // })
 
         if (!board)
-            return new BadRequestException('해당 게시글이 존재 하지않습니다.');
+            throw new BadRequestException('해당 게시글이 존재 하지않습니다.');
 
         if (user && !over_view) {
             board.view++;
@@ -292,7 +287,7 @@ export class BoardRepository {
         const parent_id = parentId ? parentId : null;
         const board = await this.boardModel.findOne({ _id: boardId });
         if (!board)
-            return new BadRequestException('해당 게시글이 존재 하지않습니다.');
+            throw new BadRequestException('해당 게시글이 존재 하지않습니다.');
 
         const like = await this.likeModel.findOneAndUpdate(
             {
@@ -314,9 +309,6 @@ export class BoardRepository {
         } else {
             board.like_count++;
             board.save();
-            if (user) {
-                board.IsLike = true;
-            }
         }
 
         return { success: true };
@@ -325,21 +317,18 @@ export class BoardRepository {
     async unlike(user: User, boardId: string, parentId: string) {
         const parent_id = parentId ? parentId : null;
         const board = await this.boardModel.findOne({ _id: boardId });
-        if (!board)
-            return new BadRequestException('해당 게시글이 존재 하지않습니다.');
 
-        const liked = await this.likeModel.findOne({
+        if (!board)
+            throw new BadRequestException('해당 게시글이 존재 하지않습니다.');
+
+        const liked = await this.likeModel.findOneAndDelete({
             userId: user._id,
-            boardId: boardId,
+            boardId,
             parentId: parent_id,
         });
-
-        if (!liked)
-            return new BadRequestException(
-                '이미 좋아요를 취소한 게시글입니다.',
-            );
-
-        liked.delete();
+        if (!liked) {
+            throw new BadRequestException('이미 좋아요를 취소한 게시글입니다.');
+        }
 
         if (liked.parentId) {
             const reply = await this.replyModel.findOne({ _id: parent_id });
@@ -348,9 +337,6 @@ export class BoardRepository {
         } else {
             board.like_count--;
             board.save();
-            if (user) {
-                board.IsLike = false;
-            }
         }
 
         return { success: true };
@@ -467,7 +453,10 @@ export class BoardRepository {
             writer: user._id,
             _id: replyId,
         });
-        await reply.save();
+
+        if (!reply) {
+            throw new BadRequestException('댓글을 삭제하는데 실패하였습니다.');
+        }
 
         if (reply.parentId) {
             const reply_data = await this.replyModel.findOne({
