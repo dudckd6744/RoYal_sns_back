@@ -1,4 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { errStatus } from 'src/resStatusDto/resStatus.dto';
+import { Board } from 'src/schemas/Board';
+import { Reply } from 'src/schemas/Reply';
 import { User } from 'src/schemas/User';
 
 import { BoardRepository } from './board.repository';
@@ -14,7 +17,7 @@ export class BoardService {
         createBoardDto: CreateBoardDto,
         status: BoardStatus,
         tag: any,
-    ) {
+    ): Promise<{ success: true } | errStatus> {
         return this.boardRepository.createBoard(
             user,
             createBoardDto,
@@ -30,19 +33,31 @@ export class BoardService {
     //   return this.boardRepository.fileTaging(user, tagFileDto);
     // }
 
-    getFollowBoard(user: User) {
+    getFollowBoard(user: User): Promise<Board[] | errStatus> {
         return this.boardRepository.getFollowBoard(user);
     }
 
-    getMyBoard(user: User, userId: any) {
+    getMyBoard(
+        user: User,
+        userId: any,
+    ): Promise<
+        { success: true; boards: Board[]; board_user: User } | errStatus
+    > {
         return this.boardRepository.getMyBoard(user, userId);
     }
 
-    getBoard(user: User, getBoardDto: GetBoardsDto) {
+    getBoard(
+        user: User,
+        getBoardDto: GetBoardsDto,
+    ): Promise<Board[] | errStatus> {
         return this.boardRepository.getBoard(user, getBoardDto);
     }
 
-    getDetailBoard(user: User, boardId: string, over_view: boolean) {
+    getDetailBoard(
+        user: User,
+        boardId: string,
+        over_view: boolean,
+    ): Promise<{ success: true; board: Board } | errStatus> {
         return this.boardRepository.getDetailBoard(user, boardId, over_view);
     }
 
@@ -52,7 +67,7 @@ export class BoardService {
         createBoardDto: CreateBoardDto,
         status: BoardStatus,
         tag: any,
-    ): Promise<{ message: string }> {
+    ): Promise<{ success: true } | errStatus> {
         return this.boardRepository.updateBoard(
             user,
             boardId,
@@ -62,15 +77,23 @@ export class BoardService {
         );
     }
 
-    deleteBoard(user: User, boardId: string) {
+    deleteBoard(user: User, boardId: string): Promise<{ success: true }> {
         return this.boardRepository.deleteBoard(user, boardId);
     }
 
-    like(user: User, boardId: string, parentId: string) {
+    like(
+        user: User,
+        boardId: string,
+        parentId: string,
+    ): Promise<{ success: true } | errStatus> {
         return this.boardRepository.like(user, boardId, parentId);
     }
 
-    unlike(user: User, boardId: string, parentId: string) {
+    unlike(
+        user: User,
+        boardId: string,
+        parentId: string,
+    ): Promise<{ success: true } | errStatus> {
         return this.boardRepository.unlike(user, boardId, parentId);
     }
 
@@ -78,15 +101,26 @@ export class BoardService {
         user: User,
         boardId: string,
         createReplyDto: CreateReplyDto,
-    ) {
+    ): Promise<{ success: true; reply_data: Reply } | errStatus> {
         return this.boardRepository.createReply(user, boardId, createReplyDto);
     }
 
-    async getReply(user: User, boardId: string, skip: number, limit: number) {
+    async getReply(
+        user: User,
+        boardId: string,
+        skip: number,
+        limit: number,
+    ): Promise<
+        { success: true; reply: Reply[]; reply_count: number } | errStatus
+    > {
         return this.boardRepository.getReply(user, boardId, skip, limit);
     }
 
-    async deleteReply(user: User, boardId: string, replyId: string) {
+    async deleteReply(
+        user: User,
+        boardId: string,
+        replyId: string,
+    ): Promise<{ success: true } | errStatus> {
         return this.boardRepository.deleteReply(user, boardId, replyId);
     }
 }

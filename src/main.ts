@@ -22,10 +22,31 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, config_swagger);
     SwaggerModule.setup('api', app, document);
 
-    const morganFormat =
-        'HTTP/:http-version :method :remote-addr :url :remote-user :status :res[content-length] :referrer :user-agent :response-time ms';
+    morgan.format('dev', (tokens, req, res) => {
+        return [
+            'HTTP',
+            tokens['http-version'](req, res),
+            tokens['remote-addr'](req, res),
+            tokens.method(req, res),
+            '\n Body :',
+            JSON.stringify(req.body),
+            '\n URI :',
+            decodeURI(tokens.url(req, res)), // I changed this from the doc example, which is the 'dev' config.
+            '\n Remote_user :',
+            tokens['remote-user'](req, res),
+            '\n Res_status :',
+            tokens.status(req, res),
+            tokens.res(req, res, 'content-length'),
+            '\n User_Agemnt :',
+            tokens['user-agent'](req, res),
+            '-',
+            tokens['response-time'](req, res),
+            'ms',
+        ].join(' ');
+    });
+
     app.use(
-        morgan(morganFormat, {
+        morgan('dev', {
             skip: function (req, res) {
                 return res.statusCode < 400;
             },

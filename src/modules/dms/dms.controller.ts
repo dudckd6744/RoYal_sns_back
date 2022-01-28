@@ -47,7 +47,7 @@ export class DmsController {
     createChatRoom(
         @ReqUser() user: User,
         @Body('usersIds') usersIds: Array<string>,
-    ) {
+    ): Promise<{ success: true } | errStatus> {
         return this.dmsService.createChatRoom(user, usersIds);
     }
 
@@ -60,7 +60,7 @@ export class DmsController {
     leaveChatRoom(
         @ReqUser() user: User,
         @Param('chatRoomId') chatRoomId: string,
-    ) {
+    ): Promise<{ success: true } | errStatus> {
         return this.dmsService.leaveChatRoom(user, chatRoomId);
     }
 
@@ -99,7 +99,10 @@ export class DmsController {
     @ApiBearerAuth()
     @Delete('/:DMs_id')
     @UseGuards(AuthGuard_renewal)
-    DeleteDMs(@ReqUser() user: User, @Param('DMs_id') DMs_id: string) {
+    DeleteDMs(
+        @ReqUser() user: User,
+        @Param('DMs_id') DMs_id: string,
+    ): Promise<{ success: true } | errStatus> {
         return this.dmsService.DeleteDMs(user, DMs_id);
     }
 }

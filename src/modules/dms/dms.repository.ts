@@ -2,6 +2,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { errStatus } from 'src/resStatusDto/resStatus.dto';
 import { ChatRoom } from 'src/schemas/ChatRoom';
 import { DMs } from 'src/schemas/DMs';
 import { User } from 'src/schemas/User';
@@ -17,7 +18,10 @@ export class DMsRepository {
         private readonly chatGateway: ChatsGateway,
     ) {}
 
-    async createChatRoom(user: User, usersIds: Array<string>) {
+    async createChatRoom(
+        user: User,
+        usersIds: Array<string>,
+    ): Promise<{ success: true } | errStatus> {
         const users_data = usersIds.concat(user._id.toString());
 
         const chatRoom = await this.chatRoomModel.findOneAndUpdate(
@@ -49,7 +53,10 @@ export class DMsRepository {
         return { success: true };
     }
 
-    async leaveChatRoom(user: User, chatRoom_id: string) {
+    async leaveChatRoom(
+        user: User,
+        chatRoom_id: string,
+    ): Promise<{ success: true } | errStatus> {
         const leaveDate = new Date();
 
         const leave_data = {
@@ -143,7 +150,10 @@ export class DMsRepository {
         this.chatGateway.server.to(`${socket_room_id}`).emit('dm', new_commnet);
     }
 
-    async DeleteDMs(user: User, DMs_id: string) {
+    async DeleteDMs(
+        user: User,
+        DMs_id: string,
+    ): Promise<{ success: true } | errStatus> {
         const deleteDMs = await this.dmsModel.findByIdAndUpdate(DMs_id, {
             deletedAt: new Date(),
         });

@@ -1,6 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { errStatus } from 'src/resStatusDto/resStatus.dto';
 import { Board } from 'src/schemas/Board';
 import { Like } from 'src/schemas/Like';
 import { Reply } from 'src/schemas/Reply';
@@ -24,7 +25,7 @@ export class BoardRepository {
         createBoardDto: CreateBoardDto,
         status: BoardStatus,
         tag: any,
-    ) {
+    ): Promise<{ success: true } | errStatus> {
         const { description, files } = createBoardDto;
 
         if (tag.length >= 30)
@@ -69,7 +70,7 @@ export class BoardRepository {
 
     //   return {message: "success"}
     // }
-    async getFollowBoard(user: User) {
+    async getFollowBoard(user: User): Promise<Board[] | errStatus> {
         const follow_boards = await this.boardModel
             .find({ deletedAt: null })
             .find({
@@ -119,7 +120,12 @@ export class BoardRepository {
         }
     }
 
-    async getMyBoard(user: User, userId: any) {
+    async getMyBoard(
+        user: User,
+        userId: any,
+    ): Promise<
+        { success: true; boards: Board[]; board_user: User } | errStatus
+    > {
         const usersId = userId['userId'];
         const board_user = await this.userModel
             .findOne({ _id: usersId })
@@ -149,7 +155,10 @@ export class BoardRepository {
         }
     }
 
-    async getBoard(user: User, getBoardDto: GetBoardsDto) {
+    async getBoard(
+        user: User,
+        getBoardDto: GetBoardsDto,
+    ): Promise<Board[] | errStatus> {
         const { search, search_type } = getBoardDto;
 
         let search_data;
@@ -212,7 +221,11 @@ export class BoardRepository {
         }
     }
 
-    async getDetailBoard(user: User, id: string, over_view: boolean) {
+    async getDetailBoard(
+        user: User,
+        id: string,
+        over_view: boolean,
+    ): Promise<{ success: true; board: Board } | errStatus> {
         const board = await this.boardModel
             .findOne({ _id: id, deletedAt: null })
             .select(
@@ -250,7 +263,7 @@ export class BoardRepository {
         creatreBoardDto: CreateBoardDto,
         status: BoardStatus,
         tag: any,
-    ): Promise<{ message: string }> {
+    ): Promise<{ success: true } | errStatus> {
         const { description, files } = creatreBoardDto;
 
         const board = await this.findBoard(user, id);
@@ -270,10 +283,10 @@ export class BoardRepository {
         }));
 
         await this.tagModel.bulkWrite(tag_data);
-        return { message: 'success' };
+        return { success: true };
     }
 
-    async deleteBoard(user: User, boardId: string) {
+    async deleteBoard(user: User, boardId: string): Promise<{ success: true }> {
         const board = await this.findBoard(user, boardId);
 
         board.deletedAt = new Date();
@@ -283,7 +296,11 @@ export class BoardRepository {
         return { success: true };
     }
 
-    async like(user: User, boardId: string, parentId: string) {
+    async like(
+        user: User,
+        boardId: string,
+        parentId: string,
+    ): Promise<{ success: true } | errStatus> {
         const parent_id = parentId ? parentId : null;
         const board = await this.boardModel.findOne({ _id: boardId });
         if (!board)
@@ -314,7 +331,11 @@ export class BoardRepository {
         return { success: true };
     }
 
-    async unlike(user: User, boardId: string, parentId: string) {
+    async unlike(
+        user: User,
+        boardId: string,
+        parentId: string,
+    ): Promise<{ success: true } | errStatus> {
         const parent_id = parentId ? parentId : null;
         const board = await this.boardModel.findOne({ _id: boardId });
 
@@ -346,7 +367,7 @@ export class BoardRepository {
         user: User,
         boardId: string,
         createReplyDto: CreateReplyDto,
-    ) {
+    ): Promise<{ success: true; reply_data: Reply } | errStatus> {
         const { comment } = createReplyDto;
         const parentId = createReplyDto.parentId
             ? createReplyDto.parentId
@@ -385,7 +406,14 @@ export class BoardRepository {
         return { success: true, reply_data };
     }
 
-    async getReply(user: User, boardId: string, skip: number, limit: number) {
+    async getReply(
+        user: User,
+        boardId: string,
+        skip: number,
+        limit: number,
+    ): Promise<
+        { success: true; reply: Reply[]; reply_count: number } | errStatus
+    > {
         const reply_count = await this.replyModel
             .find({ boardId: boardId, deletedAt: null, parentId: null })
             .count();
@@ -448,7 +476,11 @@ export class BoardRepository {
         }
     }
 
-    async deleteReply(user: User, boardId: string, replyId: string) {
+    async deleteReply(
+        user: User,
+        boardId: string,
+        replyId: string,
+    ): Promise<{ success: true } | errStatus> {
         const reply = await this.replyModel.findOne({
             writer: user._id,
             _id: replyId,

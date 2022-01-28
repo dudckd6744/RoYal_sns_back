@@ -22,6 +22,8 @@ import {
 } from '@nestjs/swagger';
 import { logger } from 'src/configs/winston';
 import { errStatus, Success } from 'src/resStatusDto/resStatus.dto';
+import { Board } from 'src/schemas/Board';
+import { Reply } from 'src/schemas/Reply';
 import { User } from 'src/schemas/User';
 import { AuthGuard_renewal } from 'src/utils/auth.guard';
 import { ReqUser } from 'src/utils/user.decorater';
@@ -57,7 +59,7 @@ export class BoardController {
         @Body() createBoardDto: CreateBoardDto,
         @Body('status', BoardStatusPipe) status: BoardStatus,
         @Body('tag') tag: any,
-    ) {
+    ): Promise<{ success: true } | errStatus> {
         return this.boardSerivce.createBoard(user, createBoardDto, status, tag);
     }
 
@@ -76,7 +78,7 @@ export class BoardController {
     @ApiOperation({ summary: '팔로잉한 유저 게시글 가져오기' })
     @Get('/followBoard')
     @UseGuards(AuthGuard_renewal)
-    getFollowBoard(@ReqUser() user: User) {
+    getFollowBoard(@ReqUser() user: User): Promise<Board[] | errStatus> {
         return this.boardSerivce.getFollowBoard(user);
     }
 
@@ -84,7 +86,10 @@ export class BoardController {
     @ApiBadRequestResponse({ description: 'false', type: errStatus })
     @ApiOperation({ summary: '전체 게시글 가져오기' })
     @Get('/')
-    getBoard(@ReqUser() user: User, @Query() getBoardDto: GetBoardsDto) {
+    getBoard(
+        @ReqUser() user: User,
+        @Query() getBoardDto: GetBoardsDto,
+    ): Promise<Board[] | errStatus> {
         return this.boardSerivce.getBoard(user, getBoardDto);
     }
 
@@ -92,7 +97,12 @@ export class BoardController {
     @ApiBadRequestResponse({ description: 'false', type: errStatus })
     @ApiOperation({ summary: '유저 페이지에 해당되는 게시글 가져오기' })
     @Get('/myPage/:userId')
-    getMyBoard(@ReqUser() user: User, @Param() userId: any) {
+    getMyBoard(
+        @ReqUser() user: User,
+        @Param() userId: any,
+    ): Promise<
+        { success: true; boards: Board[]; board_user: User } | errStatus
+    > {
         return this.boardSerivce.getMyBoard(user, userId);
     }
 
@@ -104,7 +114,7 @@ export class BoardController {
         @ReqUser() user: User,
         @Param('boardId') boardId: string,
         @Query('over_view') over_view: boolean,
-    ) {
+    ): Promise<{ success: true; board: Board } | errStatus> {
         logger.info(`${user.email}님이 ${boardId} 게시글에 접속하였습니다.`);
         return this.boardSerivce.getDetailBoard(user, boardId, over_view);
     }
@@ -123,7 +133,7 @@ export class BoardController {
         @Body() createBoardDto: CreateBoardDto,
         @Body('status', BoardStatusPipe) status: BoardStatus,
         @Body('tag') tag: any,
-    ): Promise<{ message: string }> {
+    ): Promise<{ success: true } | errStatus> {
         return this.boardSerivce.updateBoard(
             user,
             boardId,
@@ -139,7 +149,10 @@ export class BoardController {
     @ApiBearerAuth()
     @Delete('/:boardId')
     @UseGuards(AuthGuard_renewal)
-    deleteBoard(@ReqUser() user: User, @Param('boardId') boardId: string) {
+    deleteBoard(
+        @ReqUser() user: User,
+        @Param('boardId') boardId: string,
+    ): Promise<{ success: true }> {
         return this.boardSerivce.deleteBoard(user, boardId);
     }
 
@@ -154,7 +167,7 @@ export class BoardController {
         @ReqUser() user: User,
         @Param('boardId') boardId: string,
         @Body('parentId') parentId: string,
-    ) {
+    ): Promise<{ success: true } | errStatus> {
         logger.info(`${user.email}님이 ${boardId} 게시글에 좋아요눌렀습니다.`);
         return this.boardSerivce.like(user, boardId, parentId);
     }
@@ -170,7 +183,7 @@ export class BoardController {
         @ReqUser() user: User,
         @Param('boardId') boardId: string,
         @Body('parentId') parentId: string,
-    ) {
+    ): Promise<{ success: true } | errStatus> {
         return this.boardSerivce.unlike(user, boardId, parentId);
     }
 
@@ -185,7 +198,7 @@ export class BoardController {
         @ReqUser() user: User,
         @Body() createReplyDto: CreateReplyDto,
         @Param('boardId') boardId: string,
-    ) {
+    ): Promise<{ success: true; reply_data: Reply } | errStatus> {
         logger.info(
             `${user.email}님이 ${boardId} 게시글에 댓글을 작성하였습니다..`,
         );
@@ -202,7 +215,9 @@ export class BoardController {
         @ReqUser() user: User,
         @Query('skip', ParseIntPipe) skip: number,
         @Query('limit', ParseIntPipe) limit: number,
-    ) {
+    ): Promise<
+        { success: true; reply: Reply[]; reply_count: number } | errStatus
+    > {
         return this.boardSerivce.getReply(user, boardId, skip, limit);
     }
 
@@ -215,7 +230,7 @@ export class BoardController {
         @Param('boardId') boardId: string,
         @Param('replyId') replyId: string,
         @ReqUser() user: User,
-    ) {
+    ): Promise<{ success: true } | errStatus> {
         return this.boardSerivce.deleteReply(user, boardId, replyId);
     }
 }
