@@ -20,8 +20,8 @@ import {
 } from '@nestjs/swagger';
 import { errStatus, Success } from 'src/resStatusDto/resStatus.dto';
 import { User } from 'src/schemas/User';
+import { ReqUser } from 'src/utils/auth.decorater';
 import { AuthGuard_renewal } from 'src/utils/auth.guard';
-import { ReqUser } from 'src/utils/user.decorater';
 
 import { DmsService } from './dms.service';
 import {

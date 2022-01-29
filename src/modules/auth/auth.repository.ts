@@ -9,7 +9,7 @@ import { Response } from 'express';
 import { Model } from 'mongoose';
 import { errStatus } from 'src/resStatusDto/resStatus.dto';
 import { User } from 'src/schemas/User';
-import { signToken } from 'src/utils/utils.jwt';
+import { signToken } from 'src/utils/jwt';
 
 import { CreateUserDto, LoginUser, PasswordUserDto } from './dto/user.dto';
 

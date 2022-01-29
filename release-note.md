@@ -280,4 +280,9 @@
      - 해당 API들 TypeGuard 적용 완료
      - err 로깅 커스텀
 
+### 2022-01-29
+
+     - 서버 arch 구조 개선
+     - exception 미들웨어 구현
+
 ### to do

@@ -8,7 +8,7 @@ import { NextFunction, Request, Response } from 'express';
 import { Model } from 'mongoose';
 import { User } from 'src/schemas/User';
 
-import { verifyToken } from './utils.jwt';
+import { verifyToken } from '../utils/jwt';
 
 @Injectable()
 export class AuthTokenMiddleware implements NestMiddleware {

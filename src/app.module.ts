@@ -7,17 +7,17 @@ import { AppController } from './app.controller';
 import { ConfigModule } from './configs/config/config.module';
 import { ConfigService } from './configs/config/config.service';
 import { typeORMConfig } from './configs/typeorm.config';
+//인증
+import { AuthTokenMiddleware } from './middleware/auth.token.middleware';
 //모듈
 import { AuthModule } from './modules/auth/auth.module';
 import { BoardModule } from './modules/board/board.module';
 import { ChatsModule } from './modules/chats/chats.module';
 import { DmsModule } from './modules/dms/dms.module';
-//인증
-import { AuthTokenMiddleware } from './utils/auth.token.middleware';
-import { GoogleStrategy } from './utils/google.auth';
-import { KakaoStrategy } from './utils/kakao.auth';
-import { AuthMailerModule } from './utils/mailer/mailer.module';
-import { UploadModule } from './utils/upload/upload.module';
+import { AuthMailerModule } from './modules/mailer/mailer.module';
+import { UploadModule } from './modules/upload/upload.module';
+import { GoogleStrategy } from './utils/oAuth/google.auth';
+import { KakaoStrategy } from './utils/oAuth/kakao.auth';
 
 // TODO: test
 @Module({

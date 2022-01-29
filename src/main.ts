@@ -5,6 +5,7 @@ import * as morgan from 'morgan';
 
 import { AppModule } from './app.module';
 import { stream } from './configs/winston';
+import { HttpExceptionFilter } from './middleware/exception';
 
 config();
 
@@ -24,9 +25,11 @@ async function bootstrap() {
 
     morgan.format('dev', (tokens, req, res) => {
         return [
-            'HTTP',
+            '\n HTTP_version :',
             tokens['http-version'](req, res),
+            '\n IP :',
             tokens['remote-addr'](req, res),
+            '\n Method :',
             tokens.method(req, res),
             '\n Body :',
             JSON.stringify(req.body),
@@ -53,6 +56,9 @@ async function bootstrap() {
             stream,
         }),
     );
+
+    app.useGlobalFilters(new HttpExceptionFilter());
+
     await app.listen(port, () => console.log(`server runing on ${port}`));
     console.log('mongoDB runnig');
 }
