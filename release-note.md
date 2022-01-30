@@ -285,4 +285,8 @@
      - 서버 arch 구조 개선
      - exception 미들웨어 구현
 
+### 2022-01-30
+     
+     - success wrapper 구현
+
 ### to do

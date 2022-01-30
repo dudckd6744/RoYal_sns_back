@@ -18,8 +18,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
         response.status(status).json({
             statusCode: status,
-            message: typeof res === 'string' ? res : res.message,
-            data: null,
+            error: typeof res === 'string' ? res : res.message,
+            data: undefined,
         });
     }
 }

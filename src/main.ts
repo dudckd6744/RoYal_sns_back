@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { config } from 'dotenv';
@@ -6,6 +7,7 @@ import * as morgan from 'morgan';
 import { AppModule } from './app.module';
 import { stream } from './configs/winston';
 import { HttpExceptionFilter } from './middleware/exception';
+import { SuccessInterceptor } from './utils/success.interceptor';
 
 config();
 
@@ -58,6 +60,7 @@ async function bootstrap() {
     );
 
     app.useGlobalFilters(new HttpExceptionFilter());
+    app.useGlobalInterceptors(new SuccessInterceptor());
 
     await app.listen(port, () => console.log(`server runing on ${port}`));
     console.log('mongoDB runnig');
