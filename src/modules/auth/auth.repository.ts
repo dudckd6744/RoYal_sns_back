@@ -67,29 +67,9 @@ export class AuthRepository {
         }
     }
 
-    async passwordUpdateUser(
-        user: User,
-        passwordUserDto: PasswordUserDto,
-    ): Promise<{ success: true } | errStatus> {
-        const { password, new_password, confirm_new_password } =
-            passwordUserDto;
-
-        if (new_password != confirm_new_password)
-            throw new BadRequestException('다시 한번 비밀번호를 확인해주세요!');
-
+    async passwordUpdateUser(user: User): Promise<User> {
         const user_data = await this.userModel.findOne({ _id: user._id });
-
-        if (await bcrypt.compare(password, user_data.password)) {
-            const salt = await bcrypt.genSalt();
-            const hash_password = await bcrypt.hash(new_password, salt);
-            user_data.password = hash_password;
-            await user_data.save();
-        } else {
-            throw new BadRequestException(
-                '기존에 있던 비밀번호를 다시 입력해주세요',
-            );
-        }
-        return { success: true };
+        return user_data;
     }
 
     async googleLogin(req, res) {
@@ -140,46 +120,44 @@ export class AuthRepository {
         return res.redirect('http://localhost:8080');
     }
 
-    async followUser(
-        user: User,
-        othersId: string,
-    ): Promise<{ success: true } | errStatus> {
-        const user_data = await this.userModel.findOne({ _id: user._id });
-
-        user_data.following.forEach((element) => {
-            if (element == othersId) {
-                throw new BadRequestException('이미 follw 한 상대입니다.');
-            }
-            return true;
-        });
-
-        const otherUser = await this.userModel.findOne({ _id: othersId });
-        if (otherUser) {
-            if (otherUser.status == '1%' && user_data.royal >= 10) {
-                (user_data.royal = user_data.royal - 10), user_data.save();
-            } else if (otherUser.status == '3%' && user_data.royal >= 8) {
-                (user_data.royal = user_data.royal - 8), user_data.save();
-            } else if (otherUser.status == '5%' && user_data.royal >= 5) {
-                (user_data.royal = user_data.royal - 5), user_data.save();
-            } else if (otherUser.status == '10%' && user_data.royal >= 1) {
-                (user_data.royal = user_data.royal - 1), user_data.save();
-            } else {
-                throw new BadRequestException(
-                    `유저의 로얄이 ${user_data.royal} royal 남아있습니다. 충전이 필요합니다.`,
-                );
-            }
-        }
-
-        await this.userModel.findOneAndUpdate(
-            { _id: user._id },
-            { $push: { following: othersId } },
-        );
-        await this.userModel.findOneAndUpdate(
-            { _id: othersId },
-            { $push: { follower: user._id } },
-        );
-        return { success: true };
+    async findByIdUser(email: string): Promise<User> {
+        return await this.userModel.findOne({ email: email });
     }
+
+    async followAndFollowingUser(
+        userIdAndOthersId: string,
+        othersIdAndUserId: string,
+    ): Promise<User> {
+        return await this.userModel.findOneAndUpdate(
+            { _id: userIdAndOthersId },
+            { $push: { following: othersIdAndUserId } },
+        );
+    }
+
+    // async followUser(
+    //     user: User,
+    //     othersId: string,
+    // ): Promise<{
+    //     otherUser: User;
+    //     user_data: User;
+    //     followUser: User;
+    //     followingUser: User;
+    // }> {
+    //     const user_data = await this.userModel.findOne({ _id: user._id });
+
+    //     const otherUser = await this.userModel.findOne({ _id: othersId });
+
+    //     const followUser = await this.userModel.findOneAndUpdate(
+    //         { _id: user._id },
+    //         { $push: { following: othersId } },
+    //     );
+
+    //     const followingUser = await this.userModel.findOneAndUpdate(
+    //         { _id: othersId },
+    //         { $push: { follower: user._id } },
+    //     );
+    //     return { otherUser, user_data, followUser, followingUser };
+    // }
 
     async unfollowUser(
         user: User,

@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
 import { Response } from 'express';
 import { errStatus } from 'src/resStatusDto/resStatus.dto';
 import { User } from 'src/schemas/User';
@@ -49,11 +50,29 @@ export class AuthService {
         return user_data;
     }
 
-    passwordUpdateUser(
+    async passwordUpdateUser(
         user: User,
         passwordUserDto: PasswordUserDto,
     ): Promise<{ success: true } | errStatus> {
-        return this.authRepository.passwordUpdateUser(user, passwordUserDto);
+        const { password, new_password, confirm_new_password } =
+            passwordUserDto;
+
+        const user_data = await this.authRepository.passwordUpdateUser(user);
+
+        if (new_password != confirm_new_password)
+            throw new BadRequestException('다시 한번 비밀번호를 확인해주세요!');
+
+        if (await bcrypt.compare(password, user_data.password)) {
+            const salt = await bcrypt.genSalt();
+            const hash_password = await bcrypt.hash(new_password, salt);
+            user_data.password = hash_password;
+            await user_data.save();
+        } else {
+            throw new BadRequestException(
+                '기존에 있던 비밀번호를 다시 입력해주세요',
+            );
+        }
+        return { success: true };
     }
 
     getUserList(user: User): Promise<User[] | errStatus> {
@@ -68,11 +87,45 @@ export class AuthService {
         return this.authRepository.kakaoLogin(req, res);
     }
 
-    followUser(
-        user: User,
+    async followUser(
+        email: string,
         othersId: string,
     ): Promise<{ success: true } | errStatus> {
-        return this.authRepository.followUser(user, othersId);
+        const user_data = await this.authRepository.findByIdUser(email);
+        const otherUser = await this.authRepository.findByIdUser(othersId);
+
+        user_data.following.forEach((element) => {
+            if (element == othersId) {
+                console.log('3');
+
+                throw new BadRequestException('이미 follw 한 상대입니다.');
+            }
+        });
+
+        if (otherUser) {
+            if (otherUser.status == '1%' && user_data.royal >= 10) {
+                (user_data.royal = user_data.royal - 10), user_data.save();
+            } else if (otherUser.status == '3%' && user_data.royal >= 8) {
+                (user_data.royal = user_data.royal - 8), user_data.save();
+            } else if (otherUser.status == '5%' && user_data.royal >= 5) {
+                (user_data.royal = user_data.royal - 5), user_data.save();
+            } else if (otherUser.status == '10%' && user_data.royal >= 1) {
+                (user_data.royal = user_data.royal - 1), user_data.save();
+            } else {
+                throw new BadRequestException(
+                    `유저의 로얄이 ${user_data.royal} royal 남아있습니다. 충전이 필요합니다.`,
+                );
+            }
+        }
+        await this.authRepository.followAndFollowingUser(
+            user_data._id,
+            otherUser._id,
+        );
+        await this.authRepository.followAndFollowingUser(
+            otherUser._id,
+            user_data._id,
+        );
+        return { success: true };
     }
 
     unfollowUser(

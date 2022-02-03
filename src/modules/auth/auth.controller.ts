@@ -96,10 +96,10 @@ export class AuthController {
     @Post('/follow')
     @UseGuards(AuthGuard_renewal)
     followUser(
-        @ReqUser() user: User,
+        @ReqUser() email: string,
         @Body('othersId') othersId: string,
     ): Promise<{ success: true } | errStatus> {
-        return this.userService.followUser(user, othersId);
+        return this.userService.followUser(email, othersId);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
