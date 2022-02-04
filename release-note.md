@@ -296,4 +296,11 @@
                -  DB 부하 방지
      - follow API 비즈니로직 서비스컴포넌트로 옮기는 작업완료
           - 테스트 필요
+
+### 2022-02-04
+
+     - follow API 테스트 완료 
+     - unFollow API 비즈니스 로직 분리 완료
+     - user api dao 부분 한번더 검토 필요
+
 ### to do

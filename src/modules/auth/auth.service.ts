@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { Response } from 'express';
+import * as mongoose from 'mongoose';
 import { errStatus } from 'src/resStatusDto/resStatus.dto';
 import { User } from 'src/schemas/User';
 
@@ -91,13 +92,11 @@ export class AuthService {
         email: string,
         othersId: string,
     ): Promise<{ success: true } | errStatus> {
-        const user_data = await this.authRepository.findByIdUser(email);
+        const user_data = await this.authRepository.findByEmailUser(email);
         const otherUser = await this.authRepository.findByIdUser(othersId);
 
         user_data.following.forEach((element) => {
             if (element == othersId) {
-                console.log('3');
-
                 throw new BadRequestException('이미 follw 한 상대입니다.');
             }
         });
@@ -117,22 +116,38 @@ export class AuthService {
                 );
             }
         }
-        await this.authRepository.followAndFollowingUser(
-            user_data._id,
-            otherUser._id,
-        );
-        await this.authRepository.followAndFollowingUser(
-            otherUser._id,
-            user_data._id,
-        );
+        await this.authRepository.followUser(user_data._id, otherUser._id);
+        await this.authRepository.followingUser(otherUser._id, user_data._id);
         return { success: true };
     }
 
-    unfollowUser(
-        user: User,
+    async unfollowUser(
+        email: string,
         othersId: string,
     ): Promise<{ success: true } | errStatus> {
-        return this.authRepository.unfollowUser(user, othersId);
+        const user_data = await this.authRepository.findByEmailUser(email);
+
+        let others_data = '';
+
+        user_data.following.forEach((element) => {
+            console.log(element, othersId);
+
+            if (element == othersId) {
+                others_data = element;
+            }
+        });
+        if (!others_data)
+            throw new BadRequestException('이미 unfollow 한 상대입니다.');
+
+        const objectOthersId = mongoose.Types.ObjectId(othersId);
+
+        await this.authRepository.unFollowUser(user_data._id, objectOthersId);
+        await this.authRepository.unFollowingUser(
+            objectOthersId,
+            user_data._id,
+        );
+
+        return { success: true };
     }
 
     updateProfile(

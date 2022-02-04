@@ -110,10 +110,10 @@ export class AuthController {
     @Delete('/unfollow')
     @UseGuards(AuthGuard_renewal)
     unfollowUser(
-        @ReqUser() user: User,
+        @ReqUser() email: string,
         @Body('othersId') othersId: string,
     ): Promise<{ success: true } | errStatus> {
-        return this.userService.unfollowUser(user, othersId);
+        return this.userService.unfollowUser(email, othersId);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })

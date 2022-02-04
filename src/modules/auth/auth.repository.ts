@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcryptjs';
 import { Response } from 'express';
 import { Model } from 'mongoose';
+import * as mongoose from 'mongoose';
 import { errStatus } from 'src/resStatusDto/resStatus.dto';
 import { User } from 'src/schemas/User';
 import { signToken } from 'src/utils/jwt';
@@ -120,71 +121,46 @@ export class AuthRepository {
         return res.redirect('http://localhost:8080');
     }
 
-    async findByIdUser(email: string): Promise<User> {
-        return await this.userModel.findOne({ email: email });
+    async findByIdUser(othersId: string): Promise<User> {
+        return await this.userModel.findOne({ _id: othersId });
     }
 
-    async followAndFollowingUser(
-        userIdAndOthersId: string,
-        othersIdAndUserId: string,
+    async findByEmailUser(email: string): Promise<User> {
+        return await this.userModel.findOne({ email });
+    }
+
+    async followUser(userId: string, othersId: string): Promise<User> {
+        return await this.userModel.findOneAndUpdate(
+            { _id: userId },
+            { $push: { following: othersId } },
+        );
+    }
+
+    async followingUser(othersId: string, userId: string): Promise<User> {
+        return await this.userModel.findOneAndUpdate(
+            { _id: othersId },
+            { $push: { follower: userId } },
+        );
+    }
+
+    async unFollowUser(
+        userId: string,
+        othersId: mongoose.Types.ObjectId,
     ): Promise<User> {
         return await this.userModel.findOneAndUpdate(
-            { _id: userIdAndOthersId },
-            { $push: { following: othersIdAndUserId } },
+            { _id: userId },
+            { $pull: { following: othersId } },
         );
     }
 
-    // async followUser(
-    //     user: User,
-    //     othersId: string,
-    // ): Promise<{
-    //     otherUser: User;
-    //     user_data: User;
-    //     followUser: User;
-    //     followingUser: User;
-    // }> {
-    //     const user_data = await this.userModel.findOne({ _id: user._id });
-
-    //     const otherUser = await this.userModel.findOne({ _id: othersId });
-
-    //     const followUser = await this.userModel.findOneAndUpdate(
-    //         { _id: user._id },
-    //         { $push: { following: othersId } },
-    //     );
-
-    //     const followingUser = await this.userModel.findOneAndUpdate(
-    //         { _id: othersId },
-    //         { $push: { follower: user._id } },
-    //     );
-    //     return { otherUser, user_data, followUser, followingUser };
-    // }
-
-    async unfollowUser(
-        user: User,
-        othersId: string,
-    ): Promise<{ success: true } | errStatus> {
-        const user_data = await this.userModel.findOne({ _id: user._id });
-
-        let others_data = '';
-
-        user_data.following.forEach((element) => {
-            if (element == othersId) {
-                others_data = element;
-            }
-        });
-        if (!others_data)
-            throw new BadRequestException('이미 unfollow 한 상대입니다.');
-
-        await this.userModel.findOneAndUpdate(
-            { _id: user._id },
-            { $pull: { following: others_data } },
-        );
-
-        await this.userModel.findOneAndUpdate(
+    async unFollowingUser(
+        othersId: mongoose.Types.ObjectId,
+        userId: string,
+    ): Promise<User> {
+        return await this.userModel.findOneAndUpdate(
             { _id: othersId },
-            { $pull: { follower: user._id } },
+            { $pull: { follower: userId } },
         );
-        return { success: true };
     }
 
     async getUserList(user: User): Promise<User[] | errStatus> {
