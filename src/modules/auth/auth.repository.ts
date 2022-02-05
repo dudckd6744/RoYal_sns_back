@@ -1,124 +1,36 @@
-import {
-    BadRequestException,
-    ConflictException,
-    UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import * as bcrypt from 'bcryptjs';
 import { Response } from 'express';
 import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { errStatus } from 'src/resStatusDto/resStatus.dto';
 import { User } from 'src/schemas/User';
-import { signToken } from 'src/utils/jwt';
 
-import { CreateUserDto, LoginUser, PasswordUserDto } from './dto/user.dto';
+import { CreateUserDto } from './dto/user.dto';
 
 export class AuthRepository {
     constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-    async registerUser(
-        createUserDto: CreateUserDto,
-    ): Promise<{ message: string } | errStatus> {
-        const { name, email, password, profile, phone } = createUserDto;
+    async findByNameUser(name: string): Promise<User> {
+        return await this.userModel.findOne({ name: name });
+    }
 
-        const image = profile ? profile : null;
+    async createUser(userInfo: CreateUserDto) {
+        const { name, email, password, profile, phone } = userInfo;
 
-        const user_data = await this.userModel.findOne({ email });
-        const user_data_name = await this.userModel.findOne({ name });
-
-        if (user_data)
-            throw new BadRequestException('이미 해당 이메일이 존재합니다.');
-        if (user_data_name)
-            throw new BadRequestException('이미 해당 이름이 존재합니다.');
-        const salt = await bcrypt.genSalt();
-        const hash_password = await bcrypt.hash(password, salt);
-
-        const user = await this.userModel.create({
+        return await this.userModel.create({
             type: '',
             name,
             email,
-            password: hash_password,
+            password,
             phone,
-            profile: image,
+            profile,
         });
-
-        try {
-            await user.save();
-        } catch (err) {
-            if (err.code == 'ER_DUP_ENTRY')
-                throw new ConflictException('이미 해당 유저가 존재합니다.');
-        }
-
-        return { message: 'Success' };
-    }
-
-    async loginUser(loginUser: LoginUser): Promise<{ token } | errStatus> {
-        const { email, password } = loginUser;
-        const user = await this.userModel.findOne({ email });
-
-        if (!user)
-            throw new UnauthorizedException('해당 유저가 존재하지않습니다.');
-        else if (await bcrypt.compare(password, user.password)) {
-            const email = user.email;
-            const token = await signToken({ email });
-            return { token };
-        } else {
-            throw new UnauthorizedException('비밀번호를 다시 확인해주세요.');
-        }
     }
 
     async passwordUpdateUser(user: User): Promise<User> {
         const user_data = await this.userModel.findOne({ _id: user._id });
         return user_data;
-    }
-
-    async googleLogin(req, res) {
-        if (!req.user) {
-            throw new BadRequestException('잘못된 계정입니다.');
-        }
-
-        const user = req.user;
-
-        await this.userModel.findOneAndUpdate(
-            {
-                email: user.email,
-            },
-            {
-                email: user.email,
-                type: 'goole',
-                name: user.name,
-                profile: user.picture,
-            },
-            { upsert: true },
-        );
-
-        return {
-            user: user,
-        };
-    }
-
-    async kakaoLogin(req, res: Response) {
-        if (!req.user) {
-            throw new BadRequestException('잘못된 계정입니다.');
-        }
-
-        const user = req.user;
-
-        await this.userModel.findOneAndUpdate(
-            {
-                email: user.email,
-            },
-            {
-                email: user.email,
-                type: 'kakao',
-                name: user.name,
-                profile: user.picture,
-            },
-            { upsert: true },
-        );
-
-        return res.redirect('http://localhost:8080');
     }
 
     async findByIdUser(othersId: string): Promise<User> {
@@ -181,5 +93,53 @@ export class AuthRepository {
             { profile: profile.profile },
         );
         return { success: true };
+    }
+    /* ------------------------------------------------------------------------------------------------------ */
+    async googleLogin(req, res) {
+        if (!req.user) {
+            throw new BadRequestException('잘못된 계정입니다.');
+        }
+
+        const user = req.user;
+
+        await this.userModel.findOneAndUpdate(
+            {
+                email: user.email,
+            },
+            {
+                email: user.email,
+                type: 'goole',
+                name: user.name,
+                profile: user.picture,
+            },
+            { upsert: true },
+        );
+
+        return {
+            user: user,
+        };
+    }
+
+    async kakaoLogin(req, res: Response) {
+        if (!req.user) {
+            throw new BadRequestException('잘못된 계정입니다.');
+        }
+
+        const user = req.user;
+
+        await this.userModel.findOneAndUpdate(
+            {
+                email: user.email,
+            },
+            {
+                email: user.email,
+                type: 'kakao',
+                name: user.name,
+                profile: user.picture,
+            },
+            { upsert: true },
+        );
+
+        return res.redirect('http://localhost:8080');
     }
 }

@@ -303,4 +303,8 @@
      - unFollow API 비즈니스 로직 분리 완료
      - user api dao 부분 한번더 검토 필요
 
+### 2022-02-05
+
+     - auth api 비즈니스로직 분리 작업 완료
+     
 ### to do

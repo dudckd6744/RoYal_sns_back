@@ -1,9 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+/* eslint-disable prefer-const */
+import {
+    BadRequestException,
+    Injectable,
+    UnauthorizedException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { Response } from 'express';
 import * as mongoose from 'mongoose';
 import { errStatus } from 'src/resStatusDto/resStatus.dto';
 import { User } from 'src/schemas/User';
+import { signToken } from 'src/utils/jwt';
 
 import { AuthRepository } from './auth.repository';
 import {
@@ -18,14 +24,46 @@ import {
 export class AuthService {
     constructor(private authRepository: AuthRepository) {}
 
-    registerUser(
+    async registerUser(
         createUserDto: CreateUserDto,
     ): Promise<{ message: string } | errStatus> {
-        return this.authRepository.registerUser(createUserDto);
+        let { email, name, password, profile, phone } = createUserDto;
+
+        profile = profile ?? null;
+
+        const userEmail = await this.authRepository.findByEmailUser(email);
+        const userName = await this.authRepository.findByNameUser(name);
+
+        if (userEmail)
+            throw new BadRequestException('이미 해당 이메일이 존재합니다.');
+        if (userName)
+            throw new BadRequestException('이미 해당 이름이 존재합니다.');
+
+        const salt = await bcrypt.genSalt();
+        password = await bcrypt.hash(password, salt);
+        let userInfo = { email, name, password, profile, phone };
+
+        const user = await this.authRepository.createUser(userInfo);
+
+        await user.save();
+
+        return { message: 'Success' };
     }
 
     async loginUser(loginUser: LoginUser): Promise<{ token } | errStatus> {
-        return this.authRepository.loginUser(loginUser);
+        const { email, password } = loginUser;
+
+        const user = await this.authRepository.findByEmailUser(email);
+
+        if (!user)
+            throw new UnauthorizedException('해당 유저가 존재하지않습니다.');
+        else if (await bcrypt.compare(password, user.password)) {
+            const email = user.email;
+            const token = await signToken({ email });
+            return { token };
+        } else {
+            throw new UnauthorizedException('비밀번호를 다시 확인해주세요.');
+        }
     }
 
     userAuth(user: User): AuthUserDto | UnAuthUserDto {
