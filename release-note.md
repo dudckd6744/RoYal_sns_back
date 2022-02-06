@@ -312,5 +312,6 @@
      - board API 비즈니스 로직 분리
           - createBoard api
           - followBoard api
+     - auth API auth 미들웨어 수정으로 인해 req.user => req.email 으로 변경
 
 ### to do

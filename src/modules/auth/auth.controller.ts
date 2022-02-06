@@ -64,13 +64,13 @@ export class AuthController {
     }
 
     @Get('/')
-    userAuth(@ReqUser() user: User): AuthUserDto | UnAuthUserDto {
-        return this.userService.userAuth(user);
+    userAuth(@ReqUser() email: string): Promise<AuthUserDto | UnAuthUserDto> {
+        return this.userService.userAuth(email);
     }
 
     @Post('/logout') //로그아웃
     @UseGuards(AuthGuard_renewal)
-    logoutUSer(@ReqUser() user: User): { success: true } {
+    logoutUSer(@ReqUser() email: string): { success: true } {
         return { success: true };
     }
 
@@ -82,10 +82,10 @@ export class AuthController {
     @UseGuards(AuthGuard_renewal)
     @UsePipes(ValidationPipe)
     passwordUpdateUser(
-        @ReqUser() user: User,
+        @ReqUser() email: string,
         @Body() passwordUserDto: PasswordUserDto,
     ): Promise<{ success: true } | errStatus> {
-        return this.userService.passwordUpdateUser(user, passwordUserDto);
+        return this.userService.passwordUpdateUser(email, passwordUserDto);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
@@ -122,8 +122,8 @@ export class AuthController {
     @ApiBearerAuth()
     @Get('/userList')
     @UseGuards(AuthGuard_renewal)
-    getUserList(@ReqUser() user: User) {
-        return this.userService.getUserList(user);
+    getUserList(@ReqUser() email: string) {
+        return this.userService.getUserList(email);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
@@ -133,10 +133,10 @@ export class AuthController {
     @Put('/profile')
     @UseGuards(AuthGuard_renewal)
     updateProfile(
-        @ReqUser() user: User,
+        @ReqUser() email: string,
         @Body() profile: any,
     ): Promise<{ success: true } | errStatus> {
-        return this.userService.updateProfile(user, profile);
+        return this.userService.updateProfile(email, profile);
     }
 
     @Get('/google')

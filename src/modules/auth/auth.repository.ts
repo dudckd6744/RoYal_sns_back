@@ -15,7 +15,7 @@ export class AuthRepository {
         return await this.userModel.findOne({ name: name });
     }
 
-    async createUser(userInfo: CreateUserDto) {
+    async createUser(userInfo: CreateUserDto): Promise<User> {
         const { name, email, password, profile, phone } = userInfo;
 
         return await this.userModel.create({
@@ -26,11 +26,6 @@ export class AuthRepository {
             phone,
             profile,
         });
-    }
-
-    async passwordUpdateUser(user: User): Promise<User> {
-        const user_data = await this.userModel.findOne({ _id: user._id });
-        return user_data;
     }
 
     async findByIdUser(othersId: string): Promise<User> {
@@ -75,24 +70,19 @@ export class AuthRepository {
         );
     }
 
-    async getUserList(user: User): Promise<User[] | errStatus> {
-        const userList = await this.userModel
-            .find({ _id: { $ne: user._id } })
+    async getUserList(email: string): Promise<User[] | errStatus> {
+        return await this.userModel
+            .find({ email: { $ne: email } })
             .select(
                 'name phone email profile following follower royal status isActive createdAt',
             );
-        return userList;
     }
 
-    async updateProfile(
-        user: User,
-        profile: any,
-    ): Promise<{ success: true } | errStatus> {
-        await this.userModel.findByIdAndUpdate(
-            { _id: user._id },
+    async updateProfile(email: string, profile: any): Promise<User> {
+        return await this.userModel.findByIdAndUpdate(
+            { email },
             { profile: profile.profile },
         );
-        return { success: true };
     }
     /* ------------------------------------------------------------------------------------------------------ */
     async googleLogin(req, res) {

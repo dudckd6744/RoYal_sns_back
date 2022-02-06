@@ -66,7 +66,9 @@ export class AuthService {
         }
     }
 
-    userAuth(user: User): AuthUserDto | UnAuthUserDto {
+    async userAuth(email: string): Promise<AuthUserDto | UnAuthUserDto> {
+        const user = await this.authRepository.findByEmailUser(email);
+
         if (!user) {
             const data: UnAuthUserDto = { isAuth: false, error: true };
             return data;
@@ -90,13 +92,13 @@ export class AuthService {
     }
 
     async passwordUpdateUser(
-        user: User,
+        email: string,
         passwordUserDto: PasswordUserDto,
     ): Promise<{ success: true } | errStatus> {
         const { password, new_password, confirm_new_password } =
             passwordUserDto;
 
-        const user_data = await this.authRepository.passwordUpdateUser(user);
+        const user_data = await this.authRepository.findByEmailUser(email);
 
         if (new_password != confirm_new_password)
             throw new BadRequestException('다시 한번 비밀번호를 확인해주세요!');
@@ -114,8 +116,8 @@ export class AuthService {
         return { success: true };
     }
 
-    getUserList(user: User): Promise<User[] | errStatus> {
-        return this.authRepository.getUserList(user);
+    async getUserList(email: string): Promise<User[] | errStatus> {
+        return await this.authRepository.getUserList(email);
     }
 
     async googleLogin(req, res) {
@@ -188,10 +190,12 @@ export class AuthService {
         return { success: true };
     }
 
-    updateProfile(
-        user: User,
+    async updateProfile(
+        email: string,
         profile: any,
     ): Promise<{ success: true } | errStatus> {
-        return this.authRepository.updateProfile(user, profile);
+        await this.authRepository.updateProfile(email, profile);
+
+        return { success: true };
     }
 }
