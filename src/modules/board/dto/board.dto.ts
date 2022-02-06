@@ -7,6 +7,7 @@ import { Reply } from 'src/schemas/Reply';
 export class CreateBoardDto extends PickType(Board, [
     'description',
     'files',
+    'tag',
 ] as const) {}
 
 export class GetFallowBoardsDto extends PickType(Board, [

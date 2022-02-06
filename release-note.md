@@ -307,4 +307,10 @@
 
      - auth api 비즈니스로직 분리 작업 완료
      
+### 2022-02-06
+
+     - board API 비즈니스 로직 분리
+          - createBoard api
+          - followBoard api
+
 ### to do

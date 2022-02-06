@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { errStatus } from 'src/resStatusDto/resStatus.dto';
 import { Board } from 'src/schemas/Board';
 import { Reply } from 'src/schemas/Reply';
@@ -12,29 +12,71 @@ import { BoardStatus } from './utils/board.status.enum';
 export class BoardService {
     constructor(private boardRepository: BoardRepository) {}
 
-    createBoard(
-        user: User,
+    async createBoard(
+        email: string,
         createBoardDto: CreateBoardDto,
         status: BoardStatus,
-        tag: any,
     ): Promise<{ success: true } | errStatus> {
-        return this.boardRepository.createBoard(
+        const { tag } = createBoardDto;
+        const user = await this.boardRepository.findByEmailUser(email);
+
+        if (tag.length >= 30)
+            throw new BadRequestException(
+                '태그 수는 30개 이하로 입력해주세요!',
+            );
+
+        const board = await this.boardRepository.createBoard(
             user,
             createBoardDto,
             status,
-            tag,
         );
+
+        await board.save();
+
+        const tag_data = tag.map((doc) => ({
+            updateOne: {
+                filter: { tag: doc },
+                update: doc,
+                upsert: true,
+            },
+        }));
+
+        this.boardRepository.upsertTag(tag_data);
+
+        return { success: true };
     }
 
-    // fileTaging(
-    //   user: User,
-    //   tagFileDto: TagFileDto
-    // ): Promise<{message: string}> {
-    //   return this.boardRepository.fileTaging(user, tagFileDto);
-    // }
+    async getFollowBoard(email: string): Promise<Board[] | errStatus> {
+        const user = await this.boardRepository.findByEmailUser(email);
 
-    getFollowBoard(user: User): Promise<Board[] | errStatus> {
-        return this.boardRepository.getFollowBoard(user);
+        const follow_boards = await this.boardRepository.getFollowBoard(user);
+
+        const board_heart = [];
+
+        follow_boards.forEach((board_data) => {
+            board_heart.push(board_data._id);
+        });
+
+        if (user) {
+            const liked_board = await this.boardRepository.likeBoard(
+                user._id,
+                board_heart,
+            );
+
+            follow_boards.forEach((board_id) => {
+                liked_board.forEach((board_liked) => {
+                    if (
+                        board_id._id.toString() ==
+                        board_liked.boardId.toString()
+                    ) {
+                        board_id.IsLike = true;
+                    }
+                });
+            });
+            return follow_boards;
+        } else {
+            return follow_boards;
+        }
     }
 
     getMyBoard(

@@ -55,31 +55,20 @@ export class BoardController {
     @UsePipes(ValidationPipe)
     @UseGuards(AuthGuard_renewal)
     createBoard(
-        @ReqUser() user: User,
+        @ReqUser() email: string,
         @Body() createBoardDto: CreateBoardDto,
         @Body('status', BoardStatusPipe) status: BoardStatus,
-        @Body('tag') tag: any,
     ): Promise<{ success: true } | errStatus> {
-        return this.boardSerivce.createBoard(user, createBoardDto, status, tag);
+        return this.boardSerivce.createBoard(email, createBoardDto, status);
     }
-
-    // @Post('/tag')
-    // @UsePipes(ValidationPipe)s
-    // @UseGuards(AuthGuard_renewal)
-    // fileTaging(
-    //     @ReqUser() email: string,
-    //     @Body() tagFileDto: TagFileDto,
-    // ): Promise<{ message: string }> {
-    //     return this.boardSerivce.fileTaging(email, tagFileDto);
-    // s}
 
     @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })
     @ApiBadRequestResponse({ description: 'false', type: errStatus })
     @ApiOperation({ summary: '팔로잉한 유저 게시글 가져오기' })
     @Get('/followBoard')
     @UseGuards(AuthGuard_renewal)
-    getFollowBoard(@ReqUser() user: User): Promise<Board[] | errStatus> {
-        return this.boardSerivce.getFollowBoard(user);
+    getFollowBoard(@ReqUser() email: string): Promise<Board[] | errStatus> {
+        return this.boardSerivce.getFollowBoard(email);
     }
 
     @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })

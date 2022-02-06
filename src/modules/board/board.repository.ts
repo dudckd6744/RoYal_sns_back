@@ -7,6 +7,7 @@ import { Like } from 'src/schemas/Like';
 import { Reply } from 'src/schemas/Reply';
 import { Tag } from 'src/schemas/Tag';
 import { User } from 'src/schemas/User';
+import { BulkWriteOpResultObject } from 'typeorm';
 
 import { CreateBoardDto, CreateReplyDto, GetBoardsDto } from './dto/board.dto';
 import { BoardStatus } from './utils/board.status.enum';
@@ -20,20 +21,18 @@ export class BoardRepository {
         @InjectModel(Tag.name) private tagModel: Model<Tag>,
     ) {}
 
-    async createBoard(
+    async findByEmailUser(email: string): Promise<User> {
+        return await this.userModel.findOne({ email });
+    }
+
+    createBoard(
         user: User,
         createBoardDto: CreateBoardDto,
         status: BoardStatus,
-        tag: any,
-    ): Promise<{ success: true } | errStatus> {
-        const { description, files } = createBoardDto;
+    ): Promise<Board> {
+        const { description, files, tag } = createBoardDto;
 
-        if (tag.length >= 30)
-            throw new BadRequestException(
-                '태그 수는 30개 이하로 입력해주세요!',
-            );
-
-        const board = await this.boardModel.create({
+        return this.boardModel.create({
             writer: user._id,
             userName: user.name,
             description,
@@ -41,47 +40,20 @@ export class BoardRepository {
             files,
             tag,
         });
-        await board.save();
-        const tag_data = tag.map((doc) => ({
-            updateOne: {
-                filter: { tag: doc },
-                update: doc,
-                upsert: true,
-            },
-        }));
-
-        await this.tagModel.bulkWrite(tag_data);
-
-        return { success: true };
     }
 
-    // async fileTaging(
-    //   user: User,
-    //   tagFileDto: TagFileDto
-    // ): Promise<{message: string}> {
-    //   const { files, tag } = tagFileDto
-    //   console.log(files)
-    //   const tag_data = await this.tagModel.create({
-    //     _id:files,
-    //     tag:tag
-    //   })
+    upsertTag(tagData): Promise<BulkWriteOpResultObject> {
+        return this.tagModel.bulkWrite(tagData);
+    }
 
-    //   tag_data.save()
-
-    //   return {message: "success"}
-    // }
-    async getFollowBoard(user: User): Promise<Board[] | errStatus> {
-        const follow_boards = await this.boardModel
+    async getFollowBoard(user: User): Promise<Board[]> {
+        return await this.boardModel
             .find({ deletedAt: null })
             .find({
                 $or: [
                     {
-                        $and: [
-                            {
-                                writer: { $in: user.following },
-                                status: 'PUBLIC',
-                            },
-                        ],
+                        writer: { $in: user.following },
+                        status: 'PUBLIC',
                     },
                     { writer: user._id },
                 ],
@@ -91,33 +63,13 @@ export class BoardRepository {
             )
             .sort({ createdAt: -1 })
             .populate('writer', 'name profile');
+    }
 
-        const board_heart = [];
-
-        follow_boards.forEach((board_data) => {
-            board_heart.push(board_data._id);
+    async likeBoard(userId: string, boardIds: Array<string>): Promise<Like[]> {
+        return await this.likeModel.find({
+            userId,
+            boardId: { $in: boardIds },
         });
-
-        if (user) {
-            const liked_board = await this.likeModel.find({
-                userId: user._id,
-                boardId: { $in: board_heart },
-            });
-
-            follow_boards.forEach((board_id) => {
-                liked_board.forEach((board_liked) => {
-                    if (
-                        board_id._id.toString() ==
-                        board_liked.boardId.toString()
-                    ) {
-                        board_id.IsLike = true;
-                    }
-                });
-            });
-            return follow_boards;
-        } else {
-            return follow_boards;
-        }
     }
 
     async getMyBoard(
