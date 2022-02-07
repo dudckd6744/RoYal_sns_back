@@ -72,39 +72,31 @@ export class BoardRepository {
         });
     }
 
-    async getMyBoard(
-        user: User,
-        userId: any,
-    ): Promise<
-        { success: true; boards: Board[]; board_user: User } | errStatus
-    > {
-        const usersId = userId['userId'];
-        const board_user = await this.userModel
-            .findOne({ _id: usersId })
+    async getUserInfo(email: string): Promise<User> {
+        return await this.userModel
+            .findOne({ email })
             .select(
                 'name phone email profile follower following royal status isActive createdAt',
             );
-        if (user._id == usersId) {
-            const boards = await this.boardModel
-                .find({ writer: usersId, deletedAt: null })
-                .select(
-                    'description view like_count tag reply_count status IsLike files createdAt',
-                )
-                .sort({ createdAt: -1 })
-                .populate('writer', 'name profile');
+    }
 
-            return { success: true, boards, board_user };
-        } else {
-            const boards = await this.boardModel
-                .find({ writer: usersId, status: 'PUBLIC', deletedAt: null })
-                .select(
-                    'description view like_count tag reply_count status IsLike files createdAt',
-                )
-                .sort({ createdAt: -1 })
-                .populate('writer', 'name profile');
-
-            return { success: true, boards, board_user };
-        }
+    async getMyBoards(userId: string): Promise<Board[]> {
+        return await this.boardModel
+            .find({ writer: userId, deletedAt: null })
+            .select(
+                'description view like_count tag reply_count status IsLike files createdAt',
+            )
+            .sort({ createdAt: -1 })
+            .populate('writer', 'name profile');
+    }
+    async getOtherBoards(userId: string): Promise<Board[]> {
+        return await this.boardModel
+            .find({ writer: userId, status: 'PUBLIC', deletedAt: null })
+            .select(
+                'description view like_count tag reply_count status IsLike files createdAt',
+            )
+            .sort({ createdAt: -1 })
+            .populate('writer', 'name profile');
     }
 
     async getBoard(

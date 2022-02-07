@@ -87,12 +87,10 @@ export class BoardController {
     @ApiOperation({ summary: '유저 페이지에 해당되는 게시글 가져오기' })
     @Get('/myPage/:userId')
     getMyBoard(
-        @ReqUser() user: User,
-        @Param() userId: any,
-    ): Promise<
-        { success: true; boards: Board[]; board_user: User } | errStatus
-    > {
-        return this.boardSerivce.getMyBoard(user, userId);
+        @ReqUser() email: string,
+        @Param('userId') userId: string,
+    ): Promise<{ success: true; boards: Board[]; user: User } | errStatus> {
+        return this.boardSerivce.getMyBoard(email, userId);
     }
 
     @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })

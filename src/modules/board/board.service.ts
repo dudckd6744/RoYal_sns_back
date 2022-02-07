@@ -79,13 +79,21 @@ export class BoardService {
         }
     }
 
-    getMyBoard(
-        user: User,
-        userId: any,
-    ): Promise<
-        { success: true; boards: Board[]; board_user: User } | errStatus
-    > {
-        return this.boardRepository.getMyBoard(user, userId);
+    async getMyBoard(
+        email: string,
+        userId: string,
+    ): Promise<{ success: true; boards: Board[]; user: User } | errStatus> {
+        const user = await this.boardRepository.getUserInfo(email);
+        if (user._id == userId) {
+            // NOTE: 자신의 게시글일 경우 status 가 PUBLIC || PRIVATE 둘다 가져온다.
+            const boards = await this.boardRepository.getMyBoards(userId);
+            return { success: true, boards, user };
+        } else {
+            // NOTE: 자신의 게시글이 아닐 경우 status 가 PUBLIC 인것만 가져온다.
+            const boards = await this.boardRepository.getOtherBoards(userId);
+
+            return { success: true, boards, user };
+        }
     }
 
     getBoard(
