@@ -45,7 +45,7 @@ export class BoardRepository {
     upsertTag(tagData): Promise<BulkWriteOpResultObject> {
         return this.tagModel.bulkWrite(tagData);
     }
-
+    // NOTE: 팔로우한 사용자의 게시글 || 자신의 게시글 가져오기
     async getFollowBoard(user: User): Promise<Board[]> {
         return await this.boardModel
             .find({ deletedAt: null })
@@ -89,6 +89,7 @@ export class BoardRepository {
             .sort({ createdAt: -1 })
             .populate('writer', 'name profile');
     }
+
     async getOtherBoards(userId: string): Promise<Board[]> {
         return await this.boardModel
             .find({ writer: userId, status: 'PUBLIC', deletedAt: null })
@@ -98,36 +99,20 @@ export class BoardRepository {
             .sort({ createdAt: -1 })
             .populate('writer', 'name profile');
     }
-
-    async getBoard(
+    // NOTE: 자신의 게시글 || 다른 유저의 게시글은 공개된 게시글만 가져오기
+    async getBoards(
         user: User,
-        getBoardDto: GetBoardsDto,
-    ): Promise<Board[] | errStatus> {
-        const { search, search_type } = getBoardDto;
-
-        let search_data;
-        switch (search_type) {
-            case 'tag':
-                search_data = { tag: { $regex: '.*' + search + '.*' } };
-                break;
-            case 'writer':
-                search_data = { userName: { $regex: '.*' + search + '.*' } };
-                break;
-            case '장소':
-                break;
-        }
-        const boards = await this.boardModel
+        search_data: { [key: string]: string },
+    ): Promise<Board[]> {
+        return await this.boardModel
             .find({ deletedAt: null })
             .find({
                 $or: [
                     {
-                        $and: [
-                            {
-                                writer: { $ne: user._id },
-                                status: 'PUBLIC',
-                            },
-                        ],
+                        writer: { $ne: user._id },
+                        status: 'PUBLIC',
                     },
+
                     { writer: user._id },
                 ],
             })
@@ -137,32 +122,16 @@ export class BoardRepository {
                 'description view like_count tag reply_count status IsLike files createdAt',
             )
             .populate('writer', 'name profile');
+    }
 
-        const board_heart = [];
-        boards.forEach((board_data, i) => {
-            board_heart.push(board_data._id);
+    async likedBoards(
+        user: User,
+        likedBoardIds: Array<string>,
+    ): Promise<Like[]> {
+        return await this.likeModel.find({
+            userId: user._id,
+            boardId: { $in: likedBoardIds },
         });
-
-        if (user) {
-            const liked_board = await this.likeModel.find({
-                userId: user._id,
-                boardId: { $in: board_heart },
-            });
-
-            boards.forEach((board_id) => {
-                liked_board.forEach((board_liked) => {
-                    if (
-                        board_id._id.toString() ==
-                        board_liked.boardId.toString()
-                    ) {
-                        board_id.IsLike = true;
-                    }
-                });
-            });
-            return boards;
-        } else {
-            return boards;
-        }
     }
 
     async getDetailBoard(

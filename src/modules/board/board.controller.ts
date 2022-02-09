@@ -76,10 +76,10 @@ export class BoardController {
     @ApiOperation({ summary: '전체 게시글 가져오기' })
     @Get('/')
     getBoard(
-        @ReqUser() user: User,
+        @ReqUser() email: string,
         @Query() getBoardDto: GetBoardsDto,
     ): Promise<Board[] | errStatus> {
-        return this.boardSerivce.getBoard(user, getBoardDto);
+        return this.boardSerivce.getBoard(email, getBoardDto);
     }
 
     @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })

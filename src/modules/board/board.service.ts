@@ -96,11 +96,53 @@ export class BoardService {
         }
     }
 
-    getBoard(
-        user: User,
+    async getBoard(
+        email: string,
         getBoardDto: GetBoardsDto,
     ): Promise<Board[] | errStatus> {
-        return this.boardRepository.getBoard(user, getBoardDto);
+        const { search, search_type } = getBoardDto;
+
+        const user = await this.boardRepository.findByEmailUser(email);
+
+        let search_data;
+        switch (search_type) {
+            case 'tag':
+                search_data = { tag: { $regex: '.*' + search + '.*' } };
+                break;
+            case 'writer':
+                search_data = { userName: { $regex: '.*' + search + '.*' } };
+                break;
+            case '장소':
+                break;
+        }
+
+        const boards = await this.boardRepository.getBoards(user, search_data);
+
+        const likedBoardIds = [];
+        boards.forEach((board_data, i) => {
+            likedBoardIds.push(board_data._id);
+        });
+
+        if (user) {
+            const likedBoard = await this.boardRepository.likedBoards(
+                user,
+                likedBoardIds,
+            );
+
+            boards.forEach((board_id) => {
+                likedBoard.forEach((board_liked) => {
+                    if (
+                        board_id._id.toString() ==
+                        board_liked.boardId.toString()
+                    ) {
+                        board_id.IsLike = true;
+                    }
+                });
+            });
+            return boards;
+        } else {
+            return boards;
+        }
     }
 
     getDetailBoard(
