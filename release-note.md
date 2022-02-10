@@ -322,4 +322,8 @@
 
      - getBoards API 비즈니스 로직 분리
 
+### 2022-02-10
+
+     - getDetailBoard API 비즈니스 로직 분리
+
 ### to do

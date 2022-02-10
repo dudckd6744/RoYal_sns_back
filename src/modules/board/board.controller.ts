@@ -73,17 +73,6 @@ export class BoardController {
 
     @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })
     @ApiBadRequestResponse({ description: 'false', type: errStatus })
-    @ApiOperation({ summary: '전체 게시글 가져오기' })
-    @Get('/')
-    getBoard(
-        @ReqUser() email: string,
-        @Query() getBoardDto: GetBoardsDto,
-    ): Promise<Board[] | errStatus> {
-        return this.boardSerivce.getBoard(email, getBoardDto);
-    }
-
-    @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })
-    @ApiBadRequestResponse({ description: 'false', type: errStatus })
     @ApiOperation({ summary: '유저 페이지에 해당되는 게시글 가져오기' })
     @Get('/myPage/:userId')
     getMyBoard(
@@ -95,15 +84,26 @@ export class BoardController {
 
     @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })
     @ApiBadRequestResponse({ description: 'false', type: errStatus })
+    @ApiOperation({ summary: '전체 게시글 가져오기' })
+    @Get('/')
+    getBoard(
+        @ReqUser() email: string,
+        @Query() getBoardDto: GetBoardsDto,
+    ): Promise<Board[] | errStatus> {
+        return this.boardSerivce.getBoard(email, getBoardDto);
+    }
+
+    @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })
+    @ApiBadRequestResponse({ description: 'false', type: errStatus })
     @ApiOperation({ summary: '게시글 상세내용 가져오기' })
     @Get('/:boardId')
     getDeatailBoard(
-        @ReqUser() user: User,
+        @ReqUser() email: string,
         @Param('boardId') boardId: string,
         @Query('over_view') over_view: boolean,
     ): Promise<{ success: true; board: Board } | errStatus> {
-        logger.info(`${user.email}님이 ${boardId} 게시글에 접속하였습니다.`);
-        return this.boardSerivce.getDetailBoard(user, boardId, over_view);
+        logger.info(`${email}님이 ${boardId} 게시글에 접속하였습니다.`);
+        return this.boardSerivce.getDetailBoard(email, boardId, over_view);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })

@@ -145,12 +145,29 @@ export class BoardService {
         }
     }
 
-    getDetailBoard(
-        user: User,
+    async getDetailBoard(
+        email: string,
         boardId: string,
         over_view: boolean,
     ): Promise<{ success: true; board: Board } | errStatus> {
-        return this.boardRepository.getDetailBoard(user, boardId, over_view);
+        const user = await this.boardRepository.findByEmailUser(email);
+
+        const board = await this.boardRepository.getDetailBoard(boardId);
+
+        if (!board)
+            throw new BadRequestException('해당 게시글이 존재 하지않습니다.');
+
+        if (user && !over_view) {
+            board.view++;
+            board.save();
+        }
+        if (user) {
+            const like = this.boardRepository.likedBoard(user._id, boardId);
+            if (like) {
+                board.IsLike = true;
+            }
+        }
+        return { success: true, board };
     }
 
     updateBoard(

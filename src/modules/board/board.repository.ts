@@ -134,40 +134,20 @@ export class BoardRepository {
         });
     }
 
-    async getDetailBoard(
-        user: User,
-        id: string,
-        over_view: boolean,
-    ): Promise<{ success: true; board: Board } | errStatus> {
-        const board = await this.boardModel
-            .findOne({ _id: id, deletedAt: null })
+    async getDetailBoard(boarId: string) {
+        return await this.boardModel
+            .findOne({ _id: boarId, deletedAt: null })
             .select(
                 'description view like_count tag reply_count status IsLike files createdAt',
             )
             .populate('writer', 'name profile status');
-        // // let file_tag =
-        // board.files.forEach(async (element, i) => {
-        //   const tag_data = await this.tagModel.findOne({_id:element})
-        //   console.log(tag_data.tag[i])
-        // })
+    }
 
-        if (!board)
-            throw new BadRequestException('해당 게시글이 존재 하지않습니다.');
-
-        if (user && !over_view) {
-            board.view++;
-            await board.save();
-        }
-        if (user) {
-            const like = await this.likeModel.findOne({
-                userId: user._id,
-                boardId: board._id,
-            });
-            if (like) {
-                board.IsLike = true;
-            }
-        }
-        return { success: true, board };
+    async likedBoard(userId: string, boardId: string) {
+        return await this.likeModel.findOne({
+            userId,
+            boardId,
+        });
     }
 
     async updateBoard(
