@@ -9,7 +9,12 @@ import { Tag } from 'src/schemas/Tag';
 import { User } from 'src/schemas/User';
 import { BulkWriteOpResultObject } from 'typeorm';
 
-import { CreateBoardDto, CreateReplyDto, GetBoardsDto } from './dto/board.dto';
+import {
+    CreateBoardDto,
+    CreateReplyDto,
+    GetBoardsDto,
+    IBulkWriteTag,
+} from './dto/board.dto';
 import { BoardStatus } from './utils/board.status.enum';
 
 export class BoardRepository {
@@ -152,31 +157,24 @@ export class BoardRepository {
 
     async updateBoard(
         user: User,
-        id: string,
+        boardId: string,
         creatreBoardDto: CreateBoardDto,
         status: BoardStatus,
-        tag: any,
-    ): Promise<{ success: true } | errStatus> {
-        const { description, files } = creatreBoardDto;
+    ): Promise<Board> {
+        const { description, files, tag } = creatreBoardDto;
 
-        const board = await this.findBoard(user, id);
+        const board = await this.findBoard(user, boardId);
 
         board.description = description;
         board.status = status;
         board.files = files;
         board.tag = tag;
 
-        await board.save();
-        const tag_data = tag.map((doc) => ({
-            updateOne: {
-                filter: { tag: doc },
-                update: doc,
-                upsert: true,
-            },
-        }));
+        return board.save();
+    }
 
-        await this.tagModel.bulkWrite(tag_data);
-        return { success: true };
+    bulkWriteTag(tag_data: IBulkWriteTag[]): Promise<BulkWriteOpResultObject> {
+        return this.tagModel.bulkWrite(tag_data);
     }
 
     async deleteBoard(user: User, boardId: string): Promise<{ success: true }> {

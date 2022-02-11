@@ -72,3 +72,7 @@ export class SwaggerLikeDto extends PickType(Like, ['parentId'] as const) {}
 //     files: string;
 //     tag: string;
 // }
+
+export interface IBulkWriteTag {
+    updateOne: { filter: { tag: string }; update: string; upsert: boolean };
+}

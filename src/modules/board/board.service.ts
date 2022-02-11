@@ -5,7 +5,12 @@ import { Reply } from 'src/schemas/Reply';
 import { User } from 'src/schemas/User';
 
 import { BoardRepository } from './board.repository';
-import { CreateBoardDto, CreateReplyDto, GetBoardsDto } from './dto/board.dto';
+import {
+    CreateBoardDto,
+    CreateReplyDto,
+    GetBoardsDto,
+    IBulkWriteTag,
+} from './dto/board.dto';
 import { BoardStatus } from './utils/board.status.enum';
 
 @Injectable()
@@ -170,20 +175,34 @@ export class BoardService {
         return { success: true, board };
     }
 
-    updateBoard(
-        user: User,
+    async updateBoard(
+        email: string,
         boardId: string,
         createBoardDto: CreateBoardDto,
         status: BoardStatus,
-        tag: any,
     ): Promise<{ success: true } | errStatus> {
-        return this.boardRepository.updateBoard(
+        const { tag } = createBoardDto;
+
+        const user = await this.boardRepository.findByEmailUser(email);
+
+        await this.boardRepository.updateBoard(
             user,
             boardId,
             createBoardDto,
             status,
-            tag,
         );
+
+        const tagData: IBulkWriteTag[] = tag.map((doc) => ({
+            updateOne: {
+                filter: { tag: doc },
+                update: doc,
+                upsert: true,
+            },
+        }));
+
+        this.boardRepository.bulkWriteTag(tagData);
+
+        return { success: true };
     }
 
     deleteBoard(user: User, boardId: string): Promise<{ success: true }> {

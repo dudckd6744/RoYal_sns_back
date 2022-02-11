@@ -115,18 +115,16 @@ export class BoardController {
     @UseGuards(AuthGuard_renewal)
     @ApiBody({ type: SwaggerCreateBoardDto })
     updateBoard(
-        @ReqUser() user: User,
+        @ReqUser() email: string,
         @Param('boardId') boardId: string,
         @Body() createBoardDto: CreateBoardDto,
         @Body('status', BoardStatusPipe) status: BoardStatus,
-        @Body('tag') tag: any,
     ): Promise<{ success: true } | errStatus> {
         return this.boardSerivce.updateBoard(
-            user,
+            email,
             boardId,
             createBoardDto,
             status,
-            tag,
         );
     }
 
