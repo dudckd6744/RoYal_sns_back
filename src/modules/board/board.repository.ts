@@ -26,8 +26,8 @@ export class BoardRepository {
         @InjectModel(Tag.name) private tagModel: Model<Tag>,
     ) {}
 
-    async findByEmailUser(email: string): Promise<User> {
-        return await this.userModel.findOne({ email });
+    async findByIdUser(userId: string): Promise<User> {
+        return await this.userModel.findOne({ _id: userId });
     }
 
     createBoard(
@@ -77,9 +77,9 @@ export class BoardRepository {
         });
     }
 
-    async getUserInfo(email: string): Promise<User> {
+    async getUserInfo(userId: string): Promise<User> {
         return await this.userModel
-            .findOne({ email })
+            .findOne({ _id: userId })
             .select(
                 'name phone email profile follower following royal status isActive createdAt',
             );
@@ -106,7 +106,7 @@ export class BoardRepository {
     }
     // NOTE: 자신의 게시글 || 다른 유저의 게시글은 공개된 게시글만 가져오기
     async getBoards(
-        user: User,
+        userId: string,
         search_data: { [key: string]: string },
     ): Promise<Board[]> {
         return await this.boardModel
@@ -114,11 +114,10 @@ export class BoardRepository {
             .find({
                 $or: [
                     {
-                        writer: { $ne: user._id },
+                        writer: { $ne: userId },
                         status: 'PUBLIC',
                     },
-
-                    { writer: user._id },
+                    { writer: userId },
                 ],
             })
             .find(search_data)
@@ -130,11 +129,11 @@ export class BoardRepository {
     }
 
     async likedBoards(
-        user: User,
+        userId: string,
         likedBoardIds: Array<string>,
     ): Promise<Like[]> {
         return await this.likeModel.find({
-            userId: user._id,
+            userId: userId,
             boardId: { $in: likedBoardIds },
         });
     }
@@ -156,14 +155,14 @@ export class BoardRepository {
     }
 
     async updateBoard(
-        user: User,
+        userId: string,
         boardId: string,
         creatreBoardDto: CreateBoardDto,
         status: BoardStatus,
     ): Promise<Board> {
         const { description, files, tag } = creatreBoardDto;
 
-        const board = await this.findBoard(user, boardId);
+        const board = await this.findBoard(userId, boardId);
 
         board.description = description;
         board.status = status;
@@ -402,9 +401,9 @@ export class BoardRepository {
         return { success: true };
     }
 
-    private async findBoard(user, boardId) {
+    private async findBoard(userId, boardId) {
         const board = await this.boardModel.findOne({
-            writer: user._id,
+            writer: userId,
             _id: boardId,
         });
 

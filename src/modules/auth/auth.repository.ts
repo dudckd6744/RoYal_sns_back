@@ -28,8 +28,8 @@ export class AuthRepository {
         });
     }
 
-    async findByIdUser(othersId: string): Promise<User> {
-        return await this.userModel.findOne({ _id: othersId });
+    async findByIdUser(userId: string): Promise<User> {
+        return await this.userModel.findOne({ _id: userId });
     }
 
     async findByEmailUser(email: string): Promise<User> {
@@ -70,17 +70,17 @@ export class AuthRepository {
         );
     }
 
-    async getUserList(email: string): Promise<User[] | errStatus> {
+    async getUserList(userId: string): Promise<User[] | errStatus> {
         return await this.userModel
-            .find({ email: { $ne: email } })
+            .find({ _id: { $ne: userId } })
             .select(
                 'name phone email profile following follower royal status isActive createdAt',
             );
     }
 
-    async updateProfile(email: string, profile: any): Promise<User> {
+    async updateProfile(userId: string, profile: any): Promise<User> {
         return await this.userModel.findByIdAndUpdate(
-            { email },
+            { _id: userId },
             { profile: profile.profile },
         );
     }

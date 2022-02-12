@@ -58,16 +58,16 @@ export class AuthService {
         if (!user)
             throw new UnauthorizedException('해당 유저가 존재하지않습니다.');
         else if (await bcrypt.compare(password, user.password)) {
-            const email = user.email;
-            const token = await signToken({ email });
+            const userId = user._id;
+            const token = await signToken({ userId });
             return { token };
         } else {
             throw new UnauthorizedException('비밀번호를 다시 확인해주세요.');
         }
     }
 
-    async userAuth(email: string): Promise<AuthUserDto | UnAuthUserDto> {
-        const user = await this.authRepository.findByEmailUser(email);
+    async userAuth(userId: string): Promise<AuthUserDto | UnAuthUserDto> {
+        const user = await this.authRepository.findByIdUser(userId);
 
         if (!user) {
             const data: UnAuthUserDto = { isAuth: false, error: true };
@@ -92,13 +92,13 @@ export class AuthService {
     }
 
     async passwordUpdateUser(
-        email: string,
+        userId: string,
         passwordUserDto: PasswordUserDto,
     ): Promise<{ success: true } | errStatus> {
         const { password, new_password, confirm_new_password } =
             passwordUserDto;
 
-        const user_data = await this.authRepository.findByEmailUser(email);
+        const user_data = await this.authRepository.findByIdUser(userId);
 
         if (new_password != confirm_new_password)
             throw new BadRequestException('다시 한번 비밀번호를 확인해주세요!');
@@ -116,8 +116,8 @@ export class AuthService {
         return { success: true };
     }
 
-    async getUserList(email: string): Promise<User[] | errStatus> {
-        return await this.authRepository.getUserList(email);
+    async getUserList(userId: string): Promise<User[] | errStatus> {
+        return await this.authRepository.getUserList(userId);
     }
 
     async googleLogin(req, res) {
@@ -129,10 +129,10 @@ export class AuthService {
     }
 
     async followUser(
-        email: string,
+        userId: string,
         othersId: string,
     ): Promise<{ success: true } | errStatus> {
-        const user_data = await this.authRepository.findByEmailUser(email);
+        const user_data = await this.authRepository.findByIdUser(userId);
         const otherUser = await this.authRepository.findByIdUser(othersId);
 
         user_data.following.forEach((element) => {
@@ -162,10 +162,10 @@ export class AuthService {
     }
 
     async unfollowUser(
-        email: string,
+        userId: string,
         othersId: string,
     ): Promise<{ success: true } | errStatus> {
-        const user_data = await this.authRepository.findByEmailUser(email);
+        const user_data = await this.authRepository.findByIdUser(userId);
 
         let others_data = '';
 
@@ -191,10 +191,10 @@ export class AuthService {
     }
 
     async updateProfile(
-        email: string,
+        userId: string,
         profile: any,
     ): Promise<{ success: true } | errStatus> {
-        await this.authRepository.updateProfile(email, profile);
+        await this.authRepository.updateProfile(userId, profile);
 
         return { success: true };
     }

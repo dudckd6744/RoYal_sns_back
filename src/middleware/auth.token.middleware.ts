@@ -14,18 +14,18 @@ import { verifyToken } from '../utils/jwt';
 export class AuthTokenMiddleware implements NestMiddleware {
     constructor(@InjectModel(User.name) private userModel: Model<User>) {} // eslint-disable-next-line @typescript-eslint/ban-types
     public async use(req: Request, res: Response, next: NextFunction) {
-        const email = await this.parseUserId(req);
+        const userId = await this.parseUserId(req);
 
         const anyReq = req as any;
         //인증부분 재검토
 
-        anyReq.email = email;
+        anyReq.userId = userId;
 
         return next();
     }
 
     private async parseUserId(req: Request): Promise<string> {
-        let email: string;
+        let userId: string;
         try {
             const { authorization } = req.headers;
 
@@ -34,10 +34,11 @@ export class AuthTokenMiddleware implements NestMiddleware {
                 .replace('bearer ', '');
 
             const decoded = await verifyToken(token);
+            console.log(decoded);
 
-            email = decoded.email;
+            userId = decoded.userId;
         } catch (err) {} /* eslint no-empty: "off" */
 
-        return email;
+        return userId;
     }
 }

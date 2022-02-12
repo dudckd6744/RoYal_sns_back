@@ -329,5 +329,10 @@
 ### 2022-02-11
 
      - updateBoard API 비즈니스 로직 분리
+### 2022-02-12
+
+     - auth 미들웨어 수정
+          - req.email => req.userId
+               - DB 부하를 줄이기위함
 
 ### to do

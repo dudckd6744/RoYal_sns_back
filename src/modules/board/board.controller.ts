@@ -55,11 +55,11 @@ export class BoardController {
     @UsePipes(ValidationPipe)
     @UseGuards(AuthGuard_renewal)
     createBoard(
-        @ReqUser() email: string,
+        @ReqUser() userId: string,
         @Body() createBoardDto: CreateBoardDto,
         @Body('status', BoardStatusPipe) status: BoardStatus,
     ): Promise<{ success: true } | errStatus> {
-        return this.boardSerivce.createBoard(email, createBoardDto, status);
+        return this.boardSerivce.createBoard(userId, createBoardDto, status);
     }
 
     @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })
@@ -67,8 +67,8 @@ export class BoardController {
     @ApiOperation({ summary: '팔로잉한 유저 게시글 가져오기' })
     @Get('/followBoard')
     @UseGuards(AuthGuard_renewal)
-    getFollowBoard(@ReqUser() email: string): Promise<Board[] | errStatus> {
-        return this.boardSerivce.getFollowBoard(email);
+    getFollowBoard(@ReqUser() userId: string): Promise<Board[] | errStatus> {
+        return this.boardSerivce.getFollowBoard(userId);
     }
 
     @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })
@@ -76,10 +76,10 @@ export class BoardController {
     @ApiOperation({ summary: '유저 페이지에 해당되는 게시글 가져오기' })
     @Get('/myPage/:userId')
     getMyBoard(
-        @ReqUser() email: string,
-        @Param('userId') userId: string,
+        @ReqUser() userId: string,
+        @Param('ParamUserId') ParamUserId: string,
     ): Promise<{ success: true; boards: Board[]; user: User } | errStatus> {
-        return this.boardSerivce.getMyBoard(email, userId);
+        return this.boardSerivce.getMyBoard(userId, ParamUserId);
     }
 
     @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })
@@ -87,10 +87,10 @@ export class BoardController {
     @ApiOperation({ summary: '전체 게시글 가져오기' })
     @Get('/')
     getBoard(
-        @ReqUser() email: string,
+        @ReqUser() userId: string,
         @Query() getBoardDto: GetBoardsDto,
     ): Promise<Board[] | errStatus> {
-        return this.boardSerivce.getBoard(email, getBoardDto);
+        return this.boardSerivce.getBoard(userId, getBoardDto);
     }
 
     @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })
@@ -98,12 +98,12 @@ export class BoardController {
     @ApiOperation({ summary: '게시글 상세내용 가져오기' })
     @Get('/:boardId')
     getDeatailBoard(
-        @ReqUser() email: string,
+        @ReqUser() userId: string,
         @Param('boardId') boardId: string,
         @Query('over_view') over_view: boolean,
     ): Promise<{ success: true; board: Board } | errStatus> {
-        logger.info(`${email}님이 ${boardId} 게시글에 접속하였습니다.`);
-        return this.boardSerivce.getDetailBoard(email, boardId, over_view);
+        logger.info(`${userId}님이 ${boardId} 게시글에 접속하였습니다.`);
+        return this.boardSerivce.getDetailBoard(userId, boardId, over_view);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
@@ -115,13 +115,13 @@ export class BoardController {
     @UseGuards(AuthGuard_renewal)
     @ApiBody({ type: SwaggerCreateBoardDto })
     updateBoard(
-        @ReqUser() email: string,
+        @ReqUser() userId: string,
         @Param('boardId') boardId: string,
         @Body() createBoardDto: CreateBoardDto,
         @Body('status', BoardStatusPipe) status: BoardStatus,
     ): Promise<{ success: true } | errStatus> {
         return this.boardSerivce.updateBoard(
-            email,
+            userId,
             boardId,
             createBoardDto,
             status,

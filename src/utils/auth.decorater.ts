@@ -4,6 +4,6 @@ export const ReqUser = createParamDecorator<unknown, ExecutionContext>(
     async (data: unknown, context: ExecutionContext) => {
         const req = context.switchToHttp().getRequest();
 
-        return req.email;
+        return req.userId;
     },
 );

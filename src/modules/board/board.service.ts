@@ -18,12 +18,12 @@ export class BoardService {
     constructor(private boardRepository: BoardRepository) {}
 
     async createBoard(
-        email: string,
+        userId: string,
         createBoardDto: CreateBoardDto,
         status: BoardStatus,
     ): Promise<{ success: true } | errStatus> {
         const { tag } = createBoardDto;
-        const user = await this.boardRepository.findByEmailUser(email);
+        const user = await this.boardRepository.findByIdUser(userId);
 
         if (tag.length >= 30)
             throw new BadRequestException(
@@ -51,8 +51,8 @@ export class BoardService {
         return { success: true };
     }
 
-    async getFollowBoard(email: string): Promise<Board[] | errStatus> {
-        const user = await this.boardRepository.findByEmailUser(email);
+    async getFollowBoard(userId: string): Promise<Board[] | errStatus> {
+        const user = await this.boardRepository.findByIdUser(userId);
 
         const follow_boards = await this.boardRepository.getFollowBoard(user);
 
@@ -85,29 +85,29 @@ export class BoardService {
     }
 
     async getMyBoard(
-        email: string,
         userId: string,
+        ParamUserId: string,
     ): Promise<{ success: true; boards: Board[]; user: User } | errStatus> {
-        const user = await this.boardRepository.getUserInfo(email);
+        const user = await this.boardRepository.getUserInfo(userId);
         if (user._id == userId) {
             // NOTE: 자신의 게시글일 경우 status 가 PUBLIC || PRIVATE 둘다 가져온다.
-            const boards = await this.boardRepository.getMyBoards(userId);
+            const boards = await this.boardRepository.getMyBoards(ParamUserId);
             return { success: true, boards, user };
         } else {
             // NOTE: 자신의 게시글이 아닐 경우 status 가 PUBLIC 인것만 가져온다.
-            const boards = await this.boardRepository.getOtherBoards(userId);
+            const boards = await this.boardRepository.getOtherBoards(
+                ParamUserId,
+            );
 
             return { success: true, boards, user };
         }
     }
 
     async getBoard(
-        email: string,
+        userId: string,
         getBoardDto: GetBoardsDto,
     ): Promise<Board[] | errStatus> {
         const { search, search_type } = getBoardDto;
-
-        const user = await this.boardRepository.findByEmailUser(email);
 
         let search_data;
         switch (search_type) {
@@ -121,16 +121,19 @@ export class BoardService {
                 break;
         }
 
-        const boards = await this.boardRepository.getBoards(user, search_data);
+        const boards = await this.boardRepository.getBoards(
+            userId,
+            search_data,
+        );
 
         const likedBoardIds = [];
         boards.forEach((board_data, i) => {
             likedBoardIds.push(board_data._id);
         });
 
-        if (user) {
+        if (userId) {
             const likedBoard = await this.boardRepository.likedBoards(
-                user,
+                userId,
                 likedBoardIds,
             );
 
@@ -151,23 +154,21 @@ export class BoardService {
     }
 
     async getDetailBoard(
-        email: string,
+        userId: string,
         boardId: string,
         over_view: boolean,
     ): Promise<{ success: true; board: Board } | errStatus> {
-        const user = await this.boardRepository.findByEmailUser(email);
-
         const board = await this.boardRepository.getDetailBoard(boardId);
 
         if (!board)
             throw new BadRequestException('해당 게시글이 존재 하지않습니다.');
 
-        if (user && !over_view) {
+        if (userId && !over_view) {
             board.view++;
             board.save();
         }
-        if (user) {
-            const like = this.boardRepository.likedBoard(user._id, boardId);
+        if (userId) {
+            const like = this.boardRepository.likedBoard(userId, boardId);
             if (like) {
                 board.IsLike = true;
             }
@@ -176,17 +177,15 @@ export class BoardService {
     }
 
     async updateBoard(
-        email: string,
+        userId: string,
         boardId: string,
         createBoardDto: CreateBoardDto,
         status: BoardStatus,
     ): Promise<{ success: true } | errStatus> {
         const { tag } = createBoardDto;
 
-        const user = await this.boardRepository.findByEmailUser(email);
-
         await this.boardRepository.updateBoard(
-            user,
+            userId,
             boardId,
             createBoardDto,
             status,
