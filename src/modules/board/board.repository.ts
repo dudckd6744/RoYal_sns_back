@@ -176,14 +176,12 @@ export class BoardRepository {
         return this.tagModel.bulkWrite(tag_data);
     }
 
-    async deleteBoard(user: User, boardId: string): Promise<{ success: true }> {
-        const board = await this.findBoard(user, boardId);
+    async deleteBoard(userId: string, boardId: string): Promise<Board> {
+        const board = await this.findBoard(userId, boardId);
 
         board.deletedAt = new Date();
 
-        await board.save();
-
-        return { success: true };
+        return board.save();
     }
 
     async like(

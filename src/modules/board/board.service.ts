@@ -204,8 +204,12 @@ export class BoardService {
         return { success: true };
     }
 
-    deleteBoard(user: User, boardId: string): Promise<{ success: true }> {
-        return this.boardRepository.deleteBoard(user, boardId);
+    async deleteBoard(
+        userId: string,
+        boardId: string,
+    ): Promise<{ success: true }> {
+        await this.boardRepository.deleteBoard(userId, boardId);
+        return { success: true };
     }
 
     like(

@@ -135,10 +135,10 @@ export class BoardController {
     @Delete('/:boardId')
     @UseGuards(AuthGuard_renewal)
     deleteBoard(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Param('boardId') boardId: string,
     ): Promise<{ success: true }> {
-        return this.boardSerivce.deleteBoard(user, boardId);
+        return this.boardSerivce.deleteBoard(userId, boardId);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
