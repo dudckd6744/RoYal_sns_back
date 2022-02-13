@@ -212,12 +212,28 @@ export class BoardService {
         return { success: true };
     }
 
-    like(
-        user: User,
+    async like(
+        userId: string,
         boardId: string,
         parentId: string,
     ): Promise<{ success: true } | errStatus> {
-        return this.boardRepository.like(user, boardId, parentId);
+        // eslint-disable-next-line no-var
+        var parentId = parentId ?? null;
+
+        const board = await this.boardRepository.findByIdBoard(boardId);
+
+        await this.boardRepository.createLike(userId, boardId, parentId);
+
+        if (parentId != null) {
+            const reply = await this.boardRepository.findByIdReply(parentId);
+            reply.like_count++;
+            reply.save();
+        } else {
+            board.like_count++;
+            board.save();
+        }
+
+        return { success: true };
     }
 
     unlike(

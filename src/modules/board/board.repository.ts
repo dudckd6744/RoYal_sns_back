@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { errStatus } from 'src/resStatusDto/resStatus.dto';
@@ -184,39 +184,54 @@ export class BoardRepository {
         return board.save();
     }
 
-    async like(
-        user: User,
-        boardId: string,
-        parentId: string,
-    ): Promise<{ success: true } | errStatus> {
-        const parent_id = parentId ? parentId : null;
+    async findByIdBoard(boardId: string): Promise<Board> {
         const board = await this.boardModel.findOne({ _id: boardId });
         if (!board)
             throw new BadRequestException('해당 게시글이 존재 하지않습니다.');
+        return board;
+    }
 
-        const like = await this.likeModel.findOneAndUpdate(
-            {
-                userId: user._id,
-                boardId: board._id,
-                parentId: parent_id,
-            },
-            {
-                userId: user._id,
-                boardId: board._id,
-                parentId: parent_id,
-            },
-            { upsert: true },
-        );
-        if (parent_id != null) {
-            const reply = await this.replyModel.findOne({ _id: parent_id });
-            reply.like_count++;
-            reply.save();
-        } else {
-            board.like_count++;
-            board.save();
-        }
+    async createLike(userId: string, boardId: string, parentId: string) {
+        const like = await this.likeModel.findOne({
+            userId: userId,
+            boardId: boardId,
+            parentId: parentId,
+        });
 
-        return { success: true };
+        if (like)
+            throw new BadRequestException('이미 좋아요 누른 게시글입니다. ');
+
+        return await this.likeModel.create({
+            userId: userId,
+            boardId: boardId,
+            parentId: parentId,
+        });
+    }
+
+    // async upsertLike(
+    //     userId: string,
+    //     boardId: string,
+    //     parentId: string,
+    // ): Promise<Like> {
+    //     const like = await this.likeModel.findOneAndUpdate(
+    //         {
+    //             userId: userId,
+    //             boardId: boardId,
+    //             parentId: parentId,
+    //         },
+    //         {
+    //             userId: userId,
+    //             boardId: boardId,
+    //             parentId: parentId,
+    //         },
+    //         { upsert: true },
+    //     );
+    //     console.log(like);
+    //     return like;
+    // }
+
+    async findByIdReply(replyId: string): Promise<Reply> {
+        return await this.replyModel.findOne({ _id: replyId });
     }
 
     async unlike(

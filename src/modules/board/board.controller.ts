@@ -149,12 +149,12 @@ export class BoardController {
     @UseGuards(AuthGuard_renewal)
     @ApiBody({ type: SwaggerLikeDto })
     like(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Param('boardId') boardId: string,
         @Body('parentId') parentId: string,
     ): Promise<{ success: true } | errStatus> {
-        logger.info(`${user.email}님이 ${boardId} 게시글에 좋아요눌렀습니다.`);
-        return this.boardSerivce.like(user, boardId, parentId);
+        logger.info(`${userId}님이 ${boardId} 게시글에 좋아요눌렀습니다.`);
+        return this.boardSerivce.like(userId, boardId, parentId);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
