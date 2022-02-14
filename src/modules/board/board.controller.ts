@@ -165,11 +165,11 @@ export class BoardController {
     @UseGuards(AuthGuard_renewal)
     @ApiBody({ type: SwaggerLikeDto })
     unlike(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Param('boardId') boardId: string,
         @Body('parentId') parentId: string,
     ): Promise<{ success: true } | errStatus> {
-        return this.boardSerivce.unlike(user, boardId, parentId);
+        return this.boardSerivce.unlike(userId, boardId, parentId);
     }
 
     @ApiOkResponse({ description: 'success', type: SwaggerReplyDto })

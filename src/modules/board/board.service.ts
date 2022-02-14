@@ -222,7 +222,16 @@ export class BoardService {
 
         const board = await this.boardRepository.findByIdBoard(boardId);
 
-        await this.boardRepository.createLike(userId, boardId, parentId);
+        const like = await this.boardRepository.findByAllConditionsLike(
+            userId,
+            boardId,
+            parentId,
+        );
+
+        if (like)
+            throw new BadRequestException('이미 좋아요 누른 게시글입니다.');
+
+        this.boardRepository.createLike(userId, boardId, parentId);
 
         if (parentId != null) {
             const reply = await this.boardRepository.findByIdReply(parentId);
@@ -236,12 +245,37 @@ export class BoardService {
         return { success: true };
     }
 
-    unlike(
-        user: User,
+    async unlike(
+        userId: string,
         boardId: string,
         parentId: string,
     ): Promise<{ success: true } | errStatus> {
-        return this.boardRepository.unlike(user, boardId, parentId);
+        // eslint-disable-next-line no-var
+        var parentId = parentId ?? null;
+
+        const board = await this.boardRepository.findByIdBoard(boardId);
+
+        const like = await this.boardRepository.findByAllConditionsLike(
+            userId,
+            boardId,
+            parentId,
+        );
+
+        if (!like) {
+            throw new BadRequestException('이미 좋아요를 취소한 게시글입니다.');
+        }
+
+        if (like.parentId) {
+            const reply = await this.boardRepository.findByIdReply(parentId);
+            reply.like_count--;
+            reply.save();
+        } else {
+            board.like_count--;
+            board.save();
+        }
+        like.delete();
+
+        return { success: true };
     }
 
     async createReply(

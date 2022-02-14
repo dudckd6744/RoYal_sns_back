@@ -339,5 +339,10 @@
 ### 2022-02-13
 
      - deleteBoard API 비즈니스로직 분리
+     - like API 비즈니스 로직 분리
+
+### 2022-02-14
+
+     - unLike API 비즈니스 로직 분리
 
 ### to do
