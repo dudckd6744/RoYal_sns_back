@@ -344,5 +344,7 @@
 ### 2022-02-14
 
      - unLike API 비즈니스 로직 분리
+     - create 쿼리문 에 save 메서드 삭제
+     - createReply API 비즈니스 로직 분리
 
 ### to do

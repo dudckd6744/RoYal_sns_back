@@ -1,3 +1,4 @@
+/* eslint-disable no-var */
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { errStatus } from 'src/resStatusDto/resStatus.dto';
 import { Board } from 'src/schemas/Board';
@@ -35,8 +36,6 @@ export class BoardService {
             createBoardDto,
             status,
         );
-
-        await board.save();
 
         const tag_data = tag.map((doc) => ({
             updateOne: {
@@ -217,7 +216,6 @@ export class BoardService {
         boardId: string,
         parentId: string,
     ): Promise<{ success: true } | errStatus> {
-        // eslint-disable-next-line no-var
         var parentId = parentId ?? null;
 
         const board = await this.boardRepository.findByIdBoard(boardId);
@@ -250,7 +248,6 @@ export class BoardService {
         boardId: string,
         parentId: string,
     ): Promise<{ success: true } | errStatus> {
-        // eslint-disable-next-line no-var
         var parentId = parentId ?? null;
 
         const board = await this.boardRepository.findByIdBoard(boardId);
@@ -279,11 +276,44 @@ export class BoardService {
     }
 
     async createReply(
-        user: User,
+        userId: string,
         boardId: string,
         createReplyDto: CreateReplyDto,
-    ): Promise<{ success: true; reply_data: Reply } | errStatus> {
-        return this.boardRepository.createReply(user, boardId, createReplyDto);
+    ): Promise<{ success: true; reply: Reply } | errStatus> {
+        createReplyDto.parentId = createReplyDto.parentId ?? null;
+
+        const newReply = await this.boardRepository.createReply(
+            userId,
+            boardId,
+            createReplyDto,
+        );
+
+        const reply = await this.boardRepository.findbyIdPopulateReply(
+            newReply._id,
+        );
+
+        const oldReply = await this.boardRepository.findByIdReply(
+            reply.parentId,
+        );
+        if (!oldReply)
+            throw new BadRequestException('해당 댓글은 지워진 댓글입니다.');
+
+        const board = await this.boardRepository.findByIdBoard(boardId);
+
+        if (
+            createReplyDto.parentId == reply.parentId &&
+            createReplyDto.parentId != null
+        ) {
+            oldReply.reply_count++;
+            await oldReply.save();
+            board.reply_count++;
+            await board.save();
+        } else if (createReplyDto.parentId == null) {
+            board.reply_count++;
+            await board.save();
+        }
+
+        return { success: true, reply };
     }
 
     async getReply(

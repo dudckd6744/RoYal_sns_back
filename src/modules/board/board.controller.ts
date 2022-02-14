@@ -180,14 +180,14 @@ export class BoardController {
     @UseGuards(AuthGuard_renewal)
     @UsePipes(ValidationPipe)
     createReply(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Body() createReplyDto: CreateReplyDto,
         @Param('boardId') boardId: string,
-    ): Promise<{ success: true; reply_data: Reply } | errStatus> {
+    ): Promise<{ success: true; reply: Reply } | errStatus> {
         logger.info(
-            `${user.email}님이 ${boardId} 게시글에 댓글을 작성하였습니다..`,
+            `${userId}님이 ${boardId} 게시글에 댓글을 작성하였습니다..`,
         );
-        return this.boardSerivce.createReply(user, boardId, createReplyDto);
+        return this.boardSerivce.createReply(userId, boardId, createReplyDto);
     }
 
     @ApiOkResponse({ description: 'success', type: SwaggerReplyDto })

@@ -220,46 +220,25 @@ export class BoardRepository {
     }
 
     async createReply(
-        user: User,
+        userId: string,
         boardId: string,
         createReplyDto: CreateReplyDto,
-    ): Promise<{ success: true; reply_data: Reply } | errStatus> {
-        const { comment } = createReplyDto;
-        const parentId = createReplyDto.parentId
-            ? createReplyDto.parentId
-            : null;
-
-        const reply = await this.replyModel.create({
-            writer: user._id,
+    ): Promise<Reply> {
+        return await this.replyModel.create({
+            writer: userId,
             boardId: boardId,
-            comment,
-            parentId,
+            comment: createReplyDto.comment,
+            parentId: createReplyDto.parentId,
         });
-        await reply.save();
+    }
 
-        const reply_data = await this.replyModel
-            .findOne({ _id: reply._id })
+    async findbyIdPopulateReply(replyId: string): Promise<Reply> {
+        return await this.replyModel
+            .findOne({ _id: replyId })
             .select(
                 'userId boardId parentId comment reply_count like_count IsLike createdAt',
             )
             .populate('writer', 'name profile');
-
-        const replyed = await this.replyModel.findOne({
-            _id: reply_data.parentId,
-        });
-
-        const board = await this.boardModel.findOne({ _id: boardId });
-
-        if (parentId == reply_data.parentId && parentId != null) {
-            replyed.reply_count++;
-            await replyed.save();
-            board.reply_count++;
-            await board.save();
-        } else if (parentId == null) {
-            board.reply_count++;
-            await board.save();
-        }
-        return { success: true, reply_data };
     }
 
     async getReply(

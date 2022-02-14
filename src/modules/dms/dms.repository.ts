@@ -141,8 +141,6 @@ export class DMsRepository {
             files,
         });
 
-        await ChatRoom_dms.save();
-
         const new_commnet = await this.dmsModel.findOne({
             _id: ChatRoom_dms._id,
         });

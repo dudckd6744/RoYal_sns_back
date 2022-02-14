@@ -26,7 +26,7 @@ export class AuthService {
 
     async registerUser(
         createUserDto: CreateUserDto,
-    ): Promise<{ message: string } | errStatus> {
+    ): Promise<{ success: true } | errStatus> {
         let { email, name, password, profile, phone } = createUserDto;
 
         profile = profile ?? null;
@@ -45,9 +45,7 @@ export class AuthService {
 
         const user = await this.authRepository.createUser(userInfo);
 
-        await user.save();
-
-        return { message: 'Success' };
+        return { success: true };
     }
 
     async loginUser(loginUser: LoginUser): Promise<{ token } | errStatus> {

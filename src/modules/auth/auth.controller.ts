@@ -49,7 +49,7 @@ export class AuthController {
     @UsePipes(ValidationPipe)
     registerUser(
         @Body() createUserDto: CreateUserDto,
-    ): Promise<{ message: string } | errStatus> {
+    ): Promise<{ success: true } | errStatus> {
         return this.userService.registerUser(createUserDto);
     }
 
