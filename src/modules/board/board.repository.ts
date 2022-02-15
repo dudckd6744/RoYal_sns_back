@@ -241,19 +241,18 @@ export class BoardRepository {
             .populate('writer', 'name profile');
     }
 
+    async getReplyCount(boardId: string): Promise<number> {
+        return await this.replyModel
+            .find({ boardId: boardId, deletedAt: null, parentId: null })
+            .count();
+    }
+
     async getReply(
-        user: User,
         boardId: string,
         skip: number,
         limit: number,
-    ): Promise<
-        { success: true; reply: Reply[]; reply_count: number } | errStatus
-    > {
-        const reply_count = await this.replyModel
-            .find({ boardId: boardId, deletedAt: null, parentId: null })
-            .count();
-
-        const reply = await this.replyModel
+    ): Promise<Reply[]> {
+        return await this.replyModel
             .find({ boardId: boardId, parentId: null, deletedAt: null })
             .sort({ like_count: -1, reply_count: -1, createdAt: -1 })
             .skip(skip)
@@ -262,54 +261,104 @@ export class BoardRepository {
                 'userId boardId parentId comment reply_count like_count IsLike createdAt',
             )
             .populate('writer', 'name profile');
+    }
 
-        const all_reply_data = [];
-
-        const reply_heart = [];
-        reply.forEach((reply_data, i) => {
-            reply_heart.push(reply_data._id);
-            all_reply_data.push(reply_data);
-        });
-
-        const re_reply = await this.replyModel
+    async getReReply(
+        boardId: string,
+        replyIds: Array<string>,
+    ): Promise<Reply[]> {
+        return await this.replyModel
             .find({
                 boardId: boardId,
                 deletedAt: null,
-                parentId: { $in: reply_heart },
+                parentId: { $in: replyIds },
             })
             .sort({ like_count: -1, reply_count: -1, createdAt: -1 })
             .select(
                 'userId boardId parentId comment reply_count like_count IsLike createdAt',
             )
             .populate('writer', 'name profile');
-
-        re_reply.forEach((re_reply_data) => {
-            reply_heart.push(re_reply_data._id);
-            all_reply_data.push(re_reply_data);
-        });
-
-        if (user) {
-            const liked_board = await this.likeModel.find({
-                userId: user._id,
-                parentId: { $in: reply_heart },
-            });
-
-            all_reply_data.forEach((reply_data) => {
-                liked_board.forEach((board_liked) => {
-                    if (
-                        reply_data._id.toString() ==
-                        board_liked.parentId.toString()
-                    ) {
-                        reply_data.IsLike = true;
-                    }
-                });
-            });
-
-            return { success: true, reply: all_reply_data, reply_count };
-        } else {
-            return { success: true, reply: all_reply_data, reply_count };
-        }
     }
+
+    async likedReply(
+        userId: string,
+        likedReplyId: Array<string>,
+    ): Promise<Like[]> {
+        return await this.likeModel.find({
+            userId: userId,
+            parentId: { $in: likedReplyId },
+        });
+    }
+
+    // async getReplys(
+    //     user: User,
+    //     boardId: string,
+    //     skip: number,
+    //     limit: number,
+    // ): Promise<
+    //     { success: true; reply: Reply[]; reply_count: number } | errStatus
+    // > {
+    //     const reply_count = await this.replyModel
+    //         .find({ boardId: boardId, deletedAt: null, parentId: null })
+    //         .count();
+
+    //     const reply = await this.replyModel
+    //         .find({ boardId: boardId, parentId: null, deletedAt: null })
+    //         .sort({ like_count: -1, reply_count: -1, createdAt: -1 })
+    //         .skip(skip)
+    //         .limit(limit)
+    //         .select(
+    //             'userId boardId parentId comment reply_count like_count IsLike createdAt',
+    //         )
+    //         .populate('writer', 'name profile');
+
+    //     const all_reply_data = [];
+
+    //     const reply_heart = [];
+    //     reply.forEach((reply_data, i) => {
+    //         reply_heart.push(reply_data._id);
+    //         all_reply_data.push(reply_data);
+    //     });
+
+    //     const re_reply = await this.replyModel
+    //         .find({
+    //             boardId: boardId,
+    //             deletedAt: null,
+    //             parentId: { $in: reply_heart },
+    //         })
+    //         .sort({ like_count: -1, reply_count: -1, createdAt: -1 })
+    //         .select(
+    //             'userId boardId parentId comment reply_count like_count IsLike createdAt',
+    //         )
+    //         .populate('writer', 'name profile');
+
+    //     re_reply.forEach((re_reply_data) => {
+    //         reply_heart.push(re_reply_data._id);
+    //         all_reply_data.push(re_reply_data);
+    //     });
+
+    //     if (user) {
+    //         const liked_board = await this.likeModel.find({
+    //             userId: user._id,
+    //             parentId: { $in: reply_heart },
+    //         });
+
+    //         all_reply_data.forEach((reply_data) => {
+    //             liked_board.forEach((board_liked) => {
+    //                 if (
+    //                     reply_data._id.toString() ==
+    //                     board_liked.parentId.toString()
+    //                 ) {
+    //                     reply_data.IsLike = true;
+    //                 }
+    //             });
+    //         });
+
+    //         return { success: true, reply: all_reply_data, reply_count };
+    //     } else {
+    //         return { success: true, reply: all_reply_data, reply_count };
+    //     }
+    // }
 
     async deleteReply(
         user: User,

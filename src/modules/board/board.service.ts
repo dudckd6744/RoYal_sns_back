@@ -317,14 +317,45 @@ export class BoardService {
     }
 
     async getReply(
-        user: User,
+        userId: string,
         boardId: string,
         skip: number,
         limit: number,
     ): Promise<
-        { success: true; reply: Reply[]; reply_count: number } | errStatus
+        { success: true; reply: Reply[]; replyCount: number } | errStatus
     > {
-        return this.boardRepository.getReply(user, boardId, skip, limit);
+        const replyCount = await this.boardRepository.getReplyCount(boardId);
+
+        const reply = await this.boardRepository.getReply(boardId, skip, limit);
+        const allReplyData = [];
+
+        const likedReplyId = [];
+        reply.forEach((replyData) => {
+            likedReplyId.push(replyData._id);
+            allReplyData.push(replyData);
+        });
+
+        if (userId) {
+            const likedReply = await this.boardRepository.likedReply(
+                userId,
+                likedReplyId,
+            );
+
+            allReplyData.forEach((replyData) => {
+                likedReply.forEach((likedReplyData) => {
+                    if (
+                        replyData._id.toString() ==
+                        likedReplyData.parentId.toString()
+                    ) {
+                        replyData.IsLike = true;
+                    }
+                });
+            });
+
+            return { success: true, reply: allReplyData, replyCount };
+        } else {
+            return { success: true, reply: allReplyData, replyCount };
+        }
     }
 
     async deleteReply(

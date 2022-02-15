@@ -347,4 +347,9 @@
      - create 쿼리문 에 save 메서드 삭제
      - createReply API 비즈니스 로직 분리
 
+### 2022-02-15
+
+     - getReply API 비즈니스 로직 분리
+          - test 필요
+
 ### to do

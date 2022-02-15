@@ -197,13 +197,13 @@ export class BoardController {
     @Get('/:boardId/reply')
     getReply(
         @Param('boardId') boardId: string,
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Query('skip', ParseIntPipe) skip: number,
         @Query('limit', ParseIntPipe) limit: number,
     ): Promise<
-        { success: true; reply: Reply[]; reply_count: number } | errStatus
+        { success: true; reply: Reply[]; replyCount: number } | errStatus
     > {
-        return this.boardSerivce.getReply(user, boardId, skip, limit);
+        return this.boardSerivce.getReply(userId, boardId, skip, limit);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
