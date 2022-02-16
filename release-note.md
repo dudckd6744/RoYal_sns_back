@@ -352,4 +352,12 @@
      - getReply API 비즈니스 로직 분리
           - test 필요
 
+### 2022-02-16
+
+     - getReply 이슈발견
+          - parentId 가 null 인것만 불러와지는데 front에서 어떻게 로직을 짜놨는지 정확히 기억이안난다.
+          - boardId 에 해당하는 reply 다불러와서 front에서 로직을 짜는형태로 API 를 개선시켰다.
+     - createReply 수정
+          - 대댓글 달때 댓글이 삭제된상태면 alert !
+
 ### to do

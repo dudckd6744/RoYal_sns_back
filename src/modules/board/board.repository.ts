@@ -243,7 +243,7 @@ export class BoardRepository {
 
     async getReplyCount(boardId: string): Promise<number> {
         return await this.replyModel
-            .find({ boardId: boardId, deletedAt: null, parentId: null })
+            .find({ boardId: boardId, deletedAt: null })
             .count();
     }
 
@@ -253,7 +253,7 @@ export class BoardRepository {
         limit: number,
     ): Promise<Reply[]> {
         return await this.replyModel
-            .find({ boardId: boardId, parentId: null, deletedAt: null })
+            .find({ boardId: boardId, deletedAt: null })
             .sort({ like_count: -1, reply_count: -1, createdAt: -1 })
             .skip(skip)
             .limit(limit)
@@ -291,14 +291,14 @@ export class BoardRepository {
     }
 
     // async getReplys(
-    //     user: User,
+    //     userId: string,
     //     boardId: string,
     //     skip: number,
     //     limit: number,
     // ): Promise<
-    //     { success: true; reply: Reply[]; reply_count: number } | errStatus
+    //     { success: true; reply: Reply[]; replyCount: number } | errStatus
     // > {
-    //     const reply_count = await this.replyModel
+    //     const replyCount = await this.replyModel
     //         .find({ boardId: boardId, deletedAt: null, parentId: null })
     //         .count();
 
@@ -337,9 +337,9 @@ export class BoardRepository {
     //         all_reply_data.push(re_reply_data);
     //     });
 
-    //     if (user) {
+    //     if (userId) {
     //         const liked_board = await this.likeModel.find({
-    //             userId: user._id,
+    //             userId: userId,
     //             parentId: { $in: reply_heart },
     //         });
 
@@ -354,9 +354,9 @@ export class BoardRepository {
     //             });
     //         });
 
-    //         return { success: true, reply: all_reply_data, reply_count };
+    //         return { success: true, reply: all_reply_data, replyCount };
     //     } else {
-    //         return { success: true, reply: all_reply_data, reply_count };
+    //         return { success: true, reply: all_reply_data, replyCount };
     //     }
     // }
 

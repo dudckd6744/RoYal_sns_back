@@ -295,7 +295,7 @@ export class BoardService {
         const oldReply = await this.boardRepository.findByIdReply(
             reply.parentId,
         );
-        if (!oldReply)
+        if (oldReply?.deletedAt != null)
             throw new BadRequestException('해당 댓글은 지워진 댓글입니다.');
 
         const board = await this.boardRepository.findByIdBoard(boardId);
@@ -332,7 +332,20 @@ export class BoardService {
         const likedReplyId = [];
         reply.forEach((replyData) => {
             likedReplyId.push(replyData._id);
-            allReplyData.push(replyData);
+            if (replyData.parentId == null) {
+                allReplyData.push(replyData);
+            }
+        });
+
+        const ReReply = await this.boardRepository.getReReply(
+            boardId,
+            likedReplyId,
+        );
+        console.log(reply, likedReplyId);
+
+        ReReply.forEach((ReReplydata) => {
+            likedReplyId.push(ReReplydata._id);
+            allReplyData.push(ReReplydata);
         });
 
         if (userId) {
