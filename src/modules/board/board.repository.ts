@@ -359,6 +359,15 @@ export class BoardRepository {
     //         return { success: true, reply: all_reply_data, replyCount };
     //     }
     // }
+    async findByUserIdAndReplyIdReply(
+        userId: string,
+        replyId: string,
+    ): Promise<Reply> {
+        return await this.replyModel.findOne({
+            writer: userId,
+            _id: replyId,
+        });
+    }
 
     async deleteReply(
         user: User,

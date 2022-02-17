@@ -372,10 +372,37 @@ export class BoardService {
     }
 
     async deleteReply(
-        user: User,
+        userId: string,
         boardId: string,
         replyId: string,
     ): Promise<{ success: true } | errStatus> {
-        return this.boardRepository.deleteReply(user, boardId, replyId);
+        const reply = await this.boardRepository.findByUserIdAndReplyIdReply(
+            userId,
+            replyId,
+        );
+        if (!reply) {
+            throw new BadRequestException('댓글을 삭제하는데 실패하였습니다.');
+        }
+        if (reply.deletedAt)
+            throw new BadRequestException('이미 삭제된 댓글입니다.');
+        if (reply.parentId) {
+            const reply_data = await this.boardRepository.findByIdReply(
+                reply.parentId,
+            );
+            reply.deletedAt = new Date();
+            await reply.save();
+
+            reply_data.reply_count - 1;
+            await reply_data.save();
+            return { success: true };
+        }
+        const board = await this.boardRepository.findByIdBoard(boardId);
+        console.log(board);
+        reply.deletedAt = new Date();
+        await reply.save();
+        board.reply_count--;
+        await board.save();
+
+        return { success: true };
     }
 }

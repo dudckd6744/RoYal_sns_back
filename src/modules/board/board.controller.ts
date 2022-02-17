@@ -212,10 +212,10 @@ export class BoardController {
     @ApiBearerAuth()
     @Delete('/:boardId/:replyId')
     deleteReply(
+        @ReqUser() userId: string,
         @Param('boardId') boardId: string,
         @Param('replyId') replyId: string,
-        @ReqUser() user: User,
     ): Promise<{ success: true } | errStatus> {
-        return this.boardSerivce.deleteReply(user, boardId, replyId);
+        return this.boardSerivce.deleteReply(userId, boardId, replyId);
     }
 }

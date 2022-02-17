@@ -359,5 +359,12 @@
           - boardId 에 해당하는 reply 다불러와서 front에서 로직을 짜는형태로 API 를 개선시켰다.
      - createReply 수정
           - 대댓글 달때 댓글이 삭제된상태면 alert !
+     // NOTE:*****
+     - test 및 분석 필요
+
+### 2022-02-17
+
+     - DeleteReply API 비즈니스 로직 분리
+
 
 ### to do
