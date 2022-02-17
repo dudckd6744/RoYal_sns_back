@@ -18,40 +18,65 @@ export class DMsRepository {
         private readonly chatGateway: ChatsGateway,
     ) {}
 
-    async createChatRoom(
-        user: User,
-        usersIds: Array<string>,
-    ): Promise<{ success: true } | errStatus> {
-        const users_data = usersIds.concat(user._id.toString());
-
-        const chatRoom = await this.chatRoomModel.findOneAndUpdate(
+    async upsertChatRoom(userIds: Array<string>): Promise<ChatRoom> {
+        return await this.chatRoomModel.findOneAndUpdate(
             {
-                usersIds: users_data,
+                usersIds: userIds,
             },
-            { usersIds: users_data },
+            { usersIds: userIds },
             { upsert: true, new: true },
         );
-
-        if (chatRoom.leaveInfo.length > 0) {
-            chatRoom.leaveInfo.forEach(async (leave_user, i) => {
-                if (leave_user.user_id == user._id.toString()) {
-                    await this.chatRoomModel.findOneAndUpdate(
-                        { _id: chatRoom._id },
-                        {
-                            $pull: {
-                                leaveInfo: {
-                                    user_id: chatRoom.leaveInfo[i].user_id,
-                                    leaveDate: chatRoom.leaveInfo[i].leaveDate,
-                                },
-                            },
-                        },
-                        { multi: true },
-                    );
-                }
-            });
-        }
-        return { success: true };
     }
+
+    async joinChatRoom(chatRoomId: string, userId: string, leaveDate: string) {
+        return await this.chatRoomModel.findOneAndUpdate(
+            { _id: chatRoomId },
+            {
+                $pull: {
+                    leaveInfo: {
+                        userId: userId,
+                        leaveDate: leaveDate,
+                    },
+                },
+            },
+            { multi: true },
+        );
+    }
+
+    // async createChatRoom(
+    //     user: User,
+    //     usersIds: Array<string>,
+    // ): Promise<{ success: true } | errStatus> {
+    //     const users_data = usersIds.concat(user._id.toString());
+
+    //     const chatRoom = await this.chatRoomModel.findOneAndUpdate(
+    //         {
+    //             usersIds: users_data,
+    //         },
+    //         { usersIds: users_data },
+    //         { upsert: true, new: true },
+    //     );
+
+    //     if (chatRoom.leaveInfo.length > 0) {
+    //         chatRoom.leaveInfo.forEach(async (leave_user, i) => {
+    //             if (leave_user.user_id == user._id.toString()) {
+    //                 await this.chatRoomModel.findOneAndUpdate(
+    //                     { _id: chatRoom._id },
+    //                     {
+    //                         $pull: {
+    //                             leaveInfo: {
+    //                                 user_id: chatRoom.leaveInfo[i].user_id,
+    //                                 leaveDate: chatRoom.leaveInfo[i].leaveDate,
+    //                             },
+    //                         },
+    //                     },
+    //                     { multi: true },
+    //                 );
+    //             }
+    //         });
+    //     }
+    //     return { success: true };
+    // }
 
     async leaveChatRoom(
         user: User,

@@ -9,11 +9,27 @@ import { CreateDMsDto } from './dto/dms.dto';
 export class DmsService {
     constructor(private dmsRepository: DMsRepository) {}
 
-    createChatRoom(
-        user: User,
-        usersIds: Array<string>,
+    async createChatRoom(
+        userId: string,
+        userIds: Array<string>,
     ): Promise<{ success: true } | errStatus> {
-        return this.dmsRepository.createChatRoom(user, usersIds);
+        const newUserIds = userIds.concat(userId.toString());
+
+        const chatRoom = await this.dmsRepository.upsertChatRoom(newUserIds);
+
+        if (chatRoom.leaveInfo?.length > 0) {
+            chatRoom.leaveInfo.forEach(async (leaveUser, i) => {
+                console.log(leaveUser);
+                if (leaveUser.user_id == userId.toString()) {
+                    await this.dmsRepository.joinChatRoom(
+                        chatRoom._id,
+                        leaveUser.userId,
+                        leaveUser.leaveDate,
+                    );
+                }
+            });
+        }
+        return { success: true };
     }
 
     leaveChatRoom(

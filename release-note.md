@@ -364,7 +364,9 @@
 
 ### 2022-02-17
 
-     - DeleteReply API 비즈니스 로직 분리
-
+     - Board API 비즈니스 마무리
+          - DeleteReply API 비즈니스 로직 분리
+     - dms API 비즈니스 로직 분리 시작
+          - createChatRoom API 끝
 
 ### to do

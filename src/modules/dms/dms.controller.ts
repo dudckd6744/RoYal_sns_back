@@ -45,10 +45,10 @@ export class DmsController {
     @Post('/chatRoom')
     @UseGuards(AuthGuard_renewal)
     createChatRoom(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Body('usersIds') usersIds: Array<string>,
     ): Promise<{ success: true } | errStatus> {
-        return this.dmsService.createChatRoom(user, usersIds);
+        return this.dmsService.createChatRoom(userId, usersIds);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
