@@ -19,7 +19,6 @@ export class DmsService {
 
         if (chatRoom.leaveInfo?.length > 0) {
             chatRoom.leaveInfo.forEach(async (leaveUser, i) => {
-                console.log(leaveUser);
                 if (leaveUser.user_id == userId.toString()) {
                     await this.dmsRepository.joinChatRoom(
                         chatRoom._id,
@@ -33,10 +32,10 @@ export class DmsService {
     }
 
     leaveChatRoom(
-        user: User,
+        userId: string,
         chatRoom_id: string,
     ): Promise<{ success: true } | errStatus> {
-        return this.dmsRepository.leaveChatRoom(user, chatRoom_id);
+        return this.dmsRepository.leaveChatRoom(userId, chatRoom_id);
     }
 
     getChatRoomDMs(user: User, chatRoom_id: string) {

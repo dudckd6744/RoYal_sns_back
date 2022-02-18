@@ -58,10 +58,10 @@ export class DmsController {
     @Put('/:chatRoomId')
     @UseGuards(AuthGuard_renewal)
     leaveChatRoom(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Param('chatRoomId') chatRoomId: string,
     ): Promise<{ success: true } | errStatus> {
-        return this.dmsService.leaveChatRoom(user, chatRoomId);
+        return this.dmsService.leaveChatRoom(userId, chatRoomId);
     }
 
     @ApiOkResponse({ description: 'success', type: CreateDMsDto })

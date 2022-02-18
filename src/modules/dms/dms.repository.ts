@@ -79,38 +79,42 @@ export class DMsRepository {
     // }
 
     async leaveChatRoom(
-        user: User,
+        userId: string,
         chatRoom_id: string,
     ): Promise<{ success: true } | errStatus> {
         const leaveDate = new Date();
 
-        const leave_data = {
-            user_id: user._id,
+        const leaveData = {
+            user_id: userId,
             leaveDate: leaveDate,
         };
 
         const chatRoom = await this.chatRoomModel.findById(chatRoom_id);
 
+        chatRoom.leaveInfo?.forEach((leaveUser) => {
+            if (leaveUser.user_id == userId)
+                throw new BadRequestException('이미 나간 채팅방 입니다.');
+        });
+
+        await this.chatRoomModel.findOneAndUpdate(
+            { _id: chatRoom_id },
+            { $push: { leaveInfo: leaveData } },
+        );
+
         let leave_status = 0;
         let count = 0;
-        chatRoom.leaveInfo.some((leave_user) => {
+        chatRoom.usersIds?.forEach((leave_user) => {
             count++;
-            if (leave_user.user_id == user._id.toString()) {
+            if (leave_user == userId) {
                 leave_status++;
             }
         });
+
         if (count == leave_status) {
             await this.chatRoomModel.findByIdAndUpdate(chatRoom, {
                 deletedAt: new Date(),
             });
         }
-        if (leave_status) {
-            throw new BadRequestException('이미 해당 채팅방에서 나가셨습니다.');
-        }
-        await this.chatRoomModel.findOneAndUpdate(
-            { _id: chatRoom_id },
-            { $push: { leaveInfo: leave_data } },
-        );
 
         return { success: true };
     }

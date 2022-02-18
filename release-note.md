@@ -369,4 +369,9 @@
      - dms API 비즈니스 로직 분리 시작
           - createChatRoom API 끝
 
+### 2022-02-18
+
+     - leaveChatRoom API 분석 및 로직 수정
+          - 비즈니스 로직 분리 할 예정
+
 ### to do
