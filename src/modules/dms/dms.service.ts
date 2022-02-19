@@ -2,12 +2,16 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { errStatus } from 'src/resStatusDto/resStatus.dto';
 import { User } from 'src/schemas/User';
 
+import { ChatsGateway } from '../chats/chats.gateway';
 import { DMsRepository } from './dms.repository';
 import { CreateDMsDto } from './dto/dms.dto';
 
 @Injectable()
 export class DmsService {
-    constructor(private dmsRepository: DMsRepository) {}
+    constructor(
+        private dmsRepository: DMsRepository,
+        private readonly chatGateway: ChatsGateway,
+    ) {}
 
     async createChatRoom(
         userId: string,
@@ -75,14 +79,38 @@ export class DmsService {
         return this.dmsRepository.getChatRoomDMs(user, chatRoom_id);
     }
 
-    createDMs(user: User, chatRoom_id: string, createDMsDto: CreateDMsDto) {
-        return this.dmsRepository.createDMs(user, chatRoom_id, createDMsDto);
+    async createDMs(
+        userId: string,
+        chatRoomId: string,
+        createDMsDto: CreateDMsDto,
+    ) {
+        const comment = createDMsDto.comment;
+        const files = createDMsDto.files ?? null;
+
+        const socketChatRoomId = await this.dmsRepository.findByIdChatRoom(
+            chatRoomId,
+        );
+        console.log(socketChatRoomId);
+        const DM = this.dmsRepository.createDM(
+            chatRoomId,
+            userId,
+            comment,
+            files,
+        );
+
+        await this.chatGateway.server.to(`${socketChatRoomId}`).emit('dm', DM);
     }
 
-    DeleteDMs(
-        user: User,
-        DMs_id: string,
+    async DeleteDMs(
+        userId: string,
+        DMId: string,
     ): Promise<{ success: true } | errStatus> {
-        return this.dmsRepository.DeleteDMs(user, DMs_id);
+        const DM = await this.dmsRepository.findByidDM(userId, DMId);
+
+        DM.deletedAt = new Date();
+
+        DM.save();
+
+        return { success: true };
     }
 }

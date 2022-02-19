@@ -86,11 +86,11 @@ export class DmsController {
     @UsePipes(ValidationPipe)
     @UseGuards(AuthGuard_renewal)
     createDMs(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Param('chatRoomId') chatRoomId: string,
         @Body() createDmsDto: CreateDMsDto,
     ) {
-        return this.dmsService.createDMs(user, chatRoomId, createDmsDto);
+        return this.dmsService.createDMs(userId, chatRoomId, createDmsDto);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
@@ -100,9 +100,9 @@ export class DmsController {
     @Delete('/:DMs_id')
     @UseGuards(AuthGuard_renewal)
     DeleteDMs(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Param('DMs_id') DMs_id: string,
     ): Promise<{ success: true } | errStatus> {
-        return this.dmsService.DeleteDMs(user, DMs_id);
+        return this.dmsService.DeleteDMs(userId, DMs_id);
     }
 }

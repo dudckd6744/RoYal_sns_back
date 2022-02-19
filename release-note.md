@@ -379,5 +379,5 @@
      - leaveChatRoom API 비즈니스 로직 분리
      - createChatRoom API 로직 수정
           - deleteAt 값이 있으면 새로 방만들기
-
+     - deleteChatRoom API 비즈니스 로직 분리
 ### to do
