@@ -374,4 +374,10 @@
      - leaveChatRoom API 분석 및 로직 수정
           - 비즈니스 로직 분리 할 예정
 
+### 2022-02-19
+
+     - leaveChatRoom API 비즈니스 로직 분리
+     - createChatRoom API 로직 수정
+          - deleteAt 값이 있으면 새로 방만들기
+
 ### to do
