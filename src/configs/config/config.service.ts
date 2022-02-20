@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { config } from 'dotenv';
 
-config();
-
-export class ConfigService {
+export class MongoConfigService {
     constructor() {}
 
     public async getMongoConfig() {

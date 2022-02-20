@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { config } from 'dotenv';
 import * as jwt from 'jsonwebtoken';
-
-config();
 
 const jwtSecret = process.env.JWT_SECRET;
 

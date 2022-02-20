@@ -1,15 +1,11 @@
-import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { config } from 'dotenv';
 import * as morgan from 'morgan';
 
 import { AppModule } from './app.module';
 import { stream } from './configs/winston';
 import { HttpExceptionFilter } from './middleware/exception';
 import { SuccessInterceptor } from './utils/success.interceptor';
-
-config();
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, { cors: true });

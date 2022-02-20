@@ -75,8 +75,39 @@ export class DmsService {
         return { success: true };
     }
 
-    getChatRoomDMs(user: User, chatRoom_id: string) {
-        return this.dmsRepository.getChatRoomDMs(user, chatRoom_id);
+    async getChatRoomDMs(userId: string, chatRoomId: string) {
+        const chatRoom = await this.dmsRepository.findByIdChatRoom(chatRoomId);
+
+        let leave_user;
+        let leave_user_date;
+        const result = {};
+        const all_DMs_data = [];
+
+        chatRoom?.leaveInfo?.forEach(async (leaveUserData) => {
+            if (leaveUserData.user_id == userId) {
+                leave_user = leaveUserData.user_id;
+                leave_user_date = leaveUserData.leaveDate;
+            }
+        });
+
+        const chatRoomDMs = await this.dmsRepository.findByChatRoomIdDM(
+            chatRoomId,
+        );
+        if (!leave_user) {
+            result['DMs'] = chatRoomDMs;
+            result['success'] = true;
+            return result;
+        }
+
+        chatRoomDMs.forEach((DMs_data) => {
+            if (DMs_data['createdAt'] > chatRoom.deletedAt) {
+                if (DMs_data['createdAt'] > leave_user_date)
+                    all_DMs_data.push(DMs_data);
+            }
+        });
+        result['DMs'] = all_DMs_data;
+        result['success'] = true;
+        return result;
     }
 
     async createDMs(

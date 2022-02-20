@@ -71,10 +71,10 @@ export class DmsController {
     @Get('/:chatRoomId')
     @UseGuards(AuthGuard_renewal)
     getChatRoomDMs(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Param('chatRoomId') chatRoomId: string,
     ) {
-        return this.dmsService.getChatRoomDMs(user, chatRoomId);
+        return this.dmsService.getChatRoomDMs(userId, chatRoomId);
     }
 
     @ApiOkResponse({ description: 'success', type: CreateDMsDto })

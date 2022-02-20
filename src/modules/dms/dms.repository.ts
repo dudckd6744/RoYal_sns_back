@@ -59,36 +59,13 @@ export class DMsRepository {
         );
     }
 
-    async getChatRoomDMs(user: User, chatRoom_id: string) {
-        const chatRoom = await this.chatRoomModel.findOne({ _id: chatRoom_id });
-        let leave_user = null;
-        let leave_user_date = null;
-        let result = {};
-        let all_DMs_data = [];
-        chatRoom.leaveInfo.forEach(async (leave_user_data) => {
-            if (leave_user_data.user_id == user._id.toString()) {
-                leave_user = leave_user_data.user_id;
-                leave_user_date = leave_user_data.leaveDate;
-            }
-        });
-        const DMs = await this.dmsModel.find({
-            chatRoomId: chatRoom._id,
-        });
-        if (!leave_user) {
-            result['DMs'] = DMs;
-            result['success'] = true;
-            return result;
-        }
-
-        DMs.forEach((DMs_data) => {
-            if (DMs_data['createdAt'] > chatRoom.deletedAt) {
-                if (DMs_data['createdAt'] > leave_user_date)
-                    all_DMs_data.push(DMs_data);
-            }
-        });
-        result['DMs'] = all_DMs_data;
-        result['success'] = true;
-        return result;
+    async findByChatRoomIdDM(chatRoomId: string) {
+        return await this.dmsModel
+            .find({
+                chatRoomId: chatRoomId,
+                deletedAt: null,
+            })
+            .sort({ createdAt: -1 });
     }
 
     async createDM(

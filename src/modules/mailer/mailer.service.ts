@@ -2,11 +2,8 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcryptjs';
-import { config } from 'dotenv';
 import { Model } from 'mongoose';
 import { User } from 'src/schemas/User';
-
-config();
 
 @Injectable()
 export class AuthMailerService {

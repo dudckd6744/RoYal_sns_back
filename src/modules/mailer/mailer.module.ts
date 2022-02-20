@@ -3,14 +3,11 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { config } from 'dotenv';
 import { UserSchema, User } from 'src/schemas/User';
 
 // import { UserRepository } from 'src/modules/auth/user.repository';
 import { MailerController } from './mailer.controller';
 import { AuthMailerService } from './mailer.service';
-
-config();
 
 @Module({
     imports: [

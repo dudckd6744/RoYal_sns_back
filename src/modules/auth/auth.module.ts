@@ -1,13 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { config } from 'dotenv';
 import { UserSchema, User } from 'src/schemas/User';
 
 import { AuthController } from './auth.controller';
 import { AuthRepository } from './auth.repository';
 import { AuthService } from './auth.service';
-
-config();
 
 @Module({
     imports: [
