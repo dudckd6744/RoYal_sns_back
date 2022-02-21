@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as morgan from 'morgan';
@@ -7,9 +8,11 @@ import { stream } from './configs/winston';
 import { HttpExceptionFilter } from './middleware/exception';
 import { SuccessInterceptor } from './utils/success.interceptor';
 
+const configService = new ConfigService();
+
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, { cors: true });
-    const port = process.env.PORT || 5000;
+    const port = configService.get('PORT') || 5000;
 
     const config_swagger = new DocumentBuilder()
         .setTitle('RoYal API')

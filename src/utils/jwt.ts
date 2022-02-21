@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/ban-types */
+import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 
-const jwtSecret = process.env.JWT_SECRET;
+const configService = new ConfigService();
 
 export async function signToken(
     payload: Object,
     options: jwt.SignOptions = {},
 ): Promise<string> {
+    const jwtSecret = configService.get('JWT_SECRET');
+
     const { expiresIn } = options;
     return new Promise((res, rej) =>
         jwt.sign(
@@ -22,6 +25,8 @@ export async function signToken(
 }
 
 export async function verifyToken(token: string): Promise<any> {
+    const jwtSecret = configService.get('JWT_SECRET');
+
     return new Promise((res, rej) =>
         jwt.verify(token, jwtSecret, (err, decoded) => {
             if (err) rej(err);

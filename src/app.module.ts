@@ -25,7 +25,7 @@ import { KakaoStrategy } from './utils/oAuth/kakao.auth';
     imports: [
         //typeorm의 createConnection와 같은 파라미터를 제공받으며 App 전체에서 접근 가능한 Context의 connection을 주입받습니다.
         // TypeOrmModule.forRoot(typeORMConfig),
-        ConfigModule.forRoot({ isGlobal: true }),
+        ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
         MongoConfigModule,
         MongooseModule.forRootAsync({
             inject: [MongoConfigService],

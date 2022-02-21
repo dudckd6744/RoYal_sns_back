@@ -382,10 +382,15 @@
      - deleteDMS API 비즈니스 로직 분리
      - createDMS API 비즈니스 로직 분리
 
-### 2022-02-19
+### 2022-02-20
 
      - DMS API 비즈니스 로직분리 완료
           - getChatRoomDMs API 작업
      - dotenv 제거 => @nestjs/config 로 마이그레이션
+
+### 2022-02-21
+
+     - dotenv 제거 => @nestjs/config 로 마이그레이션
+          - process.env => configService.get()
 
 ### to do
