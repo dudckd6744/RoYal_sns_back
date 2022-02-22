@@ -393,4 +393,9 @@
      - dotenv 제거 => @nestjs/config 로 마이그레이션
           - process.env => configService.get()
 
+### 2022-02-22
+
+     - 이메일 인증하기 API 수정
+          - 이메일 인증시 랜덤 비밀번호값 추출하는 로직 수정
+
 ### to do

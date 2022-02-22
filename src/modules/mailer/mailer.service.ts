@@ -5,6 +5,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcryptjs';
 import { Model } from 'mongoose';
 import { User } from 'src/schemas/User';
+import { pipe } from 'src/utils/pipe.fp';
+import { randomInt, randomReturnPassword } from 'src/utils/randomValue';
 
 @Injectable()
 export class AuthMailerService {
@@ -19,7 +21,7 @@ export class AuthMailerService {
 
         if (!user) throw new BadRequestException('이메일을 다시 확인해주세요');
 
-        const passowrd = this.randomPW(14);
+        const passowrd = await pipe(randomInt, randomReturnPassword)(0);
 
         const salt = await bcrypt.genSalt();
         const hash_password = await bcrypt.hash(passowrd, salt);
@@ -35,16 +37,5 @@ export class AuthMailerService {
             html: `<h2>${user.email}님의</h2> <h3> 비밀번호 인증 코드 <b> ${passowrd}</b> 를 입력해주세요.<h3>`, // HTML body content
         });
         return { success: true };
-    }
-
-    private randomPW(lenth) {
-        let text = '';
-        const possible =
-            'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+~`{}[]:;<>?,./|';
-        for (let i = 0; i < lenth; i++)
-            text += possible.charAt(
-                Math.floor(Math.random() * possible.length),
-            );
-        return text;
     }
 }
