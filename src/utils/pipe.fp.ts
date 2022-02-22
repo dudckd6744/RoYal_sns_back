@@ -1,7 +1,7 @@
 export const pipe =
     (...funcs) =>
-    (result) => {
+    (previousResult) => {
         return funcs.reduce((res, func) => {
             return func(res);
-        }, result);
+        }, previousResult);
     };

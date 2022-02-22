@@ -1,8 +1,9 @@
 function randomCreatePassword(srt, lenth) {
-    let result;
+    let result = '';
     const possible = srt;
-    for (let i = 0; i < lenth; i++)
-        result += possible?.charAt(Math.floor(Math.random() * possible.length));
+    for (let i = 0; i < lenth; i++) {
+        result += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
     return result;
 }
 
@@ -18,7 +19,6 @@ export function randomReturnPassword(previousResult) {
 
     for (let i = 0; i <= 3; i++)
         result += randomCreatePassword(possible[toto[i]], 3);
-
     return result;
 }
 
