@@ -1,5 +1,5 @@
 import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigService, ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema, User } from 'src/schemas/User';
 
@@ -25,7 +25,7 @@ import { KakaoStrategy } from './utils/oAuth/kakao.auth';
     imports: [
         //typeorm의 createConnection와 같은 파라미터를 제공받으며 App 전체에서 접근 가능한 Context의 connection을 주입받습니다.
         // TypeOrmModule.forRoot(typeORMConfig),
-        ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
+        ConfigModule.forRoot({ isGlobal: true }),
         MongoConfigModule,
         MongooseModule.forRootAsync({
             inject: [MongoConfigService],
@@ -40,7 +40,8 @@ import { KakaoStrategy } from './utils/oAuth/kakao.auth';
         ChatsModule,
         DmsModule,
     ],
-    providers: [GoogleStrategy, KakaoStrategy],
+    providers: [GoogleStrategy, KakaoStrategy, ConfigService],
+    exports: [ConfigService],
 })
 export class AppModule {
     configure(consumer: MiddlewareConsumer) {

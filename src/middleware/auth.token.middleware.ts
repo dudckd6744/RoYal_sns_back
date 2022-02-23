@@ -1,8 +1,5 @@
-import {
-    BadRequestException,
-    Injectable,
-    NestMiddleware,
-} from '@nestjs/common';
+/* eslint-disable prefer-const */
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { NextFunction, Request, Response } from 'express';
 import { Model } from 'mongoose';
@@ -26,18 +23,15 @@ export class AuthTokenMiddleware implements NestMiddleware {
 
     private async parseUserId(req: Request): Promise<string> {
         let userId: string;
-        try {
-            const { authorization } = req.headers;
+        const { authorization } = req.headers;
 
-            const token = authorization
-                .replace('Bearer ', '')
-                .replace('bearer ', '');
+        const token = authorization
+            .replace('Bearer ', '')
+            .replace('bearer ', '');
 
-            const decoded = await verifyToken(token);
-            console.log(decoded);
+        const decoded = await verifyToken(token);
 
-            userId = decoded.userId;
-        } catch (err) {} /* eslint no-empty: "off" */
+        userId = decoded.userId;
 
         return userId;
     }
