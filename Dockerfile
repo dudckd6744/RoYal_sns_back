@@ -22,6 +22,8 @@
 
 FROM ubuntu:18.04
 
-ADD dist/test ./
+COPY dist/test ./
+
+COPY .env ./
 
 CMD ./test
