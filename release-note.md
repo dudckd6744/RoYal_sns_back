@@ -274,6 +274,149 @@
 
      - 게시글 좋아요비활성화 이슈발견 
           - 좋아요 취소시 like데이터가 삭제가 안되고있어서 삭제시켜주므로써 이슈해결
-     <!-- - 나머지 typeGuard 적용 -->
 
+### 2022-01-28
+
+     - 해당 API들 TypeGuard 적용 완료
+     - err 로깅 커스텀
+
+### 2022-01-29
+
+     - 서버 arch 구조 개선
+     - exception 미들웨어 구현
+
+### 2022-01-30
+     
+     - success wrapper 구현
+
+### 2022-02-03
+
+     - AUTH 미들웨어 수정
+          - user 데이터를 확인 시켰는데 토큰 유무만 확인
+               -  DB 부하 방지
+     - follow API 비즈니로직 서비스컴포넌트로 옮기는 작업완료
+          - 테스트 필요
+
+### 2022-02-04
+
+     - follow API 테스트 완료 
+     - unFollow API 비즈니스 로직 분리 완료
+     - user api dao 부분 한번더 검토 필요
+
+### 2022-02-05
+
+     - auth api 비즈니스로직 분리 작업 완료
+     
+### 2022-02-06
+
+     - board API 비즈니스 로직 분리
+          - createBoard api
+          - followBoard api
+     - auth API auth 미들웨어 수정으로 인해 req.user => req.email 으로 변경
+
+### 2022-02-07
+
+     - getMyBoard API 비즈니스 로직 분리
+
+### 2022-02-09
+
+     - getBoards API 비즈니스 로직 분리
+
+### 2022-02-10
+
+     - getDetailBoard API 비즈니스 로직 분리
+
+### 2022-02-11
+
+     - updateBoard API 비즈니스 로직 분리
+
+### 2022-02-12
+
+     - auth 미들웨어 수정
+          - req.email => req.userId
+               - DB 부하를 줄이기위함
+
+### 2022-02-13
+
+     - deleteBoard API 비즈니스로직 분리
+     - like API 비즈니스 로직 분리
+
+### 2022-02-14
+
+     - unLike API 비즈니스 로직 분리
+     - create 쿼리문 에 save 메서드 삭제
+     - createReply API 비즈니스 로직 분리
+
+### 2022-02-15
+
+     - getReply API 비즈니스 로직 분리
+          - test 필요
+
+### 2022-02-16
+
+     - getReply 이슈발견
+          - parentId 가 null 인것만 불러와지는데 front에서 어떻게 로직을 짜놨는지 정확히 기억이안난다.
+          - boardId 에 해당하는 reply 다불러와서 front에서 로직을 짜는형태로 API 를 개선시켰다.
+     - createReply 수정
+          - 대댓글 달때 댓글이 삭제된상태면 alert !
+     // NOTE:*****
+     - test 및 분석 필요
+
+### 2022-02-17
+
+     - Board API 비즈니스 마무리
+          - DeleteReply API 비즈니스 로직 분리
+     - dms API 비즈니스 로직 분리 시작
+          - createChatRoom API 끝
+
+### 2022-02-18
+
+     - leaveChatRoom API 분석 및 로직 수정
+          - 비즈니스 로직 분리 할 예정
+
+### 2022-02-19
+
+     - leaveChatRoom API 비즈니스 로직 분리
+     - createChatRoom API 로직 수정
+          - deleteAt 값이 있으면 새로 방만들기
+     - deleteDMS API 비즈니스 로직 분리
+     - createDMS API 비즈니스 로직 분리
+
+### 2022-02-20
+
+     - DMS API 비즈니스 로직분리 완료
+          - getChatRoomDMs API 작업
+     - dotenv 제거 => @nestjs/config 로 마이그레이션
+
+### 2022-02-21
+
+     - dotenv 제거 => @nestjs/config 로 마이그레이션
+          - process.env => configService.get()
+
+### 2022-02-22
+
+     - 이메일 인증하기 API 수정
+          - 이메일 인증시 랜덤 비밀번호값 추출하는 로직 수정
+
+### 2022-02-23
+
+     - 도커파일 용량 최적화 
+          - pkg 모듈 기술 검토
+
+### 2022-02-24
+
+     - 도커파일 용량 최적화 
+          - docker build 이후 이미지 체크 해서 실서버에 배포
+
+### 2022-02-25
+
+     - dockerfile 환경을 리눅스 기반으로 node14-linux-x64 바이너리 파일 생성
+     - env 파일내에 있는 키들이 인식이 안되는 이슈 발견
+          - 도커 파일내에 env 파일이 없어서 생긴 이슈 env 파일을 넣어주니깐 서버가 잘돌아간다.
+<!-- 실서버에 적용 시키기 -->
+
+### 2022-02-26
+
+     - pkg 바이너리 파일을 이용한 dockerfile 실서버 적용 test
+     
 ### to do

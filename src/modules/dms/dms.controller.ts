@@ -20,8 +20,8 @@ import {
 } from '@nestjs/swagger';
 import { errStatus, Success } from 'src/resStatusDto/resStatus.dto';
 import { User } from 'src/schemas/User';
+import { ReqUser } from 'src/utils/auth.decorater';
 import { AuthGuard_renewal } from 'src/utils/auth.guard';
-import { ReqUser } from 'src/utils/user.decorater';
 
 import { DmsService } from './dms.service';
 import {
@@ -45,10 +45,10 @@ export class DmsController {
     @Post('/chatRoom')
     @UseGuards(AuthGuard_renewal)
     createChatRoom(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Body('usersIds') usersIds: Array<string>,
-    ) {
-        return this.dmsService.createChatRoom(user, usersIds);
+    ): Promise<{ success: true } | errStatus> {
+        return this.dmsService.createChatRoom(userId, usersIds);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
@@ -58,10 +58,10 @@ export class DmsController {
     @Put('/:chatRoomId')
     @UseGuards(AuthGuard_renewal)
     leaveChatRoom(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Param('chatRoomId') chatRoomId: string,
-    ) {
-        return this.dmsService.leaveChatRoom(user, chatRoomId);
+    ): Promise<{ success: true } | errStatus> {
+        return this.dmsService.leaveChatRoom(userId, chatRoomId);
     }
 
     @ApiOkResponse({ description: 'success', type: CreateDMsDto })
@@ -71,10 +71,10 @@ export class DmsController {
     @Get('/:chatRoomId')
     @UseGuards(AuthGuard_renewal)
     getChatRoomDMs(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Param('chatRoomId') chatRoomId: string,
     ) {
-        return this.dmsService.getChatRoomDMs(user, chatRoomId);
+        return this.dmsService.getChatRoomDMs(userId, chatRoomId);
     }
 
     @ApiOkResponse({ description: 'success', type: CreateDMsDto })
@@ -86,11 +86,11 @@ export class DmsController {
     @UsePipes(ValidationPipe)
     @UseGuards(AuthGuard_renewal)
     createDMs(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Param('chatRoomId') chatRoomId: string,
         @Body() createDmsDto: CreateDMsDto,
     ) {
-        return this.dmsService.createDMs(user, chatRoomId, createDmsDto);
+        return this.dmsService.createDMs(userId, chatRoomId, createDmsDto);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
@@ -99,7 +99,10 @@ export class DmsController {
     @ApiBearerAuth()
     @Delete('/:DMs_id')
     @UseGuards(AuthGuard_renewal)
-    DeleteDMs(@ReqUser() user: User, @Param('DMs_id') DMs_id: string) {
-        return this.dmsService.DeleteDMs(user, DMs_id);
+    DeleteDMs(
+        @ReqUser() userId: string,
+        @Param('DMs_id') DMs_id: string,
+    ): Promise<{ success: true } | errStatus> {
+        return this.dmsService.DeleteDMs(userId, DMs_id);
     }
 }

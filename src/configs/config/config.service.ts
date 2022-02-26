@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { config } from 'dotenv';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
-config();
-
-export class ConfigService {
-    constructor() {}
+@Injectable()
+export class MongoConfigService {
+    constructor(private readonly configService: ConfigService) {}
 
     public async getMongoConfig() {
         return {
-            uri: process.env.MONGO_DB,
+            uri: this.configService.get('MONGO_DB'),
             useNewUrlParser: true,
             useCreateIndex: true,
             useUnifiedTopology: true,

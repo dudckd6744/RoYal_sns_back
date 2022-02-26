@@ -7,6 +7,7 @@ import { Reply } from 'src/schemas/Reply';
 export class CreateBoardDto extends PickType(Board, [
     'description',
     'files',
+    'tag',
 ] as const) {}
 
 export class GetFallowBoardsDto extends PickType(Board, [
@@ -71,3 +72,7 @@ export class SwaggerLikeDto extends PickType(Like, ['parentId'] as const) {}
 //     files: string;
 //     tag: string;
 // }
+
+export interface IBulkWriteTag {
+    updateOne: { filter: { tag: string }; update: string; upsert: boolean };
+}

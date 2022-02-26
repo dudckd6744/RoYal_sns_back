@@ -1,7 +1,15 @@
-import { Injectable } from '@nestjs/common';
+/* eslint-disable prefer-const */
+import {
+    BadRequestException,
+    Injectable,
+    UnauthorizedException,
+} from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
 import { Response } from 'express';
+import * as mongoose from 'mongoose';
 import { errStatus } from 'src/resStatusDto/resStatus.dto';
 import { User } from 'src/schemas/User';
+import { signToken } from 'src/utils/jwt';
 
 import { AuthRepository } from './auth.repository';
 import {
@@ -16,17 +24,49 @@ import {
 export class AuthService {
     constructor(private authRepository: AuthRepository) {}
 
-    registerUser(
+    async registerUser(
         createUserDto: CreateUserDto,
-    ): Promise<{ message: string } | errStatus> {
-        return this.authRepository.registerUser(createUserDto);
+    ): Promise<{ success: true } | errStatus> {
+        let { email, name, password, profile, phone } = createUserDto;
+
+        profile = profile ?? null;
+
+        const userEmail = await this.authRepository.findByEmailUser(email);
+        const userName = await this.authRepository.findByNameUser(name);
+
+        if (userEmail)
+            throw new BadRequestException('이미 해당 이메일이 존재합니다.');
+        if (userName)
+            throw new BadRequestException('이미 해당 이름이 존재합니다.');
+
+        const salt = await bcrypt.genSalt();
+        password = await bcrypt.hash(password, salt);
+        let userInfo = { email, name, password, profile, phone };
+
+        const user = await this.authRepository.createUser(userInfo);
+
+        return { success: true };
     }
 
     async loginUser(loginUser: LoginUser): Promise<{ token } | errStatus> {
-        return this.authRepository.loginUser(loginUser);
+        const { email, password } = loginUser;
+
+        const user = await this.authRepository.findByEmailUser(email);
+
+        if (!user)
+            throw new UnauthorizedException('해당 유저가 존재하지않습니다.');
+        else if (await bcrypt.compare(password, user.password)) {
+            const userId = user._id;
+            const token = await signToken({ userId });
+            return { token };
+        } else {
+            throw new UnauthorizedException('비밀번호를 다시 확인해주세요.');
+        }
     }
 
-    userAuth(user: User): AuthUserDto | UnAuthUserDto {
+    async userAuth(userId: string): Promise<AuthUserDto | UnAuthUserDto> {
+        const user = await this.authRepository.findByIdUser(userId);
+
         if (!user) {
             const data: UnAuthUserDto = { isAuth: false, error: true };
             return data;
@@ -49,15 +89,33 @@ export class AuthService {
         return user_data;
     }
 
-    passwordUpdateUser(
-        user: User,
+    async passwordUpdateUser(
+        userId: string,
         passwordUserDto: PasswordUserDto,
     ): Promise<{ success: true } | errStatus> {
-        return this.authRepository.passwordUpdateUser(user, passwordUserDto);
+        const { password, new_password, confirm_new_password } =
+            passwordUserDto;
+
+        const user_data = await this.authRepository.findByIdUser(userId);
+
+        if (new_password != confirm_new_password)
+            throw new BadRequestException('다시 한번 비밀번호를 확인해주세요!');
+
+        if (await bcrypt.compare(password, user_data.password)) {
+            const salt = await bcrypt.genSalt();
+            const hash_password = await bcrypt.hash(new_password, salt);
+            user_data.password = hash_password;
+            await user_data.save();
+        } else {
+            throw new BadRequestException(
+                '기존에 있던 비밀번호를 다시 입력해주세요',
+            );
+        }
+        return { success: true };
     }
 
-    getUserList(user: User): Promise<User[] | errStatus> {
-        return this.authRepository.getUserList(user);
+    async getUserList(userId: string): Promise<User[] | errStatus> {
+        return await this.authRepository.getUserList(userId);
     }
 
     async googleLogin(req, res) {
@@ -68,24 +126,72 @@ export class AuthService {
         return this.authRepository.kakaoLogin(req, res);
     }
 
-    followUser(
-        user: User,
+    async followUser(
+        userId: string,
         othersId: string,
     ): Promise<{ success: true } | errStatus> {
-        return this.authRepository.followUser(user, othersId);
+        const user_data = await this.authRepository.findByIdUser(userId);
+        const otherUser = await this.authRepository.findByIdUser(othersId);
+
+        user_data.following.forEach((element) => {
+            if (element == othersId) {
+                throw new BadRequestException('이미 follw 한 상대입니다.');
+            }
+        });
+
+        if (otherUser) {
+            if (otherUser.status == '1%' && user_data.royal >= 10) {
+                (user_data.royal = user_data.royal - 10), user_data.save();
+            } else if (otherUser.status == '3%' && user_data.royal >= 8) {
+                (user_data.royal = user_data.royal - 8), user_data.save();
+            } else if (otherUser.status == '5%' && user_data.royal >= 5) {
+                (user_data.royal = user_data.royal - 5), user_data.save();
+            } else if (otherUser.status == '10%' && user_data.royal >= 1) {
+                (user_data.royal = user_data.royal - 1), user_data.save();
+            } else {
+                throw new BadRequestException(
+                    `유저의 로얄이 ${user_data.royal} royal 남아있습니다. 충전이 필요합니다.`,
+                );
+            }
+        }
+        await this.authRepository.followUser(user_data._id, otherUser._id);
+        await this.authRepository.followingUser(otherUser._id, user_data._id);
+        return { success: true };
     }
 
-    unfollowUser(
-        user: User,
+    async unfollowUser(
+        userId: string,
         othersId: string,
     ): Promise<{ success: true } | errStatus> {
-        return this.authRepository.unfollowUser(user, othersId);
+        const user_data = await this.authRepository.findByIdUser(userId);
+
+        let others_data = '';
+
+        user_data.following.forEach((element) => {
+            if (element == othersId) {
+                others_data = element;
+            }
+        });
+        if (!others_data)
+            throw new BadRequestException('이미 unfollow 한 상대입니다.');
+
+        const objectOthersId = mongoose.Types.ObjectId(othersId);
+
+        await this.authRepository.unFollowUser(user_data._id, objectOthersId);
+        await this.authRepository.unFollowingUser(
+            objectOthersId,
+            user_data._id,
+        );
+
+        return { success: true };
     }
 
-    updateProfile(
-        user: User,
+    async updateProfile(
+        userId: string,
         profile: any,
     ): Promise<{ success: true } | errStatus> {
-        return this.authRepository.updateProfile(user, profile);
+        await this.authRepository.updateProfile(userId, profile);
+
+        return { success: true };
     }
 }

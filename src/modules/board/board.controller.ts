@@ -22,9 +22,11 @@ import {
 } from '@nestjs/swagger';
 import { logger } from 'src/configs/winston';
 import { errStatus, Success } from 'src/resStatusDto/resStatus.dto';
+import { Board } from 'src/schemas/Board';
+import { Reply } from 'src/schemas/Reply';
 import { User } from 'src/schemas/User';
+import { ReqUser } from 'src/utils/auth.decorater';
 import { AuthGuard_renewal } from 'src/utils/auth.guard';
-import { ReqUser } from 'src/utils/user.decorater';
 
 import { BoardService } from './board.service';
 import {
@@ -53,47 +55,42 @@ export class BoardController {
     @UsePipes(ValidationPipe)
     @UseGuards(AuthGuard_renewal)
     createBoard(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Body() createBoardDto: CreateBoardDto,
         @Body('status', BoardStatusPipe) status: BoardStatus,
-        @Body('tag') tag: any,
-    ) {
-        return this.boardSerivce.createBoard(user, createBoardDto, status, tag);
+    ): Promise<{ success: true } | errStatus> {
+        return this.boardSerivce.createBoard(userId, createBoardDto, status);
     }
-
-    // @Post('/tag')
-    // @UsePipes(ValidationPipe)s
-    // @UseGuards(AuthGuard_renewal)
-    // fileTaging(
-    //     @ReqUser() email: string,
-    //     @Body() tagFileDto: TagFileDto,
-    // ): Promise<{ message: string }> {
-    //     return this.boardSerivce.fileTaging(email, tagFileDto);
-    // s}
 
     @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })
     @ApiBadRequestResponse({ description: 'false', type: errStatus })
     @ApiOperation({ summary: '팔로잉한 유저 게시글 가져오기' })
     @Get('/followBoard')
     @UseGuards(AuthGuard_renewal)
-    getFollowBoard(@ReqUser() user: User) {
-        return this.boardSerivce.getFollowBoard(user);
-    }
-
-    @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })
-    @ApiBadRequestResponse({ description: 'false', type: errStatus })
-    @ApiOperation({ summary: '전체 게시글 가져오기' })
-    @Get('/')
-    getBoard(@ReqUser() user: User, @Query() getBoardDto: GetBoardsDto) {
-        return this.boardSerivce.getBoard(user, getBoardDto);
+    getFollowBoard(@ReqUser() userId: string): Promise<Board[] | errStatus> {
+        return this.boardSerivce.getFollowBoard(userId);
     }
 
     @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })
     @ApiBadRequestResponse({ description: 'false', type: errStatus })
     @ApiOperation({ summary: '유저 페이지에 해당되는 게시글 가져오기' })
     @Get('/myPage/:userId')
-    getMyBoard(@ReqUser() user: User, @Param() userId: any) {
-        return this.boardSerivce.getMyBoard(user, userId);
+    getMyBoard(
+        @ReqUser() userId: string,
+        @Param('ParamUserId') ParamUserId: string,
+    ): Promise<{ success: true; boards: Board[]; user: User } | errStatus> {
+        return this.boardSerivce.getMyBoard(userId, ParamUserId);
+    }
+
+    @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })
+    @ApiBadRequestResponse({ description: 'false', type: errStatus })
+    @ApiOperation({ summary: '전체 게시글 가져오기' })
+    @Get('/')
+    getBoard(
+        @ReqUser() userId: string,
+        @Query() getBoardDto: GetBoardsDto,
+    ): Promise<Board[] | errStatus> {
+        return this.boardSerivce.getBoard(userId, getBoardDto);
     }
 
     @ApiOkResponse({ description: 'success', type: GetFallowBoardsDto })
@@ -101,12 +98,12 @@ export class BoardController {
     @ApiOperation({ summary: '게시글 상세내용 가져오기' })
     @Get('/:boardId')
     getDeatailBoard(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Param('boardId') boardId: string,
         @Query('over_view') over_view: boolean,
-    ) {
-        logger.info(`${user.email}님이 ${boardId} 게시글에 접속하였습니다.`);
-        return this.boardSerivce.getDetailBoard(user, boardId, over_view);
+    ): Promise<{ success: true; board: Board } | errStatus> {
+        logger.info(`${userId}님이 ${boardId} 게시글에 접속하였습니다.`);
+        return this.boardSerivce.getDetailBoard(userId, boardId, over_view);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
@@ -118,18 +115,16 @@ export class BoardController {
     @UseGuards(AuthGuard_renewal)
     @ApiBody({ type: SwaggerCreateBoardDto })
     updateBoard(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Param('boardId') boardId: string,
         @Body() createBoardDto: CreateBoardDto,
         @Body('status', BoardStatusPipe) status: BoardStatus,
-        @Body('tag') tag: any,
-    ): Promise<{ message: string }> {
+    ): Promise<{ success: true } | errStatus> {
         return this.boardSerivce.updateBoard(
-            user,
+            userId,
             boardId,
             createBoardDto,
             status,
-            tag,
         );
     }
 
@@ -139,8 +134,11 @@ export class BoardController {
     @ApiBearerAuth()
     @Delete('/:boardId')
     @UseGuards(AuthGuard_renewal)
-    deleteBoard(@ReqUser() user: User, @Param('boardId') boardId: string) {
-        return this.boardSerivce.deleteBoard(user, boardId);
+    deleteBoard(
+        @ReqUser() userId: string,
+        @Param('boardId') boardId: string,
+    ): Promise<{ success: true }> {
+        return this.boardSerivce.deleteBoard(userId, boardId);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
@@ -151,12 +149,12 @@ export class BoardController {
     @UseGuards(AuthGuard_renewal)
     @ApiBody({ type: SwaggerLikeDto })
     like(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Param('boardId') boardId: string,
         @Body('parentId') parentId: string,
-    ) {
-        logger.info(`${user.email}님이 ${boardId} 게시글에 좋아요눌렀습니다.`);
-        return this.boardSerivce.like(user, boardId, parentId);
+    ): Promise<{ success: true } | errStatus> {
+        logger.info(`${userId}님이 ${boardId} 게시글에 좋아요눌렀습니다.`);
+        return this.boardSerivce.like(userId, boardId, parentId);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
@@ -167,11 +165,11 @@ export class BoardController {
     @UseGuards(AuthGuard_renewal)
     @ApiBody({ type: SwaggerLikeDto })
     unlike(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Param('boardId') boardId: string,
         @Body('parentId') parentId: string,
-    ) {
-        return this.boardSerivce.unlike(user, boardId, parentId);
+    ): Promise<{ success: true } | errStatus> {
+        return this.boardSerivce.unlike(userId, boardId, parentId);
     }
 
     @ApiOkResponse({ description: 'success', type: SwaggerReplyDto })
@@ -182,14 +180,14 @@ export class BoardController {
     @UseGuards(AuthGuard_renewal)
     @UsePipes(ValidationPipe)
     createReply(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Body() createReplyDto: CreateReplyDto,
         @Param('boardId') boardId: string,
-    ) {
+    ): Promise<{ success: true; reply: Reply } | errStatus> {
         logger.info(
-            `${user.email}님이 ${boardId} 게시글에 댓글을 작성하였습니다..`,
+            `${userId}님이 ${boardId} 게시글에 댓글을 작성하였습니다..`,
         );
-        return this.boardSerivce.createReply(user, boardId, createReplyDto);
+        return this.boardSerivce.createReply(userId, boardId, createReplyDto);
     }
 
     @ApiOkResponse({ description: 'success', type: SwaggerReplyDto })
@@ -199,11 +197,13 @@ export class BoardController {
     @Get('/:boardId/reply')
     getReply(
         @Param('boardId') boardId: string,
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Query('skip', ParseIntPipe) skip: number,
         @Query('limit', ParseIntPipe) limit: number,
-    ) {
-        return this.boardSerivce.getReply(user, boardId, skip, limit);
+    ): Promise<
+        { success: true; reply: Reply[]; replyCount: number } | errStatus
+    > {
+        return this.boardSerivce.getReply(userId, boardId, skip, limit);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
@@ -212,10 +212,10 @@ export class BoardController {
     @ApiBearerAuth()
     @Delete('/:boardId/:replyId')
     deleteReply(
+        @ReqUser() userId: string,
         @Param('boardId') boardId: string,
         @Param('replyId') replyId: string,
-        @ReqUser() user: User,
-    ) {
-        return this.boardSerivce.deleteReply(user, boardId, replyId);
+    ): Promise<{ success: true } | errStatus> {
+        return this.boardSerivce.deleteReply(userId, boardId, replyId);
     }
 }

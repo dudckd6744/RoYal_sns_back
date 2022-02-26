@@ -23,9 +23,8 @@ import {
 } from '@nestjs/swagger';
 import { Response } from 'express';
 import { errStatus, Success } from 'src/resStatusDto/resStatus.dto';
-import { User } from 'src/schemas/User';
+import { ReqUser } from 'src/utils/auth.decorater';
 import { AuthGuard_renewal } from 'src/utils/auth.guard';
-import { ReqUser } from 'src/utils/user.decorater';
 
 import { AuthService } from './auth.service';
 import {
@@ -50,7 +49,7 @@ export class AuthController {
     @UsePipes(ValidationPipe)
     registerUser(
         @Body() createUserDto: CreateUserDto,
-    ): Promise<{ message: string } | errStatus> {
+    ): Promise<{ success: true } | errStatus> {
         return this.userService.registerUser(createUserDto);
     }
 
@@ -64,13 +63,13 @@ export class AuthController {
     }
 
     @Get('/')
-    userAuth(@ReqUser() user: User): AuthUserDto | UnAuthUserDto {
-        return this.userService.userAuth(user);
+    userAuth(@ReqUser() userId: string): Promise<AuthUserDto | UnAuthUserDto> {
+        return this.userService.userAuth(userId);
     }
 
     @Post('/logout') //로그아웃
     @UseGuards(AuthGuard_renewal)
-    logoutUSer(@ReqUser() user: User): { success: true } {
+    logoutUSer(@ReqUser() userId: string): { success: true } {
         return { success: true };
     }
 
@@ -82,10 +81,10 @@ export class AuthController {
     @UseGuards(AuthGuard_renewal)
     @UsePipes(ValidationPipe)
     passwordUpdateUser(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Body() passwordUserDto: PasswordUserDto,
     ): Promise<{ success: true } | errStatus> {
-        return this.userService.passwordUpdateUser(user, passwordUserDto);
+        return this.userService.passwordUpdateUser(userId, passwordUserDto);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
@@ -96,10 +95,10 @@ export class AuthController {
     @Post('/follow')
     @UseGuards(AuthGuard_renewal)
     followUser(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Body('othersId') othersId: string,
     ): Promise<{ success: true } | errStatus> {
-        return this.userService.followUser(user, othersId);
+        return this.userService.followUser(userId, othersId);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
@@ -110,10 +109,10 @@ export class AuthController {
     @Delete('/unfollow')
     @UseGuards(AuthGuard_renewal)
     unfollowUser(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Body('othersId') othersId: string,
     ): Promise<{ success: true } | errStatus> {
-        return this.userService.unfollowUser(user, othersId);
+        return this.userService.unfollowUser(userId, othersId);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
@@ -122,8 +121,8 @@ export class AuthController {
     @ApiBearerAuth()
     @Get('/userList')
     @UseGuards(AuthGuard_renewal)
-    getUserList(@ReqUser() user: User) {
-        return this.userService.getUserList(user);
+    getUserList(@ReqUser() userId: string) {
+        return this.userService.getUserList(userId);
     }
 
     @ApiOkResponse({ description: 'success', type: Success })
@@ -133,10 +132,10 @@ export class AuthController {
     @Put('/profile')
     @UseGuards(AuthGuard_renewal)
     updateProfile(
-        @ReqUser() user: User,
+        @ReqUser() userId: string,
         @Body() profile: any,
     ): Promise<{ success: true } | errStatus> {
-        return this.userService.updateProfile(user, profile);
+        return this.userService.updateProfile(userId, profile);
     }
 
     @Get('/google')

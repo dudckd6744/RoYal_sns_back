@@ -24,7 +24,7 @@ export class Like extends Document {
         description:
             '댓글 좋아요할시에 parentId 에 댓글 _id 입력, 게시글 좋아요시 null',
     })
-    @Prop({ required: true })
+    @Prop({ default: null })
     parentId: string;
 }
 
