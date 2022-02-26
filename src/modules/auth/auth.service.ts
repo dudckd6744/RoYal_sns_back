@@ -168,8 +168,6 @@ export class AuthService {
         let others_data = '';
 
         user_data.following.forEach((element) => {
-            console.log(element, othersId);
-
             if (element == othersId) {
                 others_data = element;
             }

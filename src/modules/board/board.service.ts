@@ -341,7 +341,6 @@ export class BoardService {
             boardId,
             likedReplyId,
         );
-        console.log(reply, likedReplyId);
 
         ReReply.forEach((ReReplydata) => {
             likedReplyId.push(ReReplydata._id);
@@ -397,7 +396,7 @@ export class BoardService {
             return { success: true };
         }
         const board = await this.boardRepository.findByIdBoard(boardId);
-        console.log(board);
+
         reply.deletedAt = new Date();
         await reply.save();
         board.reply_count--;

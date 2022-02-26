@@ -20,10 +20,41 @@
 # ## application 실행
 # CMD ["npm", "run", "start:prod"]
 
+# NOTE: release docker file! 
+# NOTE: 1.빌드
+FROM node:10 AS builder
+
+WORKDIR /app
+
+COPY package.json /app
+
+RUN npm install
+
+RUN npm run build
+
+COPY . /app
+
+
+# NOTE: 2.pkg 바이너리 파일만들기
+FROM node:16-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app /app
+
+COPY package.json /app
+
+RUN npm install -g pkg
+
+RUN npm run pkg
+
+COPY dist/royalServer /app
+
+# MULTI Staging
 FROM ubuntu:18.04
 
-COPY dist/test ./
+COPY --from=1 /app/royalServer ./
 
 COPY .env ./
 
-CMD ./test
+CMD ./royalServer
