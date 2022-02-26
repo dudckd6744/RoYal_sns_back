@@ -12,11 +12,11 @@ before_install:
     - cat .env.bolier | envsubst > .env
 
 after_success:
-    - docker build -t dudckd/bolier-nest:v1 .
+    - docker build -t dudckd/bolier-nest:v2 .
 
     - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_ID" --password-stdin
 
-    - docker push dudckd/bolier-nest:v1
+    - docker push dudckd/bolier-nest:v2
 
 before_deploy:
     - rm -rf node_modules
