@@ -48,12 +48,10 @@ RUN npm install -g pkg
 
 RUN npm run pkg
 
-COPY dist/royalServer /app
-
 # MULTI Staging
 FROM ubuntu:18.04
 
-COPY --from=1 /app/royalServer ./
+COPY --from=1 /app/dist/royalServer ./
 
 COPY .env ./
 
