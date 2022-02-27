@@ -32,7 +32,7 @@ RUN npm install
 
 RUN npm run build
 
-COPY . /app
+COPY /dist /app
 
 
 # NOTE: 2.pkg 바이너리 파일만들기
