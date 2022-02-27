@@ -28,11 +28,13 @@ WORKDIR /app
 
 COPY package.json /app
 
-RUN npm install
+# RUN npm install
+
+COPY . /app
 
 RUN npm run build
 
-COPY /dist /app
+COPY dist /app
 
 
 # NOTE: 2.pkg 바이너리 파일만들기
