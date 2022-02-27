@@ -34,8 +34,6 @@ COPY . /app
 
 RUN npm run build
 
-COPY dist /app
-
 
 # NOTE: 2.pkg 바이너리 파일만들기
 FROM node:16-alpine
