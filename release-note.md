@@ -417,6 +417,6 @@
 
 ### 2022-02-26
 
-     - pkg 바이너리 파일을 이용한 dockerfile 실서버 적용 test
+     - pkg 바이너리 파일을 이용한 dockerfile 실서버 적용 test 
      
 ### to do
