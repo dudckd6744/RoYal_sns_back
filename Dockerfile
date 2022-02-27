@@ -28,11 +28,9 @@ WORKDIR /app
 
 COPY package.json /app
 
-RUN npm install
+COPY . /app
 
 RUN npm run build
-
-COPY . /app
 
 
 # NOTE: 2.pkg 바이너리 파일만들기
@@ -48,12 +46,10 @@ RUN npm install -g pkg
 
 RUN npm run pkg
 
-COPY dist/royalServer /app
-
 # MULTI Staging
 FROM ubuntu:18.04
 
-COPY --from=1 /app/royalServer ./
+COPY --from=1 /app/dist/royalServer ./
 
 COPY .env ./
 
