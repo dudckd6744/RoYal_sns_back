@@ -25,9 +25,7 @@ export class AuthTokenMiddleware implements NestMiddleware {
         let userId: string;
         const { authorization } = req.headers;
 
-        const token = authorization
-            .replace('Bearer ', '')
-            .replace('bearer ', '');
+        const token = authorization?.replace('Bearer ', '');
 
         const decoded = await verifyToken(token);
 
