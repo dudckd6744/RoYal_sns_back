@@ -430,5 +430,11 @@
      - auth 미들웨어 로직수정
           - 미들웨어에 try catch 문을 잘못지워서 인증이 필요없는 api 호출시 서버 err 가 
           나서 다시 try catch 문을 넣어줬다.
+
+### 2022-03-07
+
+     - 도메인별 test code 구현 하기
+          - 다른 github repo 탐색하면서 폴더구조 설계 탐색
+
 ### to do
 

@@ -1,4 +1,4 @@
-# #!/bin/bash
+#!/bin/bash
 
 # cd /home/ubuntu/deploy/bolier-CD
 # ./deploy.sh > /dev/null 2> /dev/null < /dev/null &
