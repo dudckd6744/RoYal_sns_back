@@ -1,20 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { errStatus, Success } from 'src/resStatusDto/resStatus.dto';
+import { mock } from 'ts-mockito';
 
+import { AuthModule } from './auth.module';
+import { AuthRepository } from './auth.repository';
 import { AuthService } from './auth.service';
 
-describe('TestService', () => {
+describe('AuthService', () => {
     let service: AuthService;
+    let mockedRepository: AuthRepository;
 
     beforeEach(async () => {
-        const module: TestingModule = await Test.createTestingModule({
-            providers: [AuthService],
-            imports: [AuthService],
-        }).compile();
-
-        service = module.get<AuthService>(AuthService);
+        mockedRepository = mock(AuthRepository);
     });
 
-    it('should be defined', async () => {
-        expect(typeof service.followUser).toBe('function');
-    });
+    it('register ', async () => {});
 });
