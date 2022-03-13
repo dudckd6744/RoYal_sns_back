@@ -43,7 +43,7 @@ export class AuthService {
         password = await bcrypt.hash(password, salt);
         let userInfo = { email, name, password, profile, phone };
 
-        const user = await this.authRepository.createUser(userInfo);
+        await this.authRepository.createUser(userInfo);
 
         return { success: true };
     }
