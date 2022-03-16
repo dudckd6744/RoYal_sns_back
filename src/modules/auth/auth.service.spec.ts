@@ -7,14 +7,22 @@ import { AuthRepository } from './auth.repository';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/user.dto';
 
-const user: User[] = [];
 describe('AuthService', () => {
+    const mockCreateUser: Required<CreateUserDto> = {
+        email: 'test212221ww@test.com',
+        name: 'test',
+        password: '!@#qwe123',
+        profile: '',
+        phone: '',
+    };
     let service: AuthService;
     let userRepository: AuthRepository;
     const mockAuthRepository = {
         findByEmailUser: jest
             .fn()
-            .mockImplementation((email) => Promise.resolve(user)),
+            .mockImplementation((mockCreateUser) =>
+                Promise.resolve({ id: anything(), ...mockCreateUser }),
+            ),
         findByNameUser: jest.fn().mockImplementation((name) => User),
         createUser: jest.fn().mockImplementation((dto) => User),
     };
@@ -41,9 +49,7 @@ describe('AuthService', () => {
             profile: '',
             phone: '',
         };
-        jest.spyOn(mockAuthRepository, 'findByEmailUser').mockResolvedValue(
-            Promise.resolve(user),
-        );
+
         expect(await service.registerUser(mockCreateUser)).toEqual({
             success: true,
         });
