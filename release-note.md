@@ -460,5 +460,13 @@
 
      - TDD 셋팅 nest 에서 기본제공해주는 셋팅에서 추가 작업후 반영
 
+
+### 2022-03-16
+
+     - TDD register 코드 setup 중 이슈
+          - user.findOne 이 없는 function 이라는 err 가뜬다. 해결해야된다.
+
 ### to do
- 
+
+
+

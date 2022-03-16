@@ -1,15 +1,22 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from 'src/schemas/User';
+import { anything } from 'ts-mockito';
 
 import { AuthRepository } from './auth.repository';
 import { AuthService } from './auth.service';
+import { CreateUserDto } from './dto/user.dto';
 
+const user: User[] = [];
 describe('AuthService', () => {
     let service: AuthService;
-
+    let userRepository: AuthRepository;
     const mockAuthRepository = {
-        create: jest.fn().mockImplementation((dto) => dto),
+        findByEmailUser: jest
+            .fn()
+            .mockImplementation((email) => Promise.resolve(user)),
+        findByNameUser: jest.fn().mockImplementation((name) => User),
+        createUser: jest.fn().mockImplementation((dto) => User),
     };
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -18,7 +25,7 @@ describe('AuthService', () => {
                 AuthRepository,
                 {
                     provide: getModelToken(User.name),
-                    useFactory: () => mockAuthRepository,
+                    useValue: mockAuthRepository,
                 },
             ],
         }).compile();
@@ -27,7 +34,19 @@ describe('AuthService', () => {
     });
 
     it('registers success ', async () => {
-        expect(service).toBeDefined();
+        const mockCreateUser: Required<CreateUserDto> = {
+            email: 'test212221ww@test.com',
+            name: 'test',
+            password: '!@#qwe123',
+            profile: '',
+            phone: '',
+        };
+        jest.spyOn(mockAuthRepository, 'findByEmailUser').mockResolvedValue(
+            Promise.resolve(user),
+        );
+        expect(await service.registerUser(mockCreateUser)).toEqual({
+            success: true,
+        });
     });
 
     // it('register 이메일 중복 err', async () => {
