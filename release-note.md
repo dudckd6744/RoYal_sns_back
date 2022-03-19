@@ -470,6 +470,11 @@
 
      - test
 
+### 2022-03-18
+
+     - tdd class 듣기    
+          - https://www.youtube.com/watch?v=dXOfOgFFKuY
+
 ### to do
 
 
