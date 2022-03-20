@@ -475,6 +475,12 @@
      - tdd class 듣기    
           - https://www.youtube.com/watch?v=dXOfOgFFKuY
 
+### 2022-03-20
+
+     - tdd class 듣기    
+          - https://www.youtube.com/watch?v=XbSZnGCJB2I
+
+
 ### to do
 
 
