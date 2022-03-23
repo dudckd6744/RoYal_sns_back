@@ -1,6 +1,6 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from 'src/schemas/User';
+import { User, UserSchema } from 'src/schemas/User';
 import { anything } from 'ts-mockito';
 
 import { AuthRepository } from './auth.repository';
@@ -8,21 +8,23 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/user.dto';
 
 describe('AuthService', () => {
-    const mockCreateUser: Required<CreateUserDto> = {
-        email: 'test212221ww@test.com',
-        name: 'test',
-        password: '!@#qwe123',
-        profile: '',
-        phone: '',
-    };
+    // const mockCreateUser: Required<CreateUserDto> = {
+    //     email: 'test212221ww@test.com',
+    //     name: 'test',
+    //     password: '!@#qwe123',
+    //     profile: '',
+    //     phone: '',
+    // };
     let service: AuthService;
     let userRepository: AuthRepository;
+
+    // const mockUser = userModel: Model<User>
+    // mockUser.name = 'test';
+
     const mockAuthRepository = {
-        findByEmailUser: jest
-            .fn()
-            .mockImplementation((mockCreateUser) =>
-                Promise.resolve({ id: anything(), ...mockCreateUser }),
-            ),
+        findByEmailUser: jest.fn().mockImplementation((email) => {
+            return { email: email, ...mockUser };
+        }),
         findByNameUser: jest.fn().mockImplementation((name) => User),
         createUser: jest.fn().mockImplementation((dto) => User),
     };

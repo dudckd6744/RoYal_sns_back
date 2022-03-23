@@ -480,6 +480,10 @@
      - tdd class 듣기    
           - https://www.youtube.com/watch?v=XbSZnGCJB2I
 
+### 2022-03-23
+
+     - tdd
+          - mongoose 가 아니라 typeOrm 이라면 testcode 짜는데 훨신 수월 했을거같은데 예제가 많이 없어 답답하다..ㅜㅜ
 
 ### to do
 
