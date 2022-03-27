@@ -465,6 +465,8 @@
 
      - TDD register 코드 setup 중 이슈
           - user.findOne 이 없는 function 이라는 err 가뜬다. 해결해야된다.
+               - 03-26
+                    - mockUserRepoistory 에 findOne 메서드를 안만들어줘서 err가 난상태였다.
 
 ### 2022-03-17
 
@@ -484,6 +486,12 @@
 
      - tdd
           - mongoose 가 아니라 typeOrm 이라면 testcode 짜는데 훨신 수월 했을거같은데 예제가 많이 없어 답답하다..ㅜㅜ
+
+### 2022-03-27
+
+     - tdd
+          - 진짜 얼추 감을 잡은거같다. 하지만 아직도 명확하게 이거 맞는진 모르겠따.
+          - err 처리하는 test code 짤 때 epect 에 함수를 집어넣어주고 toThorw를 쓰면 되는데 자꾸 catch 블록으로 잡으라는 err 가 떠서 일단 결국은 catch 로 잡아서 string 으로 받아 테스트 코드를 짜놨다. 머가 문제인지 알아볼 필요가 있을것 같다.
 
 ### to do
 
