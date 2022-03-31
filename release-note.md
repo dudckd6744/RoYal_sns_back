@@ -493,7 +493,14 @@
           - 진짜 얼추 감을 잡은거같다. 하지만 아직도 명확하게 이거 맞는진 모르겠따.
           - err 처리하는 test code 짤 때 epect 에 함수를 집어넣어주고 toThorw를 쓰면 되는데 자꾸 catch 블록으로 잡으라는 err 가 떠서 일단 결국은 catch 로 잡아서 string 으로 받아 테스트 코드를 짜놨다. 머가 문제인지 알아볼 필요가 있을것 같다.
 
-### to do
+### 2022-03-31
 
+     - tdd
+          - jest.mock 보다는 ts-mockito
+               - https://jojoldu.tistory.com/638?category=1036934
+          - ts-mockito
+               - https://npm.io/package/ts-mockito
+          
+### to do
 
 

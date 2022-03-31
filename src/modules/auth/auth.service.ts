@@ -33,7 +33,6 @@ export class AuthService {
 
         const userEmail = await this.authRepository.findByEmailUser(email);
         const userName = await this.authRepository.findByNameUser(name);
-
         if (userEmail)
             throw new BadRequestException('이미 해당 이메일이 존재합니다.');
         if (userName)
@@ -43,7 +42,7 @@ export class AuthService {
         password = await bcrypt.hash(password, salt);
         let userInfo = { email, name, password, profile, phone };
 
-        await this.authRepository.createUser(userInfo);
+        this.authRepository.createUser(userInfo);
 
         return { success: true };
     }
@@ -52,10 +51,10 @@ export class AuthService {
         const { email, password } = loginUser;
 
         const user = await this.authRepository.findByEmailUser(email);
-
+        console.log(user);
         if (!user)
             throw new UnauthorizedException('해당 유저가 존재하지않습니다.');
-        else if (await bcrypt.compare(password, user.password)) {
+        if (await bcrypt.compare(password, user.password)) {
             const userId = user._id;
             const token = await signToken({ userId });
             return { token };

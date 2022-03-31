@@ -10,7 +10,15 @@ import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUser } from './dto/user.dto';
 
 describe('AuthService', () => {
-    const mockCreateUser: Partial<CreateUserDto> = {
+    const mockUser = {
+        id: '123qwe123',
+        email: 'test@test.com',
+        name: 'test',
+        password: '!@#qwe123',
+        profile: '',
+        phone: '',
+    } as User;
+    const mockCreateUser: CreateUserDto = {
         email: 'test@test.com',
         name: 'test',
         password: '!@#qwe123',
@@ -24,22 +32,7 @@ describe('AuthService', () => {
     let service: AuthService;
 
     const userRepository: AuthRepository = mock(AuthRepository);
-    const stub = new AuthService(instance(userRepository));
 
-    // const mockAuthRepository = {
-    //     create: jest.fn().mockImplementation((user) => mockCreateUser),
-    //     findOne: jest
-    //         .fn()
-    //         .mockImplementationOnce((data) => {
-    //             return null;
-    //         })
-    //         .mockImplementationOnce((data) => {
-    //             return null;
-    //         })
-    //         .mockImplementationOnce((data) => {
-    //             return { data, ...mockCreateUser };
-    //         }),
-    // };
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
@@ -56,10 +49,18 @@ describe('AuthService', () => {
     });
     describe('회원가입', () => {
         it('registers success ', async () => {
+            const userRepository: AuthRepository = mock(AuthRepository);
+
             when(userRepository.findByEmailUser('test@test.com')).thenResolve(
                 null,
             );
             when(userRepository.findByNameUser('test')).thenResolve(null);
+
+            when(userRepository.createUser(mockCreateUser)).thenResolve(
+                mockUser,
+            );
+
+            const stub = new AuthService(instance(userRepository));
 
             const test = await stub.registerUser(
                 mockCreateUser as CreateUserDto,
@@ -69,7 +70,7 @@ describe('AuthService', () => {
         });
         it('registers email err ', async () => {
             when(userRepository.findByEmailUser('test@test.com')).thenResolve(
-                mockCreateUser as User,
+                mockUser as User,
             );
             when(userRepository.findByNameUser('test')).thenResolve(null);
 
@@ -92,7 +93,7 @@ describe('AuthService', () => {
                 null,
             );
             when(userRepository.findByNameUser('test')).thenResolve(
-                mockCreateUser as User,
+                mockUser as User,
             );
 
             const stub = new AuthService(instance(userRepository));
@@ -110,11 +111,21 @@ describe('AuthService', () => {
         });
     });
 
-    // it('registers success2 ', async () => {
-    //     when(userRepository.findByEmailUser('test@test.com')).thenResolve(
-    //         mockCreateUser as User,
-    //     );
+    describe('로그인', () => {
+        it('login success ', async () => {
+            when(userRepository.findByEmailUser('test@test.com')).thenResolve(
+                mockUser as User,
+            );
+            const stub = new AuthService(instance(userRepository));
+            console.log(await stub.loginUser(mockLoginUser));
+            const test = await stub
+                .loginUser(mockLoginUser as LoginUser)
+                .then((data) => console.log(data, 'dta'))
+                .catch((err) => {
+                    console.log(err);
+                });
 
-    //     const test = await stub.loginUser(mockLoginUser as LoginUser);
-    // });
+            // expect(test).toEqual({ success: true });
+        });
+    });
 });
