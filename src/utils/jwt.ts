@@ -8,7 +8,7 @@ export async function signToken(
     payload: Object,
     options: jwt.SignOptions = {},
 ): Promise<string> {
-    const jwtSecret = configService.get('JWT_SECRET');
+    const jwtSecret = configService.get('JWT_SECRET') || 'secret';
 
     const { expiresIn } = options;
     return new Promise((res, rej) =>

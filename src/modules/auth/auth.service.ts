@@ -40,6 +40,7 @@ export class AuthService {
 
         const salt = await bcrypt.genSalt();
         password = await bcrypt.hash(password, salt);
+
         let userInfo = { email, name, password, profile, phone };
 
         this.authRepository.createUser(userInfo);
@@ -51,9 +52,10 @@ export class AuthService {
         const { email, password } = loginUser;
 
         const user = await this.authRepository.findByEmailUser(email);
-        console.log(user);
+
         if (!user)
             throw new UnauthorizedException('해당 유저가 존재하지않습니다.');
+
         if (await bcrypt.compare(password, user.password)) {
             const userId = user._id;
             const token = await signToken({ userId });

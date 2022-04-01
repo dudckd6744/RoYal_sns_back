@@ -501,6 +501,16 @@
           - ts-mockito
                - https://npm.io/package/ts-mockito
           
+### 2022-04-01
+
+     - tdd
+          - 로그인 성공 testcode 작성
+               - findByEmailUser 메서드에서 mock 값이 null 나오는 err 발생
+                    - 인자 값에 이메일이랑 리턴값에 이메일이 달라서 null 발생
+               - 원본 pwd 와 해쉬된 pwd 값이 일치하지않아 err 발생
+                    - 두개의 값을 위치를 다르게해서 발생
+               - token 생성 함수 sgin 에서 secretkey 없다는 err 발생
+                    - env 파일에서 바로 못가져오는것같아 일단 || 연산자로 err 처리
 ### to do
 
 

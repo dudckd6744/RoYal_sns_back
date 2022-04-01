@@ -14,7 +14,8 @@ describe('AuthService', () => {
         id: '123qwe123',
         email: 'test@test.com',
         name: 'test',
-        password: '!@#qwe123',
+        password:
+            '$2a$10$VdM32CSoELHOm5V97RNfhuXchlM/.nhr3BDS.7QWvYDNRvnZf9p9e',
         profile: '',
         phone: '',
     } as User;
@@ -26,11 +27,10 @@ describe('AuthService', () => {
         phone: '',
     };
     const mockLoginUser: LoginUser = {
-        email: 'test',
+        email: 'test@test.com',
         password: '!@#qwe123',
     };
     let service: AuthService;
-
     const userRepository: AuthRepository = mock(AuthRepository);
 
     beforeEach(async () => {
@@ -49,8 +49,6 @@ describe('AuthService', () => {
     });
     describe('회원가입', () => {
         it('registers success ', async () => {
-            const userRepository: AuthRepository = mock(AuthRepository);
-
             when(userRepository.findByEmailUser('test@test.com')).thenResolve(
                 null,
             );
@@ -116,16 +114,12 @@ describe('AuthService', () => {
             when(userRepository.findByEmailUser('test@test.com')).thenResolve(
                 mockUser as User,
             );
-            const stub = new AuthService(instance(userRepository));
-            console.log(await stub.loginUser(mockLoginUser));
-            const test = await stub
-                .loginUser(mockLoginUser as LoginUser)
-                .then((data) => console.log(data, 'dta'))
-                .catch((err) => {
-                    console.log(err);
-                });
 
-            // expect(test).toEqual({ success: true });
+            const stub = new AuthService(instance(userRepository));
+
+            const test = await stub.loginUser(mockLoginUser as LoginUser);
+
+            expect(test).toHaveProperty('token');
         });
     });
 });
