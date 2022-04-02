@@ -121,5 +121,37 @@ describe('AuthService', () => {
 
             expect(test).toHaveProperty('token');
         });
+
+        it('login user undifined err ', async () => {
+            when(userRepository.findByEmailUser('test@test.com')).thenResolve(
+                null,
+            );
+
+            const stub = new AuthService(instance(userRepository));
+
+            const test = await stub
+                .loginUser(mockLoginUser as LoginUser)
+                .catch((err) => {
+                    return err.response.message;
+                });
+
+            expect(test).toEqual('해당 유저가 존재하지않습니다.');
+        });
+
+        it('login password not match err ', async () => {
+            when(userRepository.findByEmailUser('test@test.com')).thenResolve(
+                mockUser as User,
+            );
+
+            const stub = new AuthService(instance(userRepository));
+            mockLoginUser.password = '';
+            const test = await stub
+                .loginUser(mockLoginUser as LoginUser)
+                .catch((err) => {
+                    return err.response.message;
+                });
+
+            expect(test).toEqual('비밀번호를 다시 확인해주세요.');
+        });
     });
 });

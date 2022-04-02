@@ -511,6 +511,13 @@
                     - 두개의 값을 위치를 다르게해서 발생
                - token 생성 함수 sgin 에서 secretkey 없다는 err 발생
                     - env 파일에서 바로 못가져오는것같아 일단 || 연산자로 err 처리
+
+### 2022-04-02
+
+     - tdd
+          - login testCode 작성
+
+
 ### to do
 
 
