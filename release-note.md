@@ -517,7 +517,10 @@
      - tdd
           - login testCode 작성
 
+### 2022-04-04
 
+     -tdd 
+          - userAuth TestCode 작성 
 ### to do
 
 

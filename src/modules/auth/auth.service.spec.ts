@@ -7,11 +7,11 @@ import { anything, instance, mock, when } from 'ts-mockito';
 
 import { AuthRepository } from './auth.repository';
 import { AuthService } from './auth.service';
-import { CreateUserDto, LoginUser } from './dto/user.dto';
+import { AuthUserDto, CreateUserDto, LoginUser } from './dto/user.dto';
 
 describe('AuthService', () => {
     const mockUser = {
-        id: '123qwe123',
+        _id: '123qwe123',
         email: 'test@test.com',
         name: 'test',
         password:
@@ -29,6 +29,19 @@ describe('AuthService', () => {
     const mockLoginUser: LoginUser = {
         email: 'test@test.com',
         password: '!@#qwe123',
+    };
+    const mockUserAuth: AuthUserDto = {
+        _id: '123qwe123',
+        name: 'test',
+        email: 'test@test.com',
+        phone: '',
+        profile: '',
+        isAuth: true,
+        royal: undefined,
+        following: undefined,
+        follower: undefined,
+        status: undefined,
+        isActive: undefined,
     };
     let service: AuthService;
     const userRepository: AuthRepository = mock(AuthRepository);
@@ -152,6 +165,19 @@ describe('AuthService', () => {
                 });
 
             expect(test).toEqual('비밀번호를 다시 확인해주세요.');
+        });
+    });
+    describe('AUTH', () => {
+        it('userAuth', async () => {
+            when(userRepository.findByIdUser('123qwe123')).thenResolve(
+                mockUser as User,
+            );
+
+            const stub = new AuthService(instance(userRepository));
+
+            const test = await stub.userAuth('123qwe123');
+
+            expect(test).toEqual(mockUserAuth);
         });
     });
 });
