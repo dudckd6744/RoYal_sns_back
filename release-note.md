@@ -519,8 +519,15 @@
 
 ### 2022-04-04
 
-     -tdd 
+     - tdd 
           - userAuth TestCode 작성 
+
+### 2022-04-06
+
+     - tdd
+          - userAuth 인증이 안된 경우 
+          - password update 작성 예정
+
 ### to do
 
 

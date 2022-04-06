@@ -168,7 +168,7 @@ describe('AuthService', () => {
         });
     });
     describe('AUTH', () => {
-        it('userAuth', async () => {
+        it('auth User', async () => {
             when(userRepository.findByIdUser('123qwe123')).thenResolve(
                 mockUser as User,
             );
@@ -179,5 +179,19 @@ describe('AuthService', () => {
 
             expect(test).toEqual(mockUserAuth);
         });
+        it('no auth User', async () => {
+            when(userRepository.findByIdUser('123qwe123')).thenResolve(
+                mockUser as User,
+            );
+
+            const stub = new AuthService(instance(userRepository));
+
+            const test = await stub.userAuth('err');
+
+            expect(test).toEqual({ isAuth: false, error: true });
+        });
+    });
+    describe('Password Update', () => {
+        it('auth User', async () => {});
     });
 });
