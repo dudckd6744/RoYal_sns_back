@@ -528,6 +528,12 @@
           - userAuth 인증이 안된 경우 
           - password update 작성 예정
 
+### 2022-04-11
+
+     - tdd
+          - password Update 작성 중 err 발생
+               - mongoose 함수 document.save()가 jest TypeErr 가 떴다. save is not a function ..
+
 ### to do
 
 

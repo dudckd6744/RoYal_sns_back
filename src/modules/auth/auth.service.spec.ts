@@ -7,7 +7,12 @@ import { anything, instance, mock, when } from 'ts-mockito';
 
 import { AuthRepository } from './auth.repository';
 import { AuthService } from './auth.service';
-import { AuthUserDto, CreateUserDto, LoginUser } from './dto/user.dto';
+import {
+    AuthUserDto,
+    CreateUserDto,
+    LoginUser,
+    PasswordUserDto,
+} from './dto/user.dto';
 
 describe('AuthService', () => {
     const mockUser = {
@@ -42,6 +47,12 @@ describe('AuthService', () => {
         follower: undefined,
         status: undefined,
         isActive: undefined,
+    };
+
+    const mockPassWord: PasswordUserDto = {
+        password: '!@#qwe123',
+        new_password: 'qwe!@#qwe',
+        confirm_new_password: 'qwe!@#qwe',
     };
     let service: AuthService;
     const userRepository: AuthRepository = mock(AuthRepository);
@@ -192,6 +203,20 @@ describe('AuthService', () => {
         });
     });
     describe('Password Update', () => {
-        it('auth User', async () => {});
+        it('password Update Success', async () => {
+            const user = await userRepository.findByIdUser(mockUser.id);
+            when(user).thenReturn(mockUser as User);
+
+            // when(user.save());
+
+            const stub = new AuthService(instance(userRepository));
+
+            const test = await stub.passwordUpdateUser(
+                mockUser.id,
+                mockPassWord,
+            );
+
+            expect(test).toEqual({ success: true });
+        });
     });
 });

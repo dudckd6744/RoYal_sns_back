@@ -106,7 +106,7 @@ export class AuthService {
             const salt = await bcrypt.genSalt();
             const hash_password = await bcrypt.hash(new_password, salt);
             user_data.password = hash_password;
-            await user_data.save();
+            user_data.save();
         } else {
             throw new BadRequestException(
                 '기존에 있던 비밀번호를 다시 입력해주세요',
