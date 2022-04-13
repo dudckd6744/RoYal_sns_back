@@ -205,6 +205,10 @@ describe('AuthService', () => {
     describe('Password Update', () => {
         it('password Update Success', async () => {
             const user = await userRepository.findByIdUser(mockUser.id);
+            // const ss = new user()
+            // let user.save() : any = function(){
+            //     return ''
+            // }
             when(user).thenReturn(mockUser as User);
 
             // when(user.save());

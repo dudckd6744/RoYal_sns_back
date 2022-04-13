@@ -101,6 +101,7 @@ export class AuthService {
 
         if (new_password != confirm_new_password)
             throw new BadRequestException('다시 한번 비밀번호를 확인해주세요!');
+        console.log(user_data);
 
         if (await bcrypt.compare(password, user_data.password)) {
             const salt = await bcrypt.genSalt();
