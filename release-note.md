@@ -534,12 +534,17 @@
           - password Update 작성 중 err 발생
                - mongoose 함수 document.save()가 jest TypeErr 가 떴다. save is not a function ..
 
-### 2022-04-12
+### 2022-04-13
 
      - tdd
           - Jest TypeError: user_data.save is not a function
                - 해당 이슈에 대해 검토해보고 해결할려고 했지만 고질적인 문제같다..
                - 피해갈려면 update를 쳐야 될거같다.
+
+### 2022-05-26
+
+     - Reading Code
+          - code reading 하면서 refactorinng 할 요소들 한번 훑어보아야겠다...
 
 ### to do
 
