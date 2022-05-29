@@ -8,7 +8,7 @@ import { Response } from 'express';
 import { map, Observable } from 'rxjs';
 
 @Injectable()
-export class SuccessInterceptor implements NestInterceptor {
+export class SuccessInterceptor extends NestInterceptor {
     intercept(ctx: ExecutionContext, next: CallHandler): Observable<any> {
         const res = ctx.switchToHttp().getResponse<Response>();
         const statusCode = res.statusCode;

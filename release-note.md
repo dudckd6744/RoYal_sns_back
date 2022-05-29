@@ -546,6 +546,11 @@
      - Reading Code
           - code reading 하면서 refactorinng 할 요소들 한번 훑어보아야겠다...
 
+### 2022-05-29
+
+     - nestjs 의 intersepto 는 AOP 패턴에서 영감을 얻은것
+     - morgan 대체로 nestjs 자체 모듈의 loggerMiddleware 사용 가능
+
 ### to do
 
 
