@@ -22,11 +22,11 @@ export function randomReturnPassword(previousResult) {
     return result;
 }
 
-export function randomInt() {
+export function randomInt(initialValue) {
     let randomNum;
     const randomIndexArray = [];
-    for (let i = 0; i < 4; i++) {
-        randomNum = Math.floor(Math.random() * 4);
+    for (let i = 0; i < initialValue; i++) {
+        randomNum = Math.floor(Math.random() * initialValue);
         if (randomIndexArray.indexOf(randomNum.toString()) === -1) {
             randomIndexArray.push(randomNum.toString());
         } else {

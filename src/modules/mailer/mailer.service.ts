@@ -21,7 +21,7 @@ export class AuthMailerService {
 
         if (!user) throw new BadRequestException('이메일을 다시 확인해주세요');
 
-        const passowrd = await pipe(randomInt, randomReturnPassword)(0);
+        const passowrd = await pipe(randomInt, randomReturnPassword)(4);
 
         const salt = await bcrypt.genSalt();
         const hash_password = await bcrypt.hash(passowrd, salt);
