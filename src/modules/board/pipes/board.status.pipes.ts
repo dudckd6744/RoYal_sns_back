@@ -18,7 +18,7 @@ export class BoardStatusPipe implements PipeTransform {
         }
         return value;
     }
-    private isStatusOption(status: any) {
+    private isStatusOption(status: BoardStatus) {
         const index = this.StatusOption.indexOf(status);
         return index != -1;
     }

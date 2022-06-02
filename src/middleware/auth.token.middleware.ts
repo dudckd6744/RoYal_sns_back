@@ -13,8 +13,7 @@ export class AuthTokenMiddleware implements NestMiddleware {
         const userId = await this.parseUserId(req);
 
         const anyReq = req as any;
-        //인증부분 재검토
-        console.log(userId);
+
         anyReq.userId = userId;
 
         return next();
