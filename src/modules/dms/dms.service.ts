@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { errStatus } from 'src/resStatusDto/resStatus.dto';
+import { errStatus } from 'src/commonDto/resStatus.dto';
 import { User } from 'src/schemas/User';
 
 import { ChatsGateway } from '../chats/chats.gateway';

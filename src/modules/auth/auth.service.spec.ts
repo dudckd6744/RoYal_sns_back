@@ -1,7 +1,7 @@
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { errStatus } from 'src/resStatusDto/resStatus.dto';
+import { errStatus } from 'src/commonDto/resStatus.dto';
 import { User, UserSchema } from 'src/schemas/User';
 import { anything, instance, mock, when } from 'ts-mockito';
 

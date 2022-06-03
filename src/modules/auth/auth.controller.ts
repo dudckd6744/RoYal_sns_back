@@ -22,7 +22,7 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { Response } from 'express';
-import { errStatus, Success } from 'src/resStatusDto/resStatus.dto';
+import { errStatus, Success } from 'src/commonDto/resStatus.dto';
 import { ReqUser } from 'src/utils/auth.decorater';
 import { AuthGuard_renewal } from 'src/utils/auth.guard';
 

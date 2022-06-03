@@ -1,6 +1,6 @@
 /* eslint-disable no-var */
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { errStatus } from 'src/resStatusDto/resStatus.dto';
+import { errStatus } from 'src/commonDto/resStatus.dto';
 import { Board } from 'src/schemas/Board';
 import { Reply } from 'src/schemas/Reply';
 import { User } from 'src/schemas/User';

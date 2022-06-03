@@ -7,7 +7,7 @@ import {
     ApiProperty,
     ApiTags,
 } from '@nestjs/swagger';
-import { errStatus, Success } from 'src/resStatusDto/resStatus.dto';
+import { errStatus, Success } from 'src/commonDto/resStatus.dto';
 
 import { emailDto } from './mailer.dto';
 import { AuthMailerService } from './mailer.service';

@@ -1,12 +1,13 @@
 import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserSchema, User } from 'src/schemas/User';
 
 import { AppController } from './app.controller';
 import { MongoConfigModule } from './configs/config/config.module';
 import { MongoConfigService } from './configs/config/config.service';
-// import { typeORMConfig } from './configs/typeorm.config';
+import { typeORMConfig } from './configs/typeorm.config';
 //인증
 import { AuthTokenMiddleware } from './middleware/auth.token.middleware';
 //모듈
@@ -24,7 +25,7 @@ import { KakaoStrategy } from './utils/oAuth/kakao.auth';
     controllers: [AppController],
     imports: [
         //typeorm의 createConnection와 같은 파라미터를 제공받으며 App 전체에서 접근 가능한 Context의 connection을 주입받습니다.
-        // TypeOrmModule.forRoot(typeORMConfig),
+        TypeOrmModule.forRoot(typeORMConfig),
         ConfigModule.forRoot({ isGlobal: true }),
         MongoConfigModule,
         MongooseModule.forRootAsync({

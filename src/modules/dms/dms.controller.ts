@@ -18,7 +18,7 @@ import {
     ApiOperation,
     ApiTags,
 } from '@nestjs/swagger';
-import { errStatus, Success } from 'src/resStatusDto/resStatus.dto';
+import { errStatus, Success } from 'src/commonDto/resStatus.dto';
 import { User } from 'src/schemas/User';
 import { ReqUser } from 'src/utils/auth.decorater';
 import { AuthGuard_renewal } from 'src/utils/auth.guard';

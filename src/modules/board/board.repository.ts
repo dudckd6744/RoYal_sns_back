@@ -1,7 +1,7 @@
 import { BadRequestException, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { errStatus } from 'src/resStatusDto/resStatus.dto';
+import { errStatus } from 'src/commonDto/resStatus.dto';
 import { Board } from 'src/schemas/Board';
 import { Like } from 'src/schemas/Like';
 import { Reply } from 'src/schemas/Reply';

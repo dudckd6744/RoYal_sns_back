@@ -20,8 +20,8 @@ import {
     ApiOperation,
     ApiTags,
 } from '@nestjs/swagger';
+import { errStatus, Success } from 'src/commonDto/resStatus.dto';
 import { logger } from 'src/configs/winston';
-import { errStatus, Success } from 'src/resStatusDto/resStatus.dto';
 import { Board } from 'src/schemas/Board';
 import { Reply } from 'src/schemas/Reply';
 import { User } from 'src/schemas/User';

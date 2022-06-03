@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Response } from 'express';
 import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
-import { errStatus } from 'src/resStatusDto/resStatus.dto';
+import { errStatus } from 'src/commonDto/resStatus.dto';
 import { User } from 'src/schemas/User';
 
 import { CreateUserDto } from './dto/user.dto';
